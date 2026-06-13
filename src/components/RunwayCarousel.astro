@@ -1,0 +1,99 @@
+---
+const models = [
+  { id: 1, name: "GLACIER WHITE PUFFER", price: 1299.99, img: "https://placehold.co/400x600/1c1c1f/e1e1e6?text=Model+1" },
+  { id: 2, name: "POLAR GLOSS JACKET", price: 899.99, img: "https://placehold.co/400x600/1c1c1f/e1e1e6?text=Model+2" },
+  { id: 3, name: "STEALTH BLACK HEAVY", price: 1199.99, img: "https://placehold.co/400x600/1c1c1f/e1e1e6?text=Model+3" },
+  { id: 4, name: "ICEFIELD BLUE TECH", price: 999.99, img: "https://placehold.co/400x600/1c1c1f/e1e1e6?text=Model+4" },
+  { id: 5, name: "POLAR WHITE SHELL", price: 1499.99, img: "https://placehold.co/400x600/1c1c1f/e1e1e6?text=Model+5" },
+];
+---
+
+<section class="relative w-full h-[70vh] overflow-hidden flex items-center justify-center bg-woltz-bg">
+  <div id="carousel-track" class="flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 will-change-transform">
+    {models.map((model) => (
+      <div 
+        class="carousel-item relative w-[300px] h-[450px] flex-shrink-0 rounded-xl overflow-hidden border border-woltz-border bg-woltz-surface transition-all duration-300"
+        data-name={model.name}
+        data-price={model.price}
+        data-img={model.img}
+      >
+        <img src={model.img} alt={model.name} class="w-full h-full object-cover opacity-80" />
+        <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-woltz-bg to-transparent">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-woltz-accent">{model.name}</h3>
+          <p class="text-xs text-woltz-muted mt-1">${model.price.toFixed(2)}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div id="product-panel" class="absolute right-12 top-1/2 -translate-y-1/2 w-[320px] bg-woltz-surface/90 backdrop-blur-md border border-woltz-border rounded-lg p-6 hidden md:block z-20">
+    <div id="panel-content" class="flex flex-col gap-4">
+      <img id="panel-img" src={models[0].img} alt="Produto Selecionado" class="w-full h-64 object-cover rounded-md bg-woltz-bg" />
+      <div>
+        <h2 id="panel-name" class="text-xl font-bold uppercase tracking-wide text-woltz-accent">{models[0].name}</h2>
+        <p id="panel-price" class="text-2xl font-masque mt-2 text-woltz-text">${models[0].price.toFixed(2)}</p>
+      </div>
+      <button class="w-full bg-woltz-accent text-woltz-bg py-3 uppercase text-xs font-bold tracking-widest hover:bg-gray-200 transition-colors mt-4">
+        Adicionar ao Carrinho
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { Draggable } from 'gsap/Draggable';
+  import { InertiaPlugin } from 'gsap/InertiaPlugin';
+
+  gsap.registerPlugin(Draggable, InertiaPlugin);
+
+  const track = document.getElementById('carousel-track');
+  const items = document.querySelectorAll('.carousel-item');
+  const panelImg = document.getElementById('panel-img');
+  const panelName = document.getElementById('panel-name');
+  const panelPrice = document.getElementById('panel-price');
+
+  function updateDepth() {
+    const centerX = window.innerWidth / 2;
+    items.forEach((item) => {
+      const rect = item.getBoundingClientRect();
+      const itemCenterX = rect.left + rect.width / 2;
+      const distance = Math.abs(centerX - itemCenterX);
+      const scale = Math.max(0.6, 1 - (distance / (window.innerWidth * 0.6)));
+      const blur = Math.min(10, distance / 50);
+      const opacity = Math.max(0.3, 1 - (distance / (window.innerWidth * 0.5)));
+      gsap.to(item, { scale, filter: `blur(${blur}px)`, opacity, zIndex: Math.round(scale * 100), duration: 0.4, ease: "power2.out" });
+    });
+  }
+
+  function updatePanel() {
+    const centerX = window.innerWidth / 2;
+    let closestItem = null;
+    let minDistance = Infinity;
+    items.forEach((item) => {
+      const rect = item.getBoundingClientRect();
+      const itemCenterX = rect.left + rect.width / 2;
+      const distance = Math.abs(centerX - itemCenterX);
+      if (distance < minDistance) { minDistance = distance; closestItem = item; }
+    });
+    if (closestItem) {
+      const name = closestItem.getAttribute('data-name');
+      const price = closestItem.getAttribute('data-price');
+      const img = closestItem.getAttribute('data-img');
+      if (panelName.innerText !== name) {
+        gsap.to([panelImg, panelName, panelPrice], { opacity: 0, y: 10, duration: 0.2, onComplete: () => {
+          panelImg.src = img; panelName.innerText = name; panelPrice.innerText = `$${parseFloat(price).toFixed(2)}`;
+          gsap.to([panelImg, panelName, panelPrice], { opacity: 1, y: 0, duration: 0.3 });
+        }});
+      }
+    }
+  }
+
+  Draggable.create(track, {
+    type: "x", inertia: true, bounds: { minX: -Infinity, maxX: Infinity },
+    onDrag: function() { updateDepth(); updatePanel(); },
+    onThrowUpdate: function() { updateDepth(); updatePanel(); }
+  });
+
+  setTimeout(() => { updateDepth(); updatePanel(); }, 100);
+</script>
