@@ -78,11 +78,11 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models];
   const singleSetCount = 5; 
   const setWidth = singleSetCount * totalItemWidth; 
 
-  // Ponto de foco: 65% da largura da tela (alinhado com o painel lateral)
-  const focusPoint = window.innerWidth * 0.65; 
+  // PONTO DE FOCO AJUSTADO: Alinhado com o painel lateral (75% da tela)
+  // Isso garante que o item destacado fique "pra lá" (à direita), próximo ao painel
+  const focusPoint = window.innerWidth * 0.75; 
 
   let isDragging = false;
-  let dragInstance;
 
   function updateVisuals() {
     const trackX = gsap.getProperty(track, "x");
@@ -135,43 +135,8 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models];
     });
   }
 
-  // Função para trazer um item específico para o foco (usada no Hover)
-  function bringToFocus(targetIndex) {
-    if (isDragging) return; // Não interfere se estiver arrastando
-    
-    const currentX = gsap.getProperty(track, "x");
-    // Posição atual do item alvo na tela
-    const targetItemCurrentX = currentX + (targetIndex * totalItemWidth) + (itemWidth / 2);
-    // Quanto precisamos mover o track para levar esse item ao foco
-    const moveBy = focusPoint - targetItemCurrentX;
-    const newX = currentX + moveBy;
-    
-    // Anima suave até a nova posição
-    gsap.to(track, {
-      x: newX,
-      duration: 0.8,
-      ease: "power2.inOut",
-      onUpdate: () => {
-        updateVisuals();
-        checkLoop();
-      },
-      onComplete: () => {
-        // Após animar, verifica se precisa resetar para o centro silenciosamente
-        setTimeout(resetToCenter, 500);
-      }
-    });
-  }
-
-  // Adiciona evento de Hover em cada item
-  items.forEach((item) => {
-    item.addEventListener('mouseenter', () => {
-      const index = parseInt(item.dataset.index);
-      bringToFocus(index);
-    });
-  });
-
   // Inicialização do Drag
-  dragInstance = Draggable.create(track, {
+  Draggable.create(track, {
     type: "x",
     inertia: true,
     bounds: { minX: -Infinity, maxX: Infinity },
@@ -195,7 +160,7 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models];
         resetToCenter();
       }, 800);
     }
-  })[0];
+  });
 
   // Verifica loop DURANTE o movimento (segurança extra)
   function checkLoop() {
@@ -219,7 +184,7 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models];
     const relativePos = -(currentX - focusPoint + (itemWidth/2));
     const currentItemIndex = Math.round(relativePos / totalItemWidth);
     
-    // Queremos mover esse item para o "meio" da nossa lista de 5 sets (índice 10, que é o início do 3º set)
+    // Queremos mover esse item para o "meio" da nossa lista de 5 sets (índice 10)
     const targetIndexInList = 10; 
     
     // Quantos itens precisamos deslocar para levar o item atual para a posição 10?
@@ -234,7 +199,7 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models];
   }
 
   function initPosition() {
-      // Começa no índice 10 (meio da lista de 25 itens), garantindo margem máxima dos dois lados
+      // Começa no índice 10 (meio da lista de 25 itens), alinhado ao novo ponto de foco
       const targetItemIndex = 10; 
       const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
       
@@ -247,8 +212,6 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models];
   
   // Recalcula foco se redimensionar tela
   window.addEventListener('resize', () => {
-      // Atualiza variável global de foco
-      // Nota: Em produção real, precisaríamos recalcular tudo, mas para simplificar:
       updateVisuals();
   });
 
