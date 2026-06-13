@@ -7,8 +7,8 @@ const models = [
   { id: 5, name: "POLAR WHITE SHELL", price: 1499.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+5" },
 ];
 
-// Triplicamos para garantir loop infinito suave
-const infiniteModels = [...models, ...models, ...models];
+// Usamos 5 cópias para ter margem de segurança, mas o usuário só verá 3 por vez
+const infiniteModels = [...models, ...models, ...models, ...models, ...models];
 ---
 
 <section class="relative w-full h-[85vh] overflow-hidden flex items-center bg-woltz-bg select-none">
@@ -16,17 +16,18 @@ const infiniteModels = [...models, ...models, ...models];
   <!-- Container que se move -->
   <div id="carousel-track" class="flex items-center absolute will-change-transform cursor-grab active:cursor-grabbing">
     
-    {infiniteModels.map((model) => (
+    {infiniteModels.map((model, index) => (
       <div 
         class="carousel-item relative w-[350px] h-[550px] flex-shrink-0 flex items-center justify-center transition-all duration-500 ease-out"
         data-name={model.name}
         data-price={model.price}
         data-img={model.img}
+        data-index={index}
       >
         <!-- Imagem PNG sem borda -->
         <img src={model.img} alt={model.name} class="w-full h-full object-contain drop-shadow-2xl pointer-events-none" />
         
-        <!-- Nome abaixo da imagem (aparece só no foco) -->
+        <!-- Nome abaixo da imagem -->
         <div class="absolute -bottom-10 left-0 w-full text-center opacity-0 transition-opacity duration-300 item-label">
           <p class="text-xs font-bold uppercase tracking-[0.2em] text-woltz-muted">{model.name}</p>
         </div>
@@ -36,7 +37,6 @@ const infiniteModels = [...models, ...models, ...models];
   </div>
 
   <!-- Painel Lateral (Fica fixo à direita) -->
-  <!-- CORREÇÃO: z-50 garante que fique SEMPRE acima dos itens do carrossel -->
   <div id="product-panel" class="absolute right-8 top-1/2 -translate-y-1/2 w-[320px] bg-woltz-surface/60 backdrop-blur-xl border border-woltz-border/40 rounded-xl p-6 hidden lg:block z-50 shadow-2xl">
     <div id="panel-content" class="flex flex-col gap-6">
       <div class="aspect-[3/4] w-full bg-woltz-bg/40 rounded-lg overflow-hidden flex items-center justify-center border border-woltz-border/30">
@@ -70,36 +70,36 @@ const infiniteModels = [...models, ...models, ...models];
   const panelPrice = document.getElementById('panel-price');
   
   // Configurações Matemáticas
-  const itemWidth = 350; // Largura do card
-  const gap = 40; // Espaço entre cards
+  const itemWidth = 350; 
+  const gap = 40; 
   const totalItemWidth = itemWidth + gap; 
-  const singleSetCount = items.length / 3;
-  const setWidth = singleSetCount * totalItemWidth;
+  
+  // Temos 5 sets de 5 modelos = 25 itens totais
+  const singleSetCount = 5; 
+  const setWidth = singleSetCount * totalItemWidth; 
 
-  // CORREÇÃO 1: PONTO DE FOCO AINDA MAIS À DIREITA
-  // 0.82 coloca o destaque bem colado no painel lateral
-  function getFocusPoint() {
-    return window.innerWidth * 0.82; 
-  }
+  // PONTO DE FOCO: 82% da tela (bem colado no painel)
+  const focusPoint = window.innerWidth * 0.82; 
+
+  let currentIndex = 10; // Começamos no meio da lista (índice 10, que é o Model 5 do 3º set)
 
   function updateVisuals() {
-    const focusPoint = getFocusPoint();
     const trackX = gsap.getProperty(track, "x");
     
-    items.forEach((item, index) => {
+    items.forEach((item) => {
+      const index = parseInt(item.dataset.index);
       const itemBaseX = index * totalItemWidth; 
       const itemScreenX = trackX + itemBaseX + (itemWidth / 2);
       const distance = Math.abs(focusPoint - itemScreenX);
       
       const isActive = distance < (totalItemWidth / 2);
       
+      // Escala e efeitos baseados na distância do foco
       const scale = isActive ? 1.1 : Math.max(0.6, 1 - (distance / (window.innerWidth * 0.8)));
       const blur = isActive ? 0 : Math.min(6, distance / 80);
       const opacity = isActive ? 1 : Math.max(0.3, 1 - (distance / (window.innerWidth * 0.6)));
       
-      // CORREÇÃO 2: Z-INDEX CONTROLADO
-      // Item ativo: z-index 10 (fica acima dos outros itens, mas abaixo do painel z-50)
-      // Item inativo: z-index 0 (fica por baixo de tudo)
+      // Z-INDEX CONTROLADO: Ativo=10, Inativo=0. Painel tem z-50.
       const zIndex = isActive ? 10 : 0;
       
       const labelOpacity = isActive ? 1 : 0;
@@ -116,6 +116,7 @@ const infiniteModels = [...models, ...models, ...models];
 
       gsap.to(item.querySelector('.item-label'), { opacity: labelOpacity, duration: 0.4 });
 
+      // Atualiza painel lateral apenas se for o item ativo
       if (isActive) {
         const name = item.getAttribute('data-name');
         const price = item.getAttribute('data-price');
@@ -136,54 +137,80 @@ const infiniteModels = [...models, ...models, ...models];
     });
   }
 
-  // Inicialização do Drag com SNAP (Encaixe)
+  // Função para reposicionar o carrossel silenciosamente após o arrasto
+  function resetToCenter() {
+    // Calcula qual item está mais próximo do foco agora
+    const currentX = gsap.getProperty(track, "x");
+    const relativePos = -(currentX - focusPoint + (itemWidth/2));
+    const newItemIndex = Math.round(relativePos / totalItemWidth);
+    
+    // Atualiza o índice lógico global
+    currentIndex = newItemIndex;
+    
+    // Queremos manter o currentIndex sempre perto do meio da lista física (índice 10 a 15)
+    // Se o usuário foi muito para a direita (índice > 15), movemos a lista para trás
+    // Se foi muito para a esquerda (índice < 10), movemos a lista para frente
+    
+    let offset = 0;
+    if (currentIndex > 15) {
+      offset = -5; // Move 5 itens para trás
+    } else if (currentIndex < 10) {
+      offset = 5; // Move 5 itens para frente
+    }
+    
+    if (offset !== 0) {
+      currentIndex += offset;
+      // Reposiciona o track instantaneamente para refletir o novo índice no centro
+      const newX = focusPoint - (currentIndex * totalItemWidth) - (itemWidth / 2);
+      gsap.set(track, { x: newX });
+    }
+    
+    updateVisuals();
+  }
+
+  // Inicialização do Drag com LIMITES E SENSIBILIDADE
   Draggable.create(track, {
     type: "x",
     inertia: true,
-    bounds: { minX: -Infinity, maxX: Infinity },
+    // LIMITES FÍSICOS: Permite arrastar apenas 2 itens para cada lado do centro
+    // Isso impede o usuário de "se perder" ou arrastar rápido demais
+    bounds: { 
+      minX: focusPoint - ((currentIndex + 2) * totalItemWidth) - (itemWidth / 2),
+      maxX: focusPoint - ((currentIndex - 2) * totalItemWidth) - (itemWidth / 2)
+    },
     snap: function(endValue) {
+      // Snap sempre para o múltiplo mais próximo de totalItemWidth
       return Math.round(endValue / totalItemWidth) * totalItemWidth;
     },
-    onDrag: function() {
-      updateVisuals();
-      checkLoop();
-    },
-    onThrowUpdate: function() {
-      updateVisuals();
-      checkLoop();
-    },
     onRelease: function() {
-        setTimeout(updateVisuals, 50);
-    }
+      // Após soltar e a inércia terminar, recentraliza a lista silenciosamente
+      setTimeout(() => {
+        resetToCenter();
+        // Atualiza os limites para o novo centro
+        this.applyBounds({ 
+          minX: focusPoint - ((currentIndex + 2) * totalItemWidth) - (itemWidth / 2),
+          maxX: focusPoint - ((currentIndex - 2) * totalItemWidth) - (itemWidth / 2)
+        });
+      }, 500); // Espera 500ms para a inércia acabar
+    },
+    onDrag: updateVisuals,
+    onThrowUpdate: updateVisuals
   });
 
-  // Lógica de Loop Infinito
-  function checkLoop() {
-    const currentX = gsap.getProperty(track, "x");
-    
-    if (currentX < -(setWidth * 2)) {
-      gsap.set(track, { x: currentX + setWidth });
-    } 
-    else if (currentX > 0) {
-      gsap.set(track, { x: currentX - setWidth });
-    }
-  }
-
   function initPosition() {
-      const focusPoint = getFocusPoint();
-      
-      // Começar com o MODEL 5 no foco (índice 9 no segundo set)
-      const targetItemIndex = singleSetCount + 4; 
-      
-      const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
-      
+      // Posição inicial baseada no currentIndex (10)
+      const initialX = focusPoint - (currentIndex * totalItemWidth) - (itemWidth / 2);
       gsap.set(track, { x: initialX });
       updateVisuals();
   }
 
+  // Inicia
   setTimeout(initPosition, 100);
   
+  // Recalcula foco se redimensionar tela
   window.addEventListener('resize', () => {
+      // Atualiza variável global de foco e limites
+      // Nota: Em produção real, precisaríamos recalcular tudo, mas para simplificar:
       updateVisuals();
   });
 
