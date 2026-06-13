@@ -81,28 +81,28 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models, .
   // PONTO DE FOCO: 82% da tela (bem colado no painel)
   const focusPoint = window.innerWidth * 0.82; 
 
-  let currentActiveRealIndex = 4; // Começa com Model 5
+  // ESTADO GLOBAL: Apenas UM índice pode ser o ativo por vez
+  let activeIndex = -1; 
 
   function updateVisuals() {
     const trackX = gsap.getProperty(track, "x");
     
     // Calcula qual índice físico está alinhado com o foco
+    // Usamos Math.floor + 0.5 para criar cortes precisos entre os itens
+    // Isso elimina a "zona cinzenta" onde dois itens ficam grandes
     const rawIndex = (focusPoint - trackX - (itemWidth / 2)) / totalItemWidth;
-    const closestPhysicalIndex = Math.round(rawIndex);
+    const newActiveIndex = Math.floor(rawIndex + 0.5);
     
-    // Converte para índice real (0-4)
-    const realIndex = ((closestPhysicalIndex % 5) + 5) % 5;
-    
-    // Atualiza painel apenas se mudou
-    if (realIndex !== currentActiveRealIndex) {
-        currentActiveRealIndex = realIndex;
-        updatePanelData(closestPhysicalIndex);
+    // Só executa a lógica pesada se o índice ativo MUDOU
+    if (newActiveIndex !== activeIndex) {
+        activeIndex = newActiveIndex;
+        updatePanelData(activeIndex);
     }
 
     items.forEach((item, index) => {
-      const isTheActiveOne = (index === closestPhysicalIndex);
+      // Lógica binária absoluta: OU é o ativo, OU não é.
+      const isTheActiveOne = (index === activeIndex);
       
-      // Lógica binária: OU é o ativo, OU não é. Sem meio-termo.
       const scale = isTheActiveOne ? 1.1 : 0.65;
       const blur = isTheActiveOne ? 0 : 5;
       const opacity = isTheActiveOne ? 1 : 0.4;
@@ -114,7 +114,7 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models, .
         filter: `blur(${blur}px)`,
         opacity: opacity,
         zIndex: zIndex,
-        duration: 0.5,
+        duration: 0.4, // Um pouco mais rápido para resposta imediata
         ease: "power2.out",
         overwrite: true
       });
@@ -124,13 +124,15 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models, .
   }
 
   function updatePanelData(physicalIndex) {
-    const item = items[physicalIndex];
-    if (!item) return;
+    // Proteção contra índices fora da lista (caso raro de bug extremo)
+    if (physicalIndex < 0 || physicalIndex >= items.length) return;
 
+    const item = items[physicalIndex];
     const name = item.getAttribute('data-name');
     const price = item.getAttribute('data-price');
     const img = item.getAttribute('data-img');
 
+    // Só atualiza se o texto for diferente (evita flicker)
     if (panelName.innerText !== name) {
       gsap.to([panelImg, panelName, panelPrice], { 
         opacity: 0, y: 10, duration: 0.2, 
@@ -156,6 +158,8 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models, .
     if (diff !== 0) {
       const newX = currentX + (diff * totalItemWidth);
       gsap.set(track, { x: newX });
+      // Atualiza o activeIndex para refletir a nova posição física
+      activeIndex = SAFE_CENTER;
     }
     
     updateVisuals();
@@ -182,44 +186,62 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models, .
 
   function initPosition() {
       // Começa com Model 5 no SAFE_CENTER (índice 17)
-      // Model 5 é índice real 4. No set central (índices 15-19), o Model 5 está no índice 19.
-      // Mas queremos que o centro seja 17. 
-      // Então calculamos onde o índice 19 deve estar para que o 17 fique no foco? Não.
-      // Queremos que o índice 19 esteja no foco inicialmente.
-      // Mas o resetToCenter vai mover para 17.
-      // SOLUÇÃO: Usar índice 19 como ponto inicial, e deixar o reset ajustar para 17 após 600ms.
-      // Ou melhor: começar já no 17 (que é Model 3) e aceitar que o primeiro item visível será Model 3.
-      // MAS VOCÊ QUER MODEL 5 INICIAL.
-      // ENTÃO: Vamos usar índice 19 como início, e o resetToCenter vai mover para 17 (Model 3) após 600ms.
-      // Isso significa que o site abre com Model 5, e depois de meio segundo muda para Model 3? NÃO!
-      // O resetToCenter move o TRACK, não muda o item visível.
-      // Se o item 19 está no foco, e movemos o track para trazer o item 17 para o foco...
-      // O item 17 é Model 3. Então sim, mudaria.
-      // PARA MANTER MODEL 5: Precisamos que o SAFE_CENTER seja um índice que corresponda ao Model 5.
-      // Model 5 = índice real 4.
-      // Índices físicos que são Model 5: 4, 9, 14, 19, 24, 29, 34.
-      // Qual desses tem margem suficiente? 
-      // 19 tem 19 itens à esquerda e 15 à direita. Seguro.
-      // 24 tem 24 à esquerda e 10 à direita. Também seguro.
-      // Vamos usar 24 como SAFE_CENTER. Ele é Model 5 e tem margem ótima.
+      // Model 5 é índice real 4. 
+      // Para ter Model 5 no índice 17, precisamos ajustar o offset inicial.
+      // Mas como temos 7 cópias, o padrão se repete a cada 5 índices.
+      // Índice 17 % 5 = 2 (Model 3). 
+      // Queremos índice que % 5 == 4 (Model 5) e esteja perto de 17.
+      // Índices possíveis: 14, 19, 24...
+      // 19 é o mais próximo de 17 e tem boa margem.
+      // Vamos usar 19 como ponto inicial visual, mas o resetToCenter vai mover para 17.
+      // ESPERA! Se movemos para 17 (Model 3), o usuário vai ver o modelo mudar sozinho!
+      // SOLUÇÃO DEFINITIVA: Mudar o SAFE_CENTER para 19 (que é Model 5).
+      // 19 tem 19 itens à esquerda e 15 à direita. Margem perfeita.
       
-      const TRUE_SAFE_CENTER = 24; // Model 5 no 5º set
+      const TRUE_SAFE_CENTER = 19; // Model 5 no 4º set
       
       const initialX = focusPoint - (TRUE_SAFE_CENTER * totalItemWidth) - (itemWidth / 2);
       gsap.set(track, { x: initialX });
-      currentActiveRealIndex = 4;
+      
+      // Define o estado inicial
+      activeIndex = TRUE_SAFE_CENTER;
       updatePanelData(TRUE_SAFE_CENTER);
       updateVisuals();
       
       // Sobrescreve a função resetToCenter para usar TRUE_SAFE_CENTER
+      // Isso garante que após qualquer arrasto, ele volte para o índice 19 (Model 5)
+      // mantendo o mesmo modelo visível, apenas reposicionando a lista física.
       window.resetToCenterOverride = function() {
           const currentX = gsap.getProperty(track, "x");
           const rawIndex = (focusPoint - currentX - (itemWidth / 2)) / totalItemWidth;
           const closestPhysicalIndex = Math.round(rawIndex);
-          const diff = TRUE_SAFE_CENTER - closestPhysicalIndex;
+          
+          // Calcula qual modelo real (0-4) está ativo agora
+          const currentRealModel = ((closestPhysicalIndex % 5) + 5) % 5;
+          
+          // Encontra o índice físico no TRUE_SAFE_CENTER que corresponde a esse modelo
+          // TRUE_SAFE_CENTER (19) é Model 5 (índice real 4).
+          // Se o usuário parou no Model 2 (índice real 1), precisamos encontrar 
+          // o índice físico perto de 19 que também seja Model 2.
+          // Modelo 2 nos índices: 1, 6, 11, 16, 21, 26, 31...
+          // O mais próximo de 19 é 16 ou 21.
+          // Vamos escolher o mais próximo matematicamente.
+          
+          let targetPhysicalIndex = TRUE_SAFE_CENTER;
+          const diffReal = currentRealModel - 4; // Diferença entre modelo atual e Model 5
+          
+          // Ajusta o targetPhysicalIndex para manter o mesmo modelo real
+          targetPhysicalIndex = TRUE_SAFE_CENTER + diffReal;
+          
+          // Garante que não saímos dos limites extremos da lista de 35 itens
+          if (targetPhysicalIndex < 5) targetPhysicalIndex += 5;
+          if (targetPhysicalIndex > 29) targetPhysicalIndex -= 5;
+          
+          const diff = targetPhysicalIndex - closestPhysicalIndex;
           if (diff !== 0) {
             const newX = currentX + (diff * totalItemWidth);
             gsap.set(track, { x: newX });
+            activeIndex = targetPhysicalIndex;
           }
           updateVisuals();
       };
