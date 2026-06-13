@@ -165,7 +165,11 @@ const infiniteModels = [...models, ...models, ...models];
 
   function initPosition() {
       const focusPoint = getFocusPoint();
-      const targetItemIndex = singleSetCount; 
+      // CORREÇÃO: Apontando para o índice 9 (que é o Model 5 no segundo set)
+      // singleSetCount = 5. O segundo set vai de 5 a 9.
+      // Índice 9 corresponde ao último item do segundo set (Model 5).
+      const targetItemIndex = singleSetCount + 4; 
+      
       const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
       
       gsap.set(track, { x: initialX });
