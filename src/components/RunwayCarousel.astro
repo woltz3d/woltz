@@ -7,8 +7,8 @@ const models = [
   { id: 5, name: "POLAR WHITE SHELL", price: 1499.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+5" },
 ];
 
-// 5 cópias para loop seguro
-const infiniteModels = [...models, ...models, ...models, ...models, ...models];
+// 7 cópias para margem extra de segurança (35 itens totais)
+const infiniteModels = [...models, ...models, ...models, ...models, ...models, ...models, ...models];
 ---
 
 <section class="relative w-full h-[85vh] overflow-hidden flex items-center bg-woltz-bg select-none">
@@ -74,41 +74,35 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models];
   const gap = 40; 
   const totalItemWidth = itemWidth + gap; 
   
-  // Temos 5 sets de 5 modelos = 25 itens totais
-  // Centro seguro da lista física: índices 10, 11, 12, 13, 14
-  const safeCenterIndex = 12; 
+  // Temos 7 sets de 5 modelos = 35 itens totais
+  // Centro seguro: índice 17 (meio exato da lista de 35)
+  const SAFE_CENTER = 17; 
 
   // PONTO DE FOCO: 82% da tela (bem colado no painel)
   const focusPoint = window.innerWidth * 0.82; 
 
-  // Estado Global: Qual item REAL (0-4) está atualmente no foco
-  let currentActiveRealIndex = 4; // Começa com Model 5 (índice 4)
+  let currentActiveRealIndex = 4; // Começa com Model 5
 
   function updateVisuals() {
     const trackX = gsap.getProperty(track, "x");
     
-    // Calcula qual índice físico (0-24) está mais próximo do ponto de foco
-    // Fórmula: (Foco - PosiçãoDoTrack) / LarguraTotalDoItem
+    // Calcula qual índice físico está alinhado com o foco
     const rawIndex = (focusPoint - trackX - (itemWidth / 2)) / totalItemWidth;
     const closestPhysicalIndex = Math.round(rawIndex);
     
-    // Converte índice físico para índice real (0-4) usando módulo
-    // Isso resolve o problema do salto: não importa se é o item 4, 9, 14 ou 19, 
-    // todos são tratados como o mesmo "Model 5"
+    // Converte para índice real (0-4)
     const realIndex = ((closestPhysicalIndex % 5) + 5) % 5;
     
-    // Atualiza o estado global APENAS se mudou
+    // Atualiza painel apenas se mudou
     if (realIndex !== currentActiveRealIndex) {
         currentActiveRealIndex = realIndex;
         updatePanelData(closestPhysicalIndex);
     }
 
     items.forEach((item, index) => {
-      // Verifica se este item É o que está no foco
       const isTheActiveOne = (index === closestPhysicalIndex);
       
-      // Escala e efeitos baseados EXCLUSIVAMENTE em ser o ativo ou não
-      // Sem cálculos de distância complexos que causam bugs
+      // Lógica binária: OU é o ativo, OU não é. Sem meio-termo.
       const scale = isTheActiveOne ? 1.1 : 0.65;
       const blur = isTheActiveOne ? 0 : 5;
       const opacity = isTheActiveOne ? 1 : 0.4;
@@ -150,14 +144,14 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models];
     }
   }
 
-  // Função para reposicionar o carrossel silenciosamente após o arrasto
+  // Reposiciona silenciosamente para o centro seguro após parar
   function resetToCenter() {
     const currentX = gsap.getProperty(track, "x");
     const rawIndex = (focusPoint - currentX - (itemWidth / 2)) / totalItemWidth;
     const closestPhysicalIndex = Math.round(rawIndex);
     
-    // Queremos mover esse item para o "safeCenterIndex" (12)
-    const diff = safeCenterIndex - closestPhysicalIndex;
+    // Move o item atual para o SAFE_CENTER (17)
+    const diff = SAFE_CENTER - closestPhysicalIndex;
     
     if (diff !== 0) {
       const newX = currentX + (diff * totalItemWidth);
@@ -167,79 +161,78 @@ const infiniteModels = [...models, ...models, ...models, ...models, ...models];
     updateVisuals();
   }
 
-  // Inicialização do Drag com LIMITES ESTRITOS
+  // Drag SEM LIMITES RÍGIDOS, mas com snap preciso
   Draggable.create(track, {
     type: "x",
     inertia: true,
-    // LIMITES: Apenas 1 item para cada lado do centro seguro
-    bounds: { 
-      minX: focusPoint - ((safeCenterIndex + 1) * totalItemWidth) - (itemWidth / 2),
-      maxX: focusPoint - ((safeCenterIndex - 1) * totalItemWidth) - (itemWidth / 2)
-    },
+    bounds: { minX: -Infinity, maxX: Infinity }, // Liberdade total durante o arrasto
     snap: function(endValue) {
+      // Snap sempre alinha perfeitamente com um item
       return Math.round(endValue / totalItemWidth) * totalItemWidth;
     },
     onRelease: function() {
-      // Após soltar, espera a inércia parar e recentraliza
+      // Após soltar, espera a inércia acabar e recentraliza
       setTimeout(() => {
         resetToCenter();
-        // Atualiza os limites para o novo centro (que agora é sempre o safeCenterIndex)
-        this.applyBounds({ 
-          minX: focusPoint - ((safeCenterIndex + 1) * totalItemWidth) - (itemWidth / 2),
-          maxX: focusPoint - ((safeCenterIndex - 1) * totalItemWidth) - (itemWidth / 2)
-        });
-      }, 400);
+      }, 600); // Tempo suficiente para a inércia parar completamente
     },
     onDrag: updateVisuals,
     onThrowUpdate: updateVisuals
   });
 
   function initPosition() {
-      // Começa com o Model 5 (índice real 4) no foco
-      // No set seguro (centro), o Model 5 está no índice físico 14 (10+4)
-      // Mas queremos centralizar no índice 12. 
-      // Então calculamos onde o índice 14 deveria estar para que o 12 fique no foco? Não.
-      // Queremos que o índice 14 esteja no foco inicialmente.
-      // Mas o resetToCenter vai mover tudo para o índice 12.
-      // Para evitar confusão inicial, vamos começar já no índice 12 (que é Model 3) 
-      // OU forçar o início no Model 5 e deixar o reset ajustar.
+      // Começa com Model 5 no SAFE_CENTER (índice 17)
+      // Model 5 é índice real 4. No set central (índices 15-19), o Model 5 está no índice 19.
+      // Mas queremos que o centro seja 17. 
+      // Então calculamos onde o índice 19 deve estar para que o 17 fique no foco? Não.
+      // Queremos que o índice 19 esteja no foco inicialmente.
+      // Mas o resetToCenter vai mover para 17.
+      // SOLUÇÃO: Usar índice 19 como ponto inicial, e deixar o reset ajustar para 17 após 600ms.
+      // Ou melhor: começar já no 17 (que é Model 3) e aceitar que o primeiro item visível será Model 3.
+      // MAS VOCÊ QUER MODEL 5 INICIAL.
+      // ENTÃO: Vamos usar índice 19 como início, e o resetToCenter vai mover para 17 (Model 3) após 600ms.
+      // Isso significa que o site abre com Model 5, e depois de meio segundo muda para Model 3? NÃO!
+      // O resetToCenter move o TRACK, não muda o item visível.
+      // Se o item 19 está no foco, e movemos o track para trazer o item 17 para o foco...
+      // O item 17 é Model 3. Então sim, mudaria.
+      // PARA MANTER MODEL 5: Precisamos que o SAFE_CENTER seja um índice que corresponda ao Model 5.
+      // Model 5 = índice real 4.
+      // Índices físicos que são Model 5: 4, 9, 14, 19, 24, 29, 34.
+      // Qual desses tem margem suficiente? 
+      // 19 tem 19 itens à esquerda e 15 à direita. Seguro.
+      // 24 tem 24 à esquerda e 10 à direita. Também seguro.
+      // Vamos usar 24 como SAFE_CENTER. Ele é Model 5 e tem margem ótima.
       
-      // Vamos começar no Model 5 (índice 14)
-      const initialX = focusPoint - (14 * totalItemWidth) - (itemWidth / 2);
+      const TRUE_SAFE_CENTER = 24; // Model 5 no 5º set
+      
+      const initialX = focusPoint - (TRUE_SAFE_CENTER * totalItemWidth) - (itemWidth / 2);
       gsap.set(track, { x: initialX });
-      
-      // Força o estado inicial correto
       currentActiveRealIndex = 4;
-      updatePanelData(14);
+      updatePanelData(TRUE_SAFE_CENTER);
       updateVisuals();
       
-      // Após 1 segundo, recentraliza silenciosamente para o índice 12 (mantendo o Model 5 visível? Não, o 12 é Model 3)
-      // AH, entendi. Se queremos começar com Model 5, mas o centro seguro é 12 (Model 3), 
-      // temos um conflito. 
-      // SOLUÇÃO: Mudar o safeCenterIndex para 14 (que também é seguro, pois está no meio dos 25 itens)
-      // Índices seguros: 10,11,12,13,14. Todos têm 5 itens de margem para cada lado.
-      // Vamos usar 14 como centro seguro.
+      // Sobrescreve a função resetToCenter para usar TRUE_SAFE_CENTER
+      window.resetToCenterOverride = function() {
+          const currentX = gsap.getProperty(track, "x");
+          const rawIndex = (focusPoint - currentX - (itemWidth / 2)) / totalItemWidth;
+          const closestPhysicalIndex = Math.round(rawIndex);
+          const diff = TRUE_SAFE_CENTER - closestPhysicalIndex;
+          if (diff !== 0) {
+            const newX = currentX + (diff * totalItemWidth);
+            gsap.set(track, { x: newX });
+          }
+          updateVisuals();
+      };
+      
+      // Atualiza o onRelease para usar a nova função
+      Draggable.get(track).vars.onRelease = function() {
+          setTimeout(() => {
+              window.resetToCenterOverride();
+          }, 600);
+      };
   }
 
-  // CORREÇÃO FINAL: Usar índice 14 como centro seguro (é o Model 5 no 3º set)
-  // Isso permite começar com Model 5 E ter margem suficiente
-  const SAFE_CENTER = 14;
-
-  // Sobrescreve a função initPosition com o centro correto
-  setTimeout(() => {
-      const initialX = focusPoint - (SAFE_CENTER * totalItemWidth) - (itemWidth / 2);
-      gsap.set(track, { x: initialX });
-      currentActiveRealIndex = 4; // Model 5
-      updatePanelData(SAFE_CENTER);
-      updateVisuals();
-      
-      // Configura draggable com limites baseados no SAFE_CENTER
-      Draggable.get(track).applyBounds({ 
-          minX: focusPoint - ((SAFE_CENTER + 1) * totalItemWidth) - (itemWidth / 2),
-          maxX: focusPoint - ((SAFE_CENTER - 1) * totalItemWidth) - (itemWidth / 2)
-      });
-  }, 100);
-  
+  setTimeout(initPosition, 100);
   window.addEventListener('resize', updateVisuals);
 
 </script>
