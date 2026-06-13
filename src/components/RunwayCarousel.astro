@@ -7,8 +7,8 @@ const models = [
   { id: 5, name: "POLAR WHITE SHELL", price: 1499.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+5" },
 ];
 
-// Decuplicamos (10x) para criar uma esteira gigante à prova de inércia alta
-const infiniteModels = Array(10).fill(models).flat();
+// 5 cópias é o ideal: leve para o navegador, mas suficiente para loop infinito visual
+const infiniteModels = [...models, ...models, ...models, ...models, ...models];
 ---
 
 <section class="relative w-full h-[85vh] overflow-hidden flex items-center bg-woltz-bg select-none">
@@ -16,13 +16,12 @@ const infiniteModels = Array(10).fill(models).flat();
   <!-- Container que se move -->
   <div id="carousel-track" class="flex items-center absolute will-change-transform cursor-grab active:cursor-grabbing">
     
-    {infiniteModels.map((model, index) => (
+    {infiniteModels.map((model) => (
       <div 
         class="carousel-item relative w-[350px] h-[550px] flex-shrink-0 flex items-center justify-center transition-all duration-500 ease-out"
         data-name={model.name}
         data-price={model.price}
         data-img={model.img}
-        data-real-index={index % models.length} // Índice real do modelo (0-4)
       >
         <!-- Imagem PNG sem borda -->
         <img src={model.img} alt={model.name} class="w-full h-full object-contain drop-shadow-2xl pointer-events-none" />
@@ -70,13 +69,13 @@ const infiniteModels = Array(10).fill(models).flat();
   const panelPrice = document.getElementById('panel-price');
   
   // Configurações Matemáticas
-  const itemWidth = 350; // Largura do card
-  const gap = 40; // Espaço entre cards
+  const itemWidth = 350; 
+  const gap = 40; 
   const totalItemWidth = itemWidth + gap; 
   
-  // Como temos 10 cópias de 5 modelos = 50 itens
-  const singleSetCount = 5; // Número de modelos únicos
-  const setWidth = singleSetCount * totalItemWidth; // Tamanho de UM conjunto completo (5 itens)
+  // Temos 5 sets de 5 modelos = 25 itens totais
+  const singleSetCount = 5; 
+  const setWidth = singleSetCount * totalItemWidth; 
 
   // Função para calcular onde o "Ponto de Foco" está na tela
   function getFocusPoint() {
@@ -138,8 +137,6 @@ const infiniteModels = Array(10).fill(models).flat();
     inertia: true,
     bounds: { minX: -Infinity, maxX: Infinity },
     snap: function(endValue) {
-      // Snap baseado no tamanho de UM SET (5 itens), não no total
-      // Isso garante alinhamento perfeito com os modelos reais
       return Math.round(endValue / totalItemWidth) * totalItemWidth;
     },
     onDrag: function() {
@@ -150,35 +147,58 @@ const infiniteModels = Array(10).fill(models).flat();
       updateVisuals();
       checkLoop();
     },
+    // A MÁGICA DO LOOP INFINITO: Resetar posição quando parar
     onRelease: function() {
-        setTimeout(updateVisuals, 50);
+        // Espera a inércia terminar completamente antes de resetar
+        setTimeout(() => {
+            resetToCenter();
+        }, 1000); // 1 segundo de segurança após soltar
     }
   });
 
-  // Lógica de Loop Infinito BLINDADA COM ESTEIRA GIGANTE
+  // Verifica loop DURANTE o movimento (segurança extra)
   function checkLoop() {
     const currentX = gsap.getProperty(track, "x");
-    
-    // Com 10 cópias, temos muita margem. 
-    // Teleportamos quando sai da zona segura do MEIO (cópias 4, 5, 6, 7)
-    // Zona segura: entre -4*setWidth e -6*setWidth (aproximadamente)
-    
-    // Se foi muito para a esquerda (passou da cópia 4)
-    if (currentX < -(setWidth * 4.5)) {
-      gsap.set(track, { x: currentX + (setWidth * 5) }); // Pula 5 sets (metade da esteira)
-    } 
-    // Se foi muito para a direita (passou da cópia 7)
-    else if (currentX > -(setWidth * 0.5)) {
-      gsap.set(track, { x: currentX - (setWidth * 5) }); // Pula 5 sets para trás
+    // Se estiver muito perto das pontas extremas (quase saindo da lista de 25 itens)
+    // Teleporta para o meio
+    if (currentX < -(setWidth * 3)) {
+      gsap.set(track, { x: currentX + (setWidth * 2) });
+    } else if (currentX > -(setWidth)) {
+      gsap.set(track, { x: currentX - (setWidth * 2) });
     }
+  }
+
+  // Função que centraliza o carrossel silenciosamente
+  function resetToCenter() {
+    const currentX = gsap.getProperty(track, "x");
+    const focusPoint = getFocusPoint();
+    
+    // Calcula qual item está mais próximo do foco agora
+    // (currentX é negativo, então invertemos a lógica)
+    // Posição relativa ao início da lista
+    const relativePos = -(currentX - focusPoint + (itemWidth/2));
+    const currentItemIndex = Math.round(relativePos / totalItemWidth);
+    
+    // Queremos mover esse item para o "meio" da nossa lista de 5 sets (set 2 ou 3)
+    // Vamos mirar no início do Set 2 (índice 5)
+    const targetIndexInList = 5; 
+    
+    // Quantos itens precisamos deslocar para levar o item atual para a posição 5?
+    const diff = targetIndexInList - currentItemIndex;
+    
+    // Nova posição X = Posição Atual + (Diferença * Largura)
+    const newX = currentX + (diff * totalItemWidth);
+    
+    // Move instantaneamente (duração 0) para o usuário não perceber
+    gsap.set(track, { x: newX });
+    updateVisuals();
   }
 
   function initPosition() {
       const focusPoint = getFocusPoint();
-      // Começamos no meio da esteira gigante (entre a 5ª e 6ª cópia)
-      // Isso dá 5 sets de margem para cada lado
-      const startSetIndex = 5; 
-      const initialX = focusPoint - (startSetIndex * setWidth) - (itemWidth / 2);
+      // Começa no Set 2 (índice 5), deixando 2 sets de margem atrás e 3 na frente
+      const targetItemIndex = 5; 
+      const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
       
       gsap.set(track, { x: initialX });
       updateVisuals();
