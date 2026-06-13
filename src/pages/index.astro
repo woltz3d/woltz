@@ -1,0 +1,75 @@
+---
+// Layout base da Woltz Store
+const title = "Woltz | Born to Stand Out";
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <!-- Fonte Inter para textos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-woltz-bg text-woltz-text font-sans antialiased min-h-screen">
+    
+    <!-- HEADER / NAVEGAÇÃO -->
+    <header class="fixed top-0 w-full z-50 bg-woltz-bg/80 backdrop-blur-md border-b border-woltz-border">
+      <div class="max-w-[1920px] mx-auto px-6 h-20 flex items-center justify-between">
+        <!-- LOGO -->
+        <div class="font-masque text-2xl tracking-widest uppercase">WOLTZ</div>
+        
+        <!-- MENU CENTRAL -->
+        <nav class="hidden md:flex gap-12 text-sm tracking-wider uppercase text-woltz-muted">
+          <a href="#" class="hover:text-woltz-accent transition-colors">Coleção</a>
+          <a href="#" class="hover:text-woltz-accent transition-colors">Sobre Nós</a>
+          <a href="#" class="hover:text-woltz-accent transition-colors">Contato</a>
+        </nav>
+
+        <!-- CARRINHO -->
+        <button class="flex items-center gap-2 text-sm uppercase tracking-wider hover:text-woltz-accent transition-colors">
+          <span>Carrinho</span>
+          <span class="bg-woltz-surface px-2 py-0.5 rounded-full text-xs">(0)</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- HERO SECTION (ESPAÇO PARA VÍDEO/FOTO DA COLEÇÃO) -->
+    <section class="relative pt-20 h-[85vh] flex items-center justify-center overflow-hidden border-b border-woltz-border">
+      <!-- Placeholder para Vídeo/Foto Customizável -->
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent to-woltz-bg z-10"></div>
+      <div class="relative z-20 text-center max-w-4xl px-6">
+        <p class="text-woltz-muted text-sm tracking-[0.3em] uppercase mb-4">Nova Coleção</p>
+        <h1 class="font-masque text-6xl md:text-8xl uppercase leading-none mb-6">Artic 01™</h1>
+        <p class="text-woltz-muted text-lg max-w-xl mx-auto mb-10">
+          Tecnologia vestível. Arquivos 3D prontos para uso. 
+          Compre e baixe instantaneamente.
+        </p>
+        <button class="bg-woltz-accent text-woltz-bg px-8 py-4 uppercase tracking-widest text-sm font-semibold hover:bg-gray-200 transition-colors">
+          Explorar Coleção
+        </button>
+      </div>
+    </section>
+
+    <!-- ÁREA DO CARROSSEL INFINITO (SERÁ IMPLEMENTADA NO PRÓXIMO PASSO) -->
+    <section class="py-24 px-6">
+      <div class="max-w-[1920px] mx-auto">
+        <div class="flex justify-between items-end mb-12">
+          <h2 class="text-3xl uppercase tracking-wider">Desfile Virtual</h2>
+          <p class="text-woltz-muted text-sm">Arraste para navegar • Clique para comprar</p>
+        </div>
+        
+        <!-- Container do Carrossel -->
+        <div id="runway-carousel" class="relative h-[600px] flex items-center">
+          <!-- Os modelos 3D entrarão aqui via JavaScript/GSAP -->
+          <div class="w-full h-full flex items-center justify-center text-woltz-muted border border-dashed border-woltz-border rounded-lg">
+            [Carrossel Infinito será carregado aqui]
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </body>
+</html>
