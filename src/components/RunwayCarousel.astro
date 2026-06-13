@@ -7,8 +7,8 @@ const models = [
   { id: 5, name: "POLAR WHITE SHELL", price: 1499.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+5" },
 ];
 
-// Triplicamos para garantir loop infinito suave
-const infiniteModels = [...models, ...models, ...models];
+// Decuplicamos (10x) para criar uma esteira gigante à prova de inércia alta
+const infiniteModels = Array(10).fill(models).flat();
 ---
 
 <section class="relative w-full h-[85vh] overflow-hidden flex items-center bg-woltz-bg select-none">
@@ -16,12 +16,13 @@ const infiniteModels = [...models, ...models, ...models];
   <!-- Container que se move -->
   <div id="carousel-track" class="flex items-center absolute will-change-transform cursor-grab active:cursor-grabbing">
     
-    {infiniteModels.map((model) => (
+    {infiniteModels.map((model, index) => (
       <div 
         class="carousel-item relative w-[350px] h-[550px] flex-shrink-0 flex items-center justify-center transition-all duration-500 ease-out"
         data-name={model.name}
         data-price={model.price}
         data-img={model.img}
+        data-real-index={index % models.length} // Índice real do modelo (0-4)
       >
         <!-- Imagem PNG sem borda -->
         <img src={model.img} alt={model.name} class="w-full h-full object-contain drop-shadow-2xl pointer-events-none" />
@@ -72,8 +73,10 @@ const infiniteModels = [...models, ...models, ...models];
   const itemWidth = 350; // Largura do card
   const gap = 40; // Espaço entre cards
   const totalItemWidth = itemWidth + gap; 
-  const singleSetCount = items.length / 3;
-  const setWidth = singleSetCount * totalItemWidth;
+  
+  // Como temos 10 cópias de 5 modelos = 50 itens
+  const singleSetCount = 5; // Número de modelos únicos
+  const setWidth = singleSetCount * totalItemWidth; // Tamanho de UM conjunto completo (5 itens)
 
   // Função para calcular onde o "Ponto de Foco" está na tela
   function getFocusPoint() {
@@ -104,7 +107,7 @@ const infiniteModels = [...models, ...models, ...models];
         zIndex: zIndex,
         duration: 0.6,
         ease: "power3.out",
-        overwrite: true // Garante que animações rápidas não conflitem
+        overwrite: true
       });
 
       gsap.to(item.querySelector('.item-label'), { opacity: labelOpacity, duration: 0.4 });
@@ -135,40 +138,47 @@ const infiniteModels = [...models, ...models, ...models];
     inertia: true,
     bounds: { minX: -Infinity, maxX: Infinity },
     snap: function(endValue) {
+      // Snap baseado no tamanho de UM SET (5 itens), não no total
+      // Isso garante alinhamento perfeito com os modelos reais
       return Math.round(endValue / totalItemWidth) * totalItemWidth;
     },
     onDrag: function() {
       updateVisuals();
-      checkLoop(); // Verifica loop DURANTE o arrasto
+      checkLoop();
     },
     onThrowUpdate: function() {
       updateVisuals();
-      checkLoop(); // Verifica loop DURANTE a inércia (AGORA EM TEMPO REAL)
+      checkLoop();
     },
     onRelease: function() {
         setTimeout(updateVisuals, 50);
     }
   });
 
-  // Lógica de Loop Infinito BLINDADA
+  // Lógica de Loop Infinito BLINDADA COM ESTEIRA GIGANTE
   function checkLoop() {
     const currentX = gsap.getProperty(track, "x");
     
-    // Limites expandidos e verificação contínua
-    // Se passou do limite esquerdo do set do meio (moveu mais de 1 set para esquerda)
-    if (currentX < -(setWidth * 1.5)) {
-      gsap.set(track, { x: currentX + setWidth });
+    // Com 10 cópias, temos muita margem. 
+    // Teleportamos quando sai da zona segura do MEIO (cópias 4, 5, 6, 7)
+    // Zona segura: entre -4*setWidth e -6*setWidth (aproximadamente)
+    
+    // Se foi muito para a esquerda (passou da cópia 4)
+    if (currentX < -(setWidth * 4.5)) {
+      gsap.set(track, { x: currentX + (setWidth * 5) }); // Pula 5 sets (metade da esteira)
     } 
-    // Se passou do limite direito do set do meio (moveu mais de 1 set para direita)
+    // Se foi muito para a direita (passou da cópia 7)
     else if (currentX > -(setWidth * 0.5)) {
-      gsap.set(track, { x: currentX - setWidth });
+      gsap.set(track, { x: currentX - (setWidth * 5) }); // Pula 5 sets para trás
     }
   }
 
   function initPosition() {
       const focusPoint = getFocusPoint();
-      const targetItemIndex = singleSetCount; 
-      const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
+      // Começamos no meio da esteira gigante (entre a 5ª e 6ª cópia)
+      // Isso dá 5 sets de margem para cada lado
+      const startSetIndex = 5; 
+      const initialX = focusPoint - (startSetIndex * setWidth) - (itemWidth / 2);
       
       gsap.set(track, { x: initialX });
       updateVisuals();
