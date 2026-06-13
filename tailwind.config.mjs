@@ -5,17 +5,17 @@ export default {
     extend: {
       colors: {
         woltz: {
-          bg: '#121214',      // Fundo principal (quase preto, mas não total)
-          surface: '#1c1c1f', // Cartões e painéis laterais
-          border: '#2a2a2d',  // Bordas sutis
-          text: '#e1e1e6',    // Texto principal
-          muted: '#8d8d99',   // Textos secundários
-          accent: '#ffffff'   // Destaques e botões
+          bg: '#121214',
+          surface: '#1c1c1f',
+          border: '#2a2a2d',
+          text: '#e1e1e6',
+          muted: '#8d8d99',
+          accent: '#ffffff'
         }
       },
       fontFamily: {
-        masque: ['Masque', 'sans-serif'], // Preparado para sua logo/fonte
-        sans: ['Inter', 'system-ui', 'sans-serif'] // Fonte base minimalista
+        masque: ['Masque', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif']
       }
     }
   },
