@@ -70,43 +70,25 @@ const infiniteModels = [...models, ...models, ...models];
   
   // Configurações Matemáticas
   const itemWidth = 350; // Largura do card
-  const gap = 40; // Espaço entre cards (definido no CSS gap-10 ou similar, aqui ajustamos manual)
+  const gap = 40; // Espaço entre cards
   const totalItemWidth = itemWidth + gap; 
   const singleSetCount = items.length / 3;
   const setWidth = singleSetCount * totalItemWidth;
 
-  // Posição inicial: Centralizamos no SEGUNDO set (meio da lista triplicada)
-  // Ajustamos para que o primeiro item do segundo set fique no "Ponto de Foco"
-  // O ponto de foco é calculado baseado na largura da tela menos o painel lateral
-  let currentSetStartX = -(setWidth); 
-  
   // Função para calcular onde o "Ponto de Foco" está na tela
   function getFocusPoint() {
-    // O foco fica a 70% da tela (deixando espaço para o painel à direita)
     return window.innerWidth * 0.65; 
   }
 
-  function updateVisuals(activeIndex) {
+  function updateVisuals() {
     const focusPoint = getFocusPoint();
+    const trackX = gsap.getProperty(track, "x");
     
     items.forEach((item, index) => {
-      // Precisamos saber a posição REAL do item na tela considerando o scroll do track
-      // Mas como usamos GSAP, vamos usar uma aproximação baseada no índice relativo ao ativo
-      
-      // Distância relativa ao item ativo (0 = ativo, -1 = anterior, 1 = próximo)
-      // Nota: Isso é simplificado. Para precisão absoluta em loop, usamos a posição X real.
-      
-      // Vamos usar uma lógica mais robusta baseada na distância do centro do item ao ponto de foco
-      // Como o track se move, precisamos calcular a posição global do item
-      const trackX = gsap.getProperty(track, "x");
-      // Posição inicial do item dentro do track (index * totalItemWidth)
       const itemBaseX = index * totalItemWidth; 
-      // Posição final do item na tela
       const itemScreenX = trackX + itemBaseX + (itemWidth / 2);
-      
       const distance = Math.abs(focusPoint - itemScreenX);
       
-      // Lógica de Destaque
       const isActive = distance < (totalItemWidth / 2);
       
       const scale = isActive ? 1.1 : Math.max(0.6, 1 - (distance / (window.innerWidth * 0.8)));
@@ -126,7 +108,6 @@ const infiniteModels = [...models, ...models, ...models];
 
       gsap.to(item.querySelector('.item-label'), { opacity: labelOpacity, duration: 0.4 });
 
-      // Atualizar Painel se for o ativo
       if (isActive) {
         const name = item.getAttribute('data-name');
         const price = item.getAttribute('data-price');
@@ -153,49 +134,37 @@ const infiniteModels = [...models, ...models, ...models];
     inertia: true,
     bounds: { minX: -Infinity, maxX: Infinity },
     snap: function(endValue) {
-      // Arredonda para o múltiplo mais próximo de totalItemWidth
-      // Isso garante que o carrossel sempre pare com um item alinhado
       return Math.round(endValue / totalItemWidth) * totalItemWidth;
     },
     onDrag: function() {
       updateVisuals();
-      checkLoop();
+      checkLoop(); // Verifica loop DURANTE o arrasto
     },
     onThrowUpdate: function() {
       updateVisuals();
-      checkLoop();
+      checkLoop(); // Verifica loop DURANTE a inércia
     },
     onRelease: function() {
-        // Força atualização visual final quando solta
         setTimeout(updateVisuals, 50);
     }
   });
 
-  // Lógica de Loop Infinito (Teletransporte)
+  // Lógica de Loop Infinito (Teletransporte por Item)
   function checkLoop() {
     const currentX = gsap.getProperty(track, "x");
     
-    // Se passou do limite esquerdo do set do meio
+    // Se passou do limite esquerdo do set do meio (moveu mais de 1 set para esquerda)
     if (currentX < -(setWidth * 1.5)) {
       gsap.set(track, { x: currentX + setWidth });
     } 
-    // Se passou do limite direito do set do meio
+    // Se passou do limite direito do set do meio (moveu mais de 1 set para direita)
     else if (currentX > -(setWidth * 0.5)) {
       gsap.set(track, { x: currentX - setWidth });
     }
   }
 
-  // Ajuste inicial de posição
-  // Queremos que o item 0 do SET DO MEIO (índice 5, se temos 5 itens por set) 
-  // esteja alinhado ao ponto de foco.
-  // Posição do item 5 no track = 5 * totalItemWidth
-  // Queremos: trackX + (5 * totalItemWidth) + (itemWidth/2) = focusPoint
-  // trackX = focusPoint - (5 * totalItemWidth) - (itemWidth/2)
-  
   function initPosition() {
       const focusPoint = getFocusPoint();
-      // Começamos pelo item do meio do set do meio (índice = singleSetCount + Math.floor(singleSetCount/2))
-      // Para simplificar, vamos alinhar o primeiro item do set do meio (índice 5)
       const targetItemIndex = singleSetCount; 
       const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
       
@@ -203,14 +172,9 @@ const infiniteModels = [...models, ...models, ...models];
       updateVisuals();
   }
 
-  // Espera layout estabilizar
   setTimeout(initPosition, 100);
   
-  // Recalcula se redimensionar tela
   window.addEventListener('resize', () => {
-      // Mantém o item atual no foco
-      const currentX = gsap.getProperty(track, "x");
-      // Apenas recalcula visuais, a posição X relativa se mantém correta
       updateVisuals();
   });
 
