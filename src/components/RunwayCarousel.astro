@@ -70,8 +70,8 @@ const infiniteModels = [...models, ...models, ...models];
   const panelPrice = document.getElementById('panel-price');
   
   // Configurações Matemáticas
-  const itemWidth = 350; 
-  const gap = 40; 
+  const itemWidth = 350; // Largura do card
+  const gap = 40; // Espaço entre cards
   const totalItemWidth = itemWidth + gap; 
   const singleSetCount = items.length / 3;
   const setWidth = singleSetCount * totalItemWidth;
@@ -97,7 +97,7 @@ const infiniteModels = [...models, ...models, ...models];
       const scale = isActive ? 1.1 : 0.65;
       const blur = isActive ? 0 : 5;
       const opacity = isActive ? 1 : 0.4;
-      const zIndex = isActive ? 10 : 0; 
+      const zIndex = isActive ? 10 : 0; // 0 garante que passe POR BAIXO do painel (z-50)
       const labelOpacity = isActive ? 1 : 0;
 
       gsap.to(item, {
@@ -131,18 +131,19 @@ const infiniteModels = [...models, ...models, ...models];
     });
   }
 
-  // Inicialização do Drag COM TRAVA DE DIREÇÃO
+  // CORREÇÃO: TRAVAR ARRASTO APENAS DA ESQUERDA PARA DIREITA
+  // minX: A posição atual (não permite ir para direita/valores maiores)
+  // maxX: Infinito (permite ir para esquerda/valores menores)
+  // Nota: No GSAP, mover para a esquerda significa X negativo.
+  // Então queremos permitir X ficar cada vez mais negativo.
+  // bounds: { minX: -Infinity, maxX: currentX } -> Permitiria ir pra esquerda livremente mas travaria na direita.
+  
   Draggable.create(track, {
     type: "x",
     inertia: true,
-    lockAxis: true, // Trava o movimento apenas no eixo X (horizontal)
-    
-    // LIMITES: minX é a posição inicial (não pode ir pra esquerda dela)
-    // maxX é infinito (pode ir pra direita o quanto quiser)
-    bounds: { 
-      minX: 0, 
-      maxX: Infinity 
-    },
+    // Trava o movimento para a direita (impede voltar atrás)
+    // Permite movimento livre para a esquerda (trazer novos itens)
+    bounds: { minX: -Infinity, maxX: 0 }, 
     
     snap: function(endValue) {
       return Math.round(endValue / totalItemWidth) * totalItemWidth;
@@ -164,34 +165,21 @@ const infiniteModels = [...models, ...models, ...models];
   function checkLoop() {
     const currentX = gsap.getProperty(track, "x");
     
-    // Como só movemos para direita (X positivo), o loop acontece quando X fica muito grande
-    // Quando passar de 1.5 sets, teleporta de volta para 0.5 sets
-    if (currentX > (setWidth * 1.5)) {
-      gsap.set(track, { x: currentX - setWidth });
+    // Como só movemos para a esquerda (X negativo), o teletransporte acontece
+    // quando X fica muito negativo.
+    // Se passou do limite esquerdo do set do meio
+    if (currentX < -(setWidth * 1.5)) {
+      gsap.set(track, { x: currentX + setWidth });
     } 
-    // Segurança extra: se por algum bug voltar a negativo, reseta
-    else if (currentX < 0) {
-      gsap.set(track, { x: 0 });
-    }
   }
 
   function initPosition() {
       const focusPoint = getFocusPoint();
-      // Começa na posição 0 (limite esquerdo)
-      // O primeiro item do segundo set (índice 5) será alinhado ao foco
+      // Começa no meio do segundo set (índice 5), garantindo margem
       const targetItemIndex = singleSetCount; 
       const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
       
-      // Ajustamos para que initialX seja exatamente 0 ou próximo, 
-      // mas mantendo o alinhamento visual correto.
-      // Para simplificar e respeitar o bounds {minX: 0}, vamos calcular onde o item 5 deve estar
-      // para que o foco esteja em 0.82.
-      
       gsap.set(track, { x: initialX });
-      
-      // Se o cálculo inicial der negativo (o que violaria nosso bounds), ajustamos
-      // Mas com focusPoint em 0.82 e itemWidth 350, initialX deve ser positivo.
-      
       updateVisuals();
   }
 
