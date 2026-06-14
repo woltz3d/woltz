@@ -80,21 +80,33 @@ const infiniteModels = [...models, ...models, ...models];
     return window.innerWidth * 0.65; 
   }
 
-  let isUpdating = false;
-
   function updateVisuals() {
-    if (isUpdating) return;
-    isUpdating = true;
-    
     const focusPoint = getFocusPoint();
     const trackX = gsap.getProperty(track, "x");
     
+    let closestDistance = Infinity;
+    let closestIndex = -1;
+    
+    // Primeiro passo: encontrar qual item está mais próximo do foco
     items.forEach((item, index) => {
       const itemBaseX = index * totalItemWidth; 
       const itemScreenX = trackX + itemBaseX + (itemWidth / 2);
       const distance = Math.abs(focusPoint - itemScreenX);
       
-      const isActive = distance < (totalItemWidth / 2);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+    
+    // Segundo passo: aplicar estilos visuais
+    items.forEach((item, index) => {
+      const itemBaseX = index * totalItemWidth; 
+      const itemScreenX = trackX + itemBaseX + (itemWidth / 2);
+      const distance = Math.abs(focusPoint - itemScreenX);
+      
+      // O item ativo é o que está mais próximo do ponto de foco
+      const isActive = index === closestIndex && closestDistance < (totalItemWidth * 0.8);
       
       const scale = isActive ? 1.1 : Math.max(0.6, 1 - (distance / (window.innerWidth * 0.8)));
       const blur = isActive ? 0 : Math.min(6, distance / 80);
@@ -107,7 +119,7 @@ const infiniteModels = [...models, ...models, ...models];
         filter: `blur(${blur}px)`,
         opacity: opacity,
         zIndex: zIndex,
-        duration: 0.4,
+        duration: 0.5,
         ease: "power2.out",
         overwrite: true
       });
@@ -118,6 +130,7 @@ const infiniteModels = [...models, ...models, ...models];
         overwrite: true 
       });
 
+      // Atualiza o painel lateral apenas se este for o item ativo
       if (isActive) {
         const name = item.getAttribute('data-name');
         const price = item.getAttribute('data-price');
@@ -136,59 +149,83 @@ const infiniteModels = [...models, ...models, ...models];
         }
       }
     });
-    
-    setTimeout(() => { isUpdating = false; }, 50);
   }
 
-  // Variável para rastrear se estamos em drag
-  let isDragging = false;
+  // Variável para armazenar a última posição válida
+  let lastValidX = 0;
 
-  // Inicialização do Drag - Apenas da direita para esquerda (valores negativos)
+  // Inicialização do Drag - APENAS da direita para esquerda
   Draggable.create(track, {
     type: "x",
     inertia: true,
     bounds: { minX: -Infinity, maxX: Infinity },
     snap: function(endValue) {
-      // Snap sempre para múltiplos de totalItemWidth
       return Math.round(endValue / totalItemWidth) * totalItemWidth;
     },
     onDragStart: function() {
-      isDragging = true;
+      lastValidX = this.x;
     },
     onDrag: function() {
-      // Permite apenas movimento para valores menores (mais negativos) = direita para esquerda
-      // Não precisamos bloquear aqui, vamos controlar no loop check
+      // Se está tentando mover para a direita (valores maiores), bloqueia
+      if (this.x > lastValidX) {
+        gsap.set(track, { x: lastValidX });
+        this.update();
+        return;
+      }
+      
+      lastValidX = this.x;
       updateVisuals();
     },
     onThrowUpdate: function() {
+      // Durante inércia, também verifica direção
+      if (this.x > lastValidX) {
+        gsap.set(track, { x: lastValidX });
+        this.update();
+        return;
+      }
+      
+      lastValidX = this.x;
       updateVisuals();
     },
     onRelease: function() {
-      isDragging = false;
-      setTimeout(updateVisuals, 50);
+      setTimeout(() => {
+        updateVisuals();
+        lastValidX = gsap.getProperty(track, "x");
+      }, 100);
     }
   });
 
-  // Lógica de Loop Infinito - CORRIGIDA
+  // Lógica de Loop Infinito - CORRIGIDA PARA EVITAR BUG DE EMBASAMENTO
   function checkLoop() {
     const currentX = gsap.getProperty(track, "x");
+    let needsUpdate = false;
     
     // Se foi muito para a esquerda (valores muito negativos), teletransporta para a direita
     if (currentX < -(setWidth * 1.5)) {
-      gsap.set(track, { x: currentX + setWidth });
+      const newX = currentX + setWidth;
+      gsap.set(track, { x: newX });
+      lastValidX = newX;
+      needsUpdate = true;
     } 
-    // Se foi muito para a direita (valores menos negativos/positivos), teletransporta para a esquerda
+    // Se foi muito para a direita, teletransporta para a esquerda
     else if (currentX > -(setWidth * 0.5)) {
-      gsap.set(track, { x: currentX - setWidth });
+      const newX = currentX - setWidth;
+      gsap.set(track, { x: newX });
+      lastValidX = newX;
+      needsUpdate = true;
+    }
+    
+    // IMPORTANTE: Após teletransporte, força atualização visual imediata
+    if (needsUpdate) {
+      // Pequeno delay para garantir que o GSAP aplicou a nova posição
+      requestAnimationFrame(() => {
+        updateVisuals();
+      });
     }
   }
 
-  // Chamamos checkLoop constantemente durante o movimento
-  gsap.ticker.add(() => {
-    if (!isDragging) {
-      checkLoop();
-    }
-  });
+  // Verifica loop constantemente
+  gsap.ticker.add(checkLoop);
 
   function initPosition() {
       const focusPoint = getFocusPoint();
@@ -196,11 +233,16 @@ const infiniteModels = [...models, ...models, ...models];
       const targetItemIndex = singleSetCount + 4; 
       const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
       
-      // Arredonda para o snap mais próximo para evitar bugs
+      // Arredonda para o snap mais próximo
       const snappedX = Math.round(initialX / totalItemWidth) * totalItemWidth;
       
       gsap.set(track, { x: snappedX });
-      updateVisuals();
+      lastValidX = snappedX;
+      
+      // Força atualização visual inicial
+      requestAnimationFrame(() => {
+        updateVisuals();
+      });
   }
 
   setTimeout(initPosition, 100);
