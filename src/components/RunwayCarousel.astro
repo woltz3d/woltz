@@ -36,8 +36,7 @@ const infiniteModels = [...models, ...models, ...models];
   </div>
 
   <!-- Painel Lateral (Fica fixo à direita) -->
-  <!-- z-50 garante que fique SEMPRE acima dos itens do carrossel -->
-  <div id="product-panel" class="absolute right-8 top-1/2 -translate-y-1/2 w-[320px] bg-woltz-surface/60 backdrop-blur-xl border border-woltz-border/40 rounded-xl p-6 hidden lg:block z-50 shadow-2xl">
+  <div id="product-panel" class="absolute right-8 top-1/2 -translate-y-1/2 w-[320px] bg-woltz-surface/60 backdrop-blur-xl border border-woltz-border/40 rounded-xl p-6 hidden lg:block z-30 shadow-2xl">
     <div id="panel-content" class="flex flex-col gap-6">
       <div class="aspect-[3/4] w-full bg-woltz-bg/40 rounded-lg overflow-hidden flex items-center justify-center border border-woltz-border/30">
          <img id="panel-img" src={models[0].img} alt="Produto" class="w-full h-full object-contain p-6 transition-all duration-300" />
@@ -76,28 +75,31 @@ const infiniteModels = [...models, ...models, ...models];
   const singleSetCount = items.length / 3;
   const setWidth = singleSetCount * totalItemWidth;
 
-  // PONTO DE FOCO DESLOCADO PARA A DIREITA (COLADO NO PAINEL)
+  // Função para calcular onde o "Ponto de Foco" está na tela
   function getFocusPoint() {
-    return window.innerWidth * 0.82; 
+    return window.innerWidth * 0.65; 
   }
 
-  let lastActiveIndex = -1;
+  // Variável para armazenar o índice ativo atual e evitar flicker
+  let currentActiveIndex = -1;
 
   function updateVisuals() {
     const focusPoint = getFocusPoint();
     const trackX = gsap.getProperty(track, "x");
     
-    // LÓGICA DE VENCEDOR ÚNICO (ELIMINA O SALTO)
+    // CORREÇÃO: Cálculo direto do índice ativo baseado na posição X
+    // Isso elimina a zona cinzenta de distância que causava o salto entre 1 e 2
     const rawIndex = (focusPoint - trackX - (itemWidth / 2)) / totalItemWidth;
-    const activeIndex = Math.round(rawIndex);
+    const newActiveIndex = Math.round(rawIndex);
 
     items.forEach((item, index) => {
-      const isActive = (index === activeIndex);
+      // Lógica binária: apenas o índice calculado é o ativo
+      const isActive = (index === newActiveIndex);
       
-      const scale = isActive ? 1.1 : 0.65;
-      const blur = isActive ? 0 : 5;
-      const opacity = isActive ? 1 : 0.4;
-      const zIndex = isActive ? 10 : 0; // 0 garante que passe POR BAIXO do painel (z-50)
+      const scale = isActive ? 1.1 : Math.max(0.6, 1 - (Math.abs(index - newActiveIndex) * 0.3));
+      const blur = isActive ? 0 : Math.min(6, Math.abs(index - newActiveIndex) * 4);
+      const opacity = isActive ? 1 : Math.max(0.3, 1 - (Math.abs(index - newActiveIndex) * 0.4));
+      const zIndex = isActive ? 10 : 1;
       const labelOpacity = isActive ? 1 : 0;
 
       gsap.to(item, {
@@ -105,15 +107,16 @@ const infiniteModels = [...models, ...models, ...models];
         filter: `blur(${blur}px)`,
         opacity: opacity,
         zIndex: zIndex,
-        duration: 0.5,
+        duration: 0.4, // Duração um pouco mais rápida para resposta imediata
         ease: "power2.out",
         overwrite: true
       });
 
       gsap.to(item.querySelector('.item-label'), { opacity: labelOpacity, duration: 0.3 });
 
-      if (isActive && index !== lastActiveIndex) {
-        lastActiveIndex = index;
+      // Atualiza o painel apenas quando o índice ativo muda
+      if (isActive && index !== currentActiveIndex) {
+        currentActiveIndex = index;
         const name = item.getAttribute('data-name');
         const price = item.getAttribute('data-price');
         const img = item.getAttribute('data-img');
@@ -131,51 +134,43 @@ const infiniteModels = [...models, ...models, ...models];
     });
   }
 
-  // CORREÇÃO: TRAVAR ARRASTO APENAS DA ESQUERDA PARA DIREITA
-  // minX: A posição atual (não permite ir para direita/valores maiores)
-  // maxX: Infinito (permite ir para esquerda/valores menores)
-  // Nota: No GSAP, mover para a esquerda significa X negativo.
-  // Então queremos permitir X ficar cada vez mais negativo.
-  // bounds: { minX: -Infinity, maxX: currentX } -> Permitiria ir pra esquerda livremente mas travaria na direita.
-  
+  // Inicialização do Drag com SNAP (Encaixe)
   Draggable.create(track, {
     type: "x",
     inertia: true,
-    // Trava o movimento para a direita (impede voltar atrás)
-    // Permite movimento livre para a esquerda (trazer novos itens)
-    bounds: { minX: -Infinity, maxX: 0 }, 
-    
+    bounds: { minX: -Infinity, maxX: Infinity },
     snap: function(endValue) {
       return Math.round(endValue / totalItemWidth) * totalItemWidth;
     },
     onDrag: function() {
       updateVisuals();
-      checkLoop();
+      checkLoop(); // Verifica loop DURANTE o arrasto
     },
     onThrowUpdate: function() {
       updateVisuals();
-      checkLoop();
+      checkLoop(); // Verifica loop DURANTE a inércia
     },
     onRelease: function() {
         setTimeout(updateVisuals, 50);
     }
   });
 
-  // Lógica de Loop Infinito
+  // Lógica de Loop Infinito (Teletransporte por Item)
   function checkLoop() {
     const currentX = gsap.getProperty(track, "x");
     
-    // Como só movemos para a esquerda (X negativo), o teletransporte acontece
-    // quando X fica muito negativo.
-    // Se passou do limite esquerdo do set do meio
+    // Se passou do limite esquerdo do set do meio (moveu mais de 1 set para esquerda)
     if (currentX < -(setWidth * 1.5)) {
       gsap.set(track, { x: currentX + setWidth });
     } 
+    // Se passou do limite direito do set do meio (moveu mais de 1 set para direita)
+    else if (currentX > -(setWidth * 0.5)) {
+      gsap.set(track, { x: currentX - setWidth });
+    }
   }
 
   function initPosition() {
       const focusPoint = getFocusPoint();
-      // Começa no meio do segundo set (índice 5), garantindo margem
       const targetItemIndex = singleSetCount; 
       const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
       
