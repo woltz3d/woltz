@@ -7,265 +7,358 @@ const models = [
   { id: 5, name: "POLAR WHITE SHELL", price: 1499.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+5" },
 ];
 
-// Triplicamos para garantir loop infinito suave
 const infiniteModels = [...models, ...models, ...models];
 ---
 
 <section class="relative w-full h-[85vh] overflow-hidden flex items-center bg-woltz-bg select-none">
-  
-  <!-- Container que se move -->
-  <div id="carousel-track" class="flex items-center absolute will-change-transform cursor-grab active:cursor-grabbing">
-    
+
+  <div
+    id="carousel-track"
+    class="flex items-center absolute will-change-transform cursor-grab active:cursor-grabbing"
+  >
     {infiniteModels.map((model) => (
-      <div 
-        class="carousel-item relative w-[350px] h-[550px] flex-shrink-0 flex items-center justify-center transition-all duration-500 ease-out"
+      <div
+        class="carousel-item relative w-[350px] h-[550px] flex-shrink-0 flex items-center justify-center"
         data-name={model.name}
         data-price={model.price}
         data-img={model.img}
       >
-        <!-- Imagem PNG sem borda -->
-        <img src={model.img} alt={model.name} class="w-full h-full object-contain drop-shadow-2xl pointer-events-none" />
-        
-        <!-- Nome abaixo da imagem (aparece só no foco) -->
-        <div class="absolute -bottom-10 left-0 w-full text-center opacity-0 transition-opacity duration-300 item-label">
-          <p class="text-xs font-bold uppercase tracking-[0.2em] text-woltz-muted">{model.name}</p>
+        <img
+          src={model.img}
+          alt={model.name}
+          class="w-full h-full object-contain pointer-events-none"
+        />
+
+        <div class="item-label absolute -bottom-10 left-0 w-full text-center opacity-0">
+          <p class="text-xs font-bold uppercase tracking-[0.2em] text-woltz-muted">
+            {model.name}
+          </p>
         </div>
       </div>
     ))}
-
   </div>
 
-  <!-- Painel Lateral (Fica fixo à direita) -->
-  <div id="product-panel" class="absolute right-8 top-1/2 -translate-y-1/2 w-[320px] bg-woltz-surface/60 backdrop-blur-xl border border-woltz-border/40 rounded-xl p-6 hidden lg:block z-30 shadow-2xl">
-    <div id="panel-content" class="flex flex-col gap-6">
+  <div
+    id="product-panel"
+    class="absolute right-8 top-1/2 -translate-y-1/2 w-[320px] bg-woltz-surface/60 backdrop-blur-xl border border-woltz-border/40 rounded-xl p-6 hidden lg:block z-30 shadow-2xl"
+  >
+    <div class="flex flex-col gap-6">
+
       <div class="aspect-[3/4] w-full bg-woltz-bg/40 rounded-lg overflow-hidden flex items-center justify-center border border-woltz-border/30">
-         <img id="panel-img" src={models[4].img} alt="Produto" class="w-full h-full object-contain p-6 transition-all duration-300" />
-      </div>
-      
-      <div class="text-center space-y-2">
-        <h2 id="panel-name" class="text-lg font-bold uppercase tracking-wide text-woltz-accent leading-tight min-h-[3rem] flex items-center justify-center">{models[4].name}</h2>
-        <p id="panel-price" class="text-2xl font-masque text-woltz-text">${models[4].price.toFixed(2)}</p>
+        <img
+          id="panel-img"
+          src={models[4].img}
+          alt="Produto"
+          class="w-full h-full object-contain p-6"
+        />
       </div>
 
-      <button class="w-full bg-white text-black py-4 uppercase text-[10px] font-bold tracking-[0.25em] hover:bg-gray-200 transition-colors rounded-sm mt-2">
+      <div class="text-center space-y-2">
+        <h2
+          id="panel-name"
+          class="text-lg font-bold uppercase tracking-wide text-woltz-accent"
+        >
+          {models[4].name}
+        </h2>
+
+        <p
+          id="panel-price"
+          class="text-2xl font-masque text-woltz-text"
+        >
+          ${models[4].price.toFixed(2)}
+        </p>
+      </div>
+
+      <button
+        class="w-full bg-white text-black py-4 uppercase text-[10px] font-bold tracking-[0.25em] hover:bg-gray-200 transition-colors"
+      >
         Adicionar ao Carrinho
       </button>
+
     </div>
   </div>
 
 </section>
 
 <script>
-  import { gsap } from 'gsap';
-  import { Draggable } from 'gsap/Draggable';
-  import { InertiaPlugin } from 'gsap/InertiaPlugin';
+import { gsap } from "gsap";
+import { Draggable } from "gsap/Draggable";
+import { InertiaPlugin } from "gsap/InertiaPlugin";
 
-  gsap.registerPlugin(Draggable, InertiaPlugin);
+gsap.registerPlugin(
+  Draggable,
+  InertiaPlugin
+);
 
-  const track = document.getElementById('carousel-track');
-  const items = document.querySelectorAll('.carousel-item');
-  const panelImg = document.getElementById('panel-img');
-  const panelName = document.getElementById('panel-name');
-  const panelPrice = document.getElementById('panel-price');
-  
-  // Configurações Matemáticas
-  const itemWidth = 350; // Largura do card
-  const gap = 40; // Espaço entre cards
-  const totalItemWidth = itemWidth + gap; 
-  const singleSetCount = items.length / 3;
-  const setWidth = singleSetCount * totalItemWidth;
+const track =
+  document.getElementById("carousel-track");
 
-  // Variáveis de controle
-  let isDragging = false;
-  let isUpdating = false;
+const items =
+  [...document.querySelectorAll(".carousel-item")];
 
-  // Função para calcular onde o "Ponto de Foco" está na tela
-  function getFocusPoint() {
-    return window.innerWidth * 0.65; 
-  }
+const labels =
+  items.map(item =>
+    item.querySelector(".item-label")
+  );
 
-  // 1. NOVO updateVisuals() - Calcula o item mais próximo
-  function updateVisuals() {
-    if (isUpdating) return;
-    isUpdating = true;
+const panelImg =
+  document.getElementById("panel-img");
 
-    const focusPoint = getFocusPoint();
-    const trackX = gsap.getProperty(track, "x");
+const panelName =
+  document.getElementById("panel-name");
 
-    let closestItem = null;
-    let smallestDistance = Infinity;
+const panelPrice =
+  document.getElementById("panel-price");
 
-    items.forEach((item, index) => {
-      const itemBaseX = index * totalItemWidth;
-      const itemScreenX = trackX + itemBaseX + itemWidth / 2;
+const ITEM_WIDTH = 350;
+const GAP = 40;
 
-      const distance = Math.abs(focusPoint - itemScreenX);
+const STEP =
+  ITEM_WIDTH + GAP;
 
-      if (distance < smallestDistance) {
-        smallestDistance = distance;
-        closestItem = item;
-      }
-    });
+const ORIGINAL_COUNT =
+  items.length / 3;
 
-    items.forEach((item, index) => {
-      const itemBaseX = index * totalItemWidth;
-      const itemScreenX = trackX + itemBaseX + itemWidth / 2;
+const LOOP_WIDTH =
+  ORIGINAL_COUNT * STEP;
 
-      const distance = Math.abs(focusPoint - itemScreenX);
+let currentProduct = null;
 
-      const isActive = item === closestItem;
+function focusPoint() {
+  return window.innerWidth * 0.65;
+}
 
-      const scale = isActive
-        ? 1.1
-        : Math.max(0.7, 1 - distance / (window.innerWidth * 0.8));
+function updatePanel(item) {
 
-      const blur = isActive
-        ? 0
-        : Math.min(5, distance / 120);
+  if (currentProduct === item)
+    return;
 
-      const opacity = isActive
-        ? 1
-        : Math.max(0.4, 1 - distance / (window.innerWidth * 0.7));
+  currentProduct = item;
 
-      gsap.to(item, {
-        scale,
-        opacity,
-        filter: `blur(${blur}px)`,
-        zIndex: isActive ? 10 : 1,
-        duration: 0.25,
-        overwrite: true
-      });
+  gsap.to(
+    [panelImg, panelName, panelPrice],
+    {
+      opacity: 0,
+      y: 10,
+      duration: 0.15,
 
-      gsap.to(item.querySelector(".item-label"), {
-        opacity: isActive ? 1 : 0,
-        duration: 0.25,
-        overwrite: true
-      });
-    });
+      onComplete: () => {
 
-    if (closestItem) {
-      const name = closestItem.dataset.name;
-      const price = closestItem.dataset.price;
-      const img = closestItem.dataset.img;
+        panelImg.src =
+          item.dataset.img;
 
-      if (panelName.innerText !== name) {
-        gsap.to([panelImg, panelName, panelPrice], {
-          opacity: 0,
-          y: 10,
-          duration: 0.15,
-          onComplete: () => {
-            panelImg.src = img;
-            panelName.innerText = name;
-            panelPrice.innerText = `$${parseFloat(price).toFixed(2)}`;
+        panelName.textContent =
+          item.dataset.name;
 
-            gsap.to([panelImg, panelName, panelPrice], {
-              opacity: 1,
-              y: 0,
-              duration: 0.25
-            });
+        panelPrice.textContent =
+          `$${Number(item.dataset.price).toFixed(2)}`;
+
+        gsap.to(
+          [panelImg, panelName, panelPrice],
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.25
           }
-        });
+        );
       }
     }
+  );
+}
 
-    requestAnimationFrame(() => {
-      isUpdating = false;
+function render() {
+
+  const x =
+    gsap.getProperty(track, "x");
+
+  const focus =
+    focusPoint();
+
+  let closestItem = null;
+  let closestDistance = Infinity;
+
+  items.forEach((item, index) => {
+
+    const center =
+      x +
+      index * STEP +
+      ITEM_WIDTH / 2;
+
+    const distance =
+      Math.abs(focus - center);
+
+    if (
+      distance <
+      closestDistance
+    ) {
+      closestDistance =
+        distance;
+
+      closestItem =
+        item;
+    }
+  });
+
+  items.forEach((item, index) => {
+
+    const center =
+      x +
+      index * STEP +
+      ITEM_WIDTH / 2;
+
+    const distance =
+      Math.abs(focus - center);
+
+    const normalized =
+      Math.min(
+        distance /
+        (window.innerWidth * 0.6),
+        1
+      );
+
+    const scale =
+      1.12 -
+      normalized * 0.42;
+
+    const opacity =
+      1 -
+      normalized * 0.55;
+
+    const blur =
+      normalized * 4;
+
+    gsap.set(item, {
+      scale,
+      opacity,
+      filter: `blur(${blur}px)`,
+      zIndex:
+        item === closestItem
+          ? 10
+          : 1
+    });
+
+    gsap.set(
+      labels[index],
+      {
+        opacity:
+          item === closestItem
+            ? 1
+            : 0
+      }
+    );
+  });
+
+  updatePanel(
+    closestItem
+  );
+}
+
+function loopTrack() {
+
+  let x =
+    gsap.getProperty(track, "x");
+
+  if (
+    x <=
+    -(LOOP_WIDTH * 2)
+  ) {
+    x += LOOP_WIDTH;
+
+    gsap.set(track, {
+      x
     });
   }
 
-  // 4. NOVO Draggable - Bloqueia arrasto para trás
-  let lastX = 0;
+  if (
+    x >=
+    -LOOP_WIDTH
+  ) {
+    x -= LOOP_WIDTH;
 
-  Draggable.create(track, {
-    type: "x",
-    inertia: true,
-
-    bounds: {
-      minX: -Infinity,
-      maxX: Infinity
-    },
-
-    snap(endValue) {
-      return (
-        Math.round(endValue / totalItemWidth) *
-        totalItemWidth
-      );
-    },
-
-    onPress() {
-      lastX = this.x;
-    },
-
-    onDragStart() {
-      isDragging = true;
-    },
-
-    onDrag() {
-
-      // impede arrastar para trás
-      if (this.x > lastX) {
-        this.x = lastX;
-        gsap.set(track, { x: lastX });
-        return;
-      }
-
-      lastX = this.x;
-
-      checkLoop();
-      updateVisuals();
-    },
-
-    onThrowUpdate() {
-      checkLoop();
-      updateVisuals();
-    },
-
-    onRelease() {
-      isDragging = false;
-      updateVisuals();
-    }
-  });
-
-  // 2. NOVO checkLoop()
-  function checkLoop() {
-    let currentX = gsap.getProperty(track, "x");
-
-    if (currentX <= -setWidth * 2) {
-      currentX += setWidth;
-      gsap.set(track, { x: currentX });
-    }
-
-    if (currentX >= -setWidth) {
-      currentX -= setWidth;
-      gsap.set(track, { x: currentX });
-    }
+    gsap.set(track, {
+      x
+    });
   }
+}
 
-  // 3. NOVO ticker
-  gsap.ticker.add(() => {
-    checkLoop();
-  });
+let lastX = 0;
 
-  function initPosition() {
-      const focusPoint = getFocusPoint();
-      // Aponta para o 5º item (índice 4) do conjunto do meio
-      const targetItemIndex = singleSetCount + 4; 
-      const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
-      
-      // Arredonda para o snap mais próximo
-      const snappedX = Math.round(initialX / totalItemWidth) * totalItemWidth;
-      
-      gsap.set(track, { x: snappedX });
-      lastX = snappedX;
-      
-      // Força atualização visual inicial
-      updateVisuals();
+Draggable.create(track, {
+
+  type: "x",
+
+  inertia: true,
+
+  onPress() {
+    lastX = this.x;
+  },
+
+  onDrag() {
+
+    if (
+      this.x >
+      lastX
+    ) {
+      this.x = lastX;
+
+      gsap.set(track, {
+        x: lastX
+      });
+
+      return;
+    }
+
+    lastX =
+      this.x;
+
+    loopTrack();
+    render();
+  },
+
+  onThrowUpdate() {
+    loopTrack();
+    render();
+  },
+
+  snap(value) {
+    return (
+      Math.round(
+        value / STEP
+      ) * STEP
+    );
   }
+});
 
-  setTimeout(initPosition, 100);
-  
-  window.addEventListener('resize', () => {
-      updateVisuals();
+gsap.ticker.add(
+  loopTrack
+);
+
+function initialize() {
+
+  const focus =
+    focusPoint();
+
+  const startIndex =
+    ORIGINAL_COUNT + 4;
+
+  const x =
+    focus -
+    startIndex * STEP -
+    ITEM_WIDTH / 2;
+
+  gsap.set(track, {
+    x
   });
 
+  lastX = x;
+
+  render();
+}
+
+window.addEventListener(
+  "resize",
+  render
+);
+
+initialize();
 </script>
