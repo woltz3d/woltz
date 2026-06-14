@@ -128,24 +128,54 @@ const infiniteModels = [...models, ...models, ...models];
     });
   }
 
-  // Inicialização do Drag com SNAP (Encaixe)
+  // Variável para rastrear a última posição X
+  let lastX = 0;
+  let isDragging = false;
+
+  // Inicialização do Drag com SNAP (Encaixe) - Apenas da esquerda para direita
   Draggable.create(track, {
     type: "x",
     inertia: true,
     bounds: { minX: -Infinity, maxX: Infinity },
     snap: function(endValue) {
+      // Garante que o snap seja sempre em múltiplos de totalItemWidth
       return Math.round(endValue / totalItemWidth) * totalItemWidth;
     },
+    onDragStart: function() {
+      isDragging = true;
+      lastX = this.x;
+    },
     onDrag: function() {
+      // Bloqueia movimento para a esquerda (valores menores/menos negativos)
+      if (this.x > lastX) {
+        // Se está tentando ir para a esquerda, mantém na posição anterior
+        gsap.set(track, { x: lastX });
+        return;
+      }
+      
+      lastX = this.x;
       updateVisuals();
-      checkLoop(); // Verifica loop DURANTE o arrasto
+      checkLoop();
     },
     onThrowUpdate: function() {
+      // Durante a inércia, também bloqueia movimento para a esquerda
+      const currentX = this.x;
+      if (currentX > lastX) {
+        gsap.set(track, { x: lastX });
+        this.update();
+        return;
+      }
+      
+      lastX = currentX;
       updateVisuals();
-      checkLoop(); // Verifica loop DURANTE a inércia
+      checkLoop();
     },
     onRelease: function() {
-        setTimeout(updateVisuals, 50);
+      isDragging = false;
+      setTimeout(() => {
+        updateVisuals();
+        lastX = gsap.getProperty(track, "x");
+      }, 50);
     }
   });
 
@@ -153,23 +183,22 @@ const infiniteModels = [...models, ...models, ...models];
   function checkLoop() {
     const currentX = gsap.getProperty(track, "x");
     
-    // Se passou do limite esquerdo do set do meio (moveu mais de 1 set para esquerda)
+    // Se passou do limite esquerdo do set do meio (moveu mais de 1 set para esquerda/direita)
     if (currentX < -(setWidth * 1.5)) {
+      // Teletransporta para a direita adicionando um set
       gsap.set(track, { x: currentX + setWidth });
-    } 
-    // Se passou do limite direito do set do meio (moveu mais de 1 set para direita)
-    else if (currentX > -(setWidth * 0.5)) {
-      gsap.set(track, { x: currentX - setWidth });
+      lastX = currentX + setWidth;
     }
   }
 
   function initPosition() {
       const focusPoint = getFocusPoint();
-      // Alterado para o 5º item (índice 4) do conjunto do meio
+      // Aponta para o 5º item (índice 4) do conjunto do meio
       const targetItemIndex = singleSetCount + 4; 
       const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
       
       gsap.set(track, { x: initialX });
+      lastX = initialX;
       updateVisuals();
   }
 
