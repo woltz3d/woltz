@@ -39,12 +39,12 @@ const infiniteModels = [...models, ...models, ...models];
   <div id="product-panel" class="absolute right-8 top-1/2 -translate-y-1/2 w-[320px] bg-woltz-surface/60 backdrop-blur-xl border border-woltz-border/40 rounded-xl p-6 hidden lg:block z-30 shadow-2xl">
     <div id="panel-content" class="flex flex-col gap-6">
       <div class="aspect-[3/4] w-full bg-woltz-bg/40 rounded-lg overflow-hidden flex items-center justify-center border border-woltz-border/30">
-         <img id="panel-img" src={models[0].img} alt="Produto" class="w-full h-full object-contain p-6 transition-all duration-300" />
+         <img id="panel-img" src={models[4].img} alt="Produto" class="w-full h-full object-contain p-6 transition-all duration-300" />
       </div>
       
       <div class="text-center space-y-2">
-        <h2 id="panel-name" class="text-lg font-bold uppercase tracking-wide text-woltz-accent leading-tight min-h-[3rem] flex items-center justify-center">{models[0].name}</h2>
-        <p id="panel-price" class="text-2xl font-masque text-woltz-text">${models[0].price.toFixed(2)}</p>
+        <h2 id="panel-name" class="text-lg font-bold uppercase tracking-wide text-woltz-accent leading-tight min-h-[3rem] flex items-center justify-center">{models[4].name}</h2>
+        <p id="panel-price" class="text-2xl font-masque text-woltz-text">${models[4].price.toFixed(2)}</p>
       </div>
 
       <button class="w-full bg-white text-black py-4 uppercase text-[10px] font-bold tracking-[0.25em] hover:bg-gray-200 transition-colors rounded-sm mt-2">
@@ -165,7 +165,8 @@ const infiniteModels = [...models, ...models, ...models];
 
   function initPosition() {
       const focusPoint = getFocusPoint();
-      const targetItemIndex = singleSetCount; 
+      // Alterado para o 5º item (índice 4) do conjunto do meio
+      const targetItemIndex = singleSetCount + 4; 
       const initialX = focusPoint - (targetItemIndex * totalItemWidth) - (itemWidth / 2);
       
       gsap.set(track, { x: initialX });
@@ -179,8 +180,3 @@ const infiniteModels = [...models, ...models, ...models];
   });
 
 </script>
-
-
-
-
-eu queria fazer uma mudança. ao inves do item em destaque ser o 4º, quero que seja o 5º
