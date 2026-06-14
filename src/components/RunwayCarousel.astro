@@ -1,400 +1,332 @@
 ---
-// RunwayCarousel.astro
-// Não precisa de imports aqui pois vamos carregar via CDN no script abaixo
+// src/pages/index.astro
+// Nenhuma importação necessária aqui!
 ---
 
-<!-- Dados dos Modelos (Simulando sua coleção) -->
-<script type="module">
-  // Carregando GSAP via CDN (Não precisa instalar nada)
-  import gsap from 'https://esm.sh/gsap@3.12.5';
-  import { Draggable } from 'https://esm.sh/gsap@3.12.5/Draggable';
-  import { InertiaPlugin } from 'https://esm.sh/gsap@3.12.5/InertiaPlugin';
-
-  gsap.registerPlugin(Draggable, InertiaPlugin);
-
-  const products = [
-    { id: 1, name: "GLACIER WHITE PUFFER", price: 1299.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+1" },
-    { id: 2, name: "POLAR GLOSS JACKET", price: 899.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+2" },
-    { id: 3, name: "STEALTH BLACK HEAVY", price: 1199.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+3" },
-    { id: 4, name: "ICEFIELD BLUE TECH", price: 999.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+4" },
-    { id: 5, name: "POLAR WHITE SHELL", price: 1499.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+5" },
-  ];
-
-  // Triplicar array para loop infinito visual
-  const runwayItems = [...products, ...products, ...products];
-  const singleSetCount = products.length;
-
-  // Variáveis Globais
-  let cart = [];
-  let isUpdating = false;
-  let track, items, panelImg, panelName, panelPrice, cartList, cartCount, cartTotal, emptyMsg;
-  
-  // Configurações Matemáticas
-  let itemWidth = window.innerWidth < 768 ? 300 : 400;
-  const gap = 40; 
-  let totalItemWidth = itemWidth + gap;
-  let setWidth = singleSetCount * totalItemWidth;
-
-  document.addEventListener('DOMContentLoaded', () => {
-    initCarousel();
-  });
-
-  function initCarousel() {
-    track = document.getElementById('runway-track');
-    items = document.querySelectorAll('.runway-item');
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Loja 3D Premium</title>
+    <!-- Tailwind CSS via CDN para garantir o estilo sem build complexo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-[#0a0a0a] text-white overflow-hidden">
     
-    // Elementos do Painel
-    panelImg = document.getElementById('panel-main-img');
-    panelName = document.getElementById('panel-name');
-    panelPrice = document.getElementById('panel-price');
-    cartList = document.getElementById('cart-list');
-    cartCount = document.getElementById('cart-count');
-    cartTotal = document.getElementById('cart-total');
-    emptyMsg = document.getElementById('empty-cart-msg');
-
-    // Inicializar Posição
-    setTimeout(() => {
-      initPosition();
-      setupDraggable();
-    }, 100);
-
-    window.addEventListener('resize', () => {
-      itemWidth = window.innerWidth < 768 ? 300 : 400;
-      totalItemWidth = itemWidth + gap;
-      setWidth = singleSetCount * totalItemWidth;
-      updateVisuals();
-    });
-  }
-
-  function getFocusPoint() {
-    return window.innerWidth < 768 ? window.innerWidth * 0.5 : window.innerWidth * 0.35;
-  }
-
-  function updateVisuals() {
-    if (isUpdating) return;
-    isUpdating = true;
-
-    const focusPoint = getFocusPoint();
-    const trackX = gsap.getProperty(track, "x");
-    
-    let closestItem = null;
-    let smallestDistance = Infinity;
-
-    items.forEach((item) => {
-      const index = Array.from(items).indexOf(item);
-      const itemBaseX = index * totalItemWidth;
-      const itemScreenX = trackX + itemBaseX + (itemWidth / 2);
-      const distance = Math.abs(focusPoint - itemScreenX);
-
-      if (distance < smallestDistance) {
-        smallestDistance = distance;
-        closestItem = item;
-      }
-    });
-
-    items.forEach((item) => {
-      const index = Array.from(items).indexOf(item);
-      const itemBaseX = index * totalItemWidth;
-      const itemScreenX = trackX + itemBaseX + (itemWidth / 2);
-      const distance = Math.abs(focusPoint - itemScreenX);
+    <section class="relative w-full h-screen overflow-hidden bg-[#0a0a0a] text-white font-sans selection:bg-white selection:text-black">
       
-      const isActive = item === closestItem;
-      
-      const scale = isActive ? 1.2 : Math.max(0.6, 1 - (distance / (window.innerWidth * 0.8)));
-      const blur = isActive ? 0 : Math.min(8, distance / 100);
-      const opacity = isActive ? 1 : Math.max(0.3, 1 - (distance / (window.innerWidth * 0.6)));
-      const zIndex = isActive ? 50 : 1;
+      <!-- ÁREA 1: RUNWAY (Fundo Visual) -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div id="runway-track" class="flex items-center absolute will-change-transform cursor-grab active:cursor-grabbing pointer-events-auto">
+          <!-- Os itens serão gerados via JS para evitar erros de hidratação do Astro -->
+        </div>
+      </div>
 
-      gsap.to(item, {
-        scale: scale,
-        filter: `blur(${blur}px)`,
-        opacity: opacity,
-        zIndex: zIndex,
-        duration: 0.4,
-        ease: "power2.out",
-        overwrite: true
-      });
-    });
+      <!-- Overlay gradiente para profundidade -->
+      <div class="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-transparent to-[#0a0a0a] pointer-events-none z-10 opacity-80"></div>
 
-    if (closestItem) {
-      const name = closestItem.dataset.name;
-      const price = closestItem.dataset.price;
-      const img = closestItem.dataset.img;
-
-      if (panelName.innerText !== name) {
-        animatePanelChange(img, name, price);
-      }
-    }
-
-    requestAnimationFrame(() => { isUpdating = false; });
-  }
-
-  function animatePanelChange(img, name, price) {
-    const elements = [panelImg, panelName, panelPrice];
-    
-    gsap.to(elements, {
-      opacity: 0,
-      y: 10,
-      duration: 0.2,
-      onComplete: () => {
-        panelImg.src = img;
-        panelName.innerText = name;
-        panelPrice.innerText = `$${parseFloat(price).toFixed(2)}`;
+      <!-- ÁREA 2: SHOPPING PANEL (Lateral Fixa) -->
+      <aside class="absolute right-0 top-0 h-full w-full md:w-[400px] bg-[#111]/90 backdrop-blur-md border-l border-white/10 z-20 flex flex-col shadow-2xl transform transition-transform duration-300 translate-x-0">
         
-        gsap.to(elements, {
-          opacity: 1,
-          y: 0,
-          duration: 0.3,
-          stagger: 0.05
+        <!-- Header do Painel -->
+        <div class="p-8 border-b border-white/10">
+          <h2 class="text-xs font-bold tracking-[0.3em] text-gray-400 uppercase mb-1">Em Destaque</h2>
+          
+          <!-- Conteúdo Dinâmico do Produto Atual -->
+          <div id="active-product-display" class="mt-6 group">
+            <div class="aspect-[3/4] w-full bg-white/5 rounded-lg overflow-hidden mb-6 relative">
+               <img id="panel-main-img" src="" class="w-full h-full object-contain p-4 transition-transform duration-700 group-hover:scale-105" />
+            </div>
+            
+            <div class="space-y-2">
+              <h3 id="panel-name" class="text-xl font-bold uppercase tracking-wide leading-tight">Carregando...</h3>
+              <p id="panel-price" class="text-2xl font-light text-gray-300">$0.00</p>
+            </div>
+
+            <button 
+              onclick="addToCart()"
+              class="w-full mt-6 bg-white text-black py-4 uppercase text-[10px] font-bold tracking-[0.25em] hover:bg-gray-200 active:scale-95 transition-all rounded-sm"
+            >
+              Adicionar à Seleção
+            </button>
+          </div>
+        </div>
+
+        <!-- Histórico / Minha Seleção -->
+        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xs font-bold tracking-[0.3em] text-gray-400 uppercase">Minha Seleção</h2>
+            <span id="cart-count" class="text-xs bg-white/10 px-2 py-1 rounded-full">0 itens</span>
+          </div>
+
+          <!-- Lista de Itens -->
+          <div id="cart-list" class="space-y-4 min-h-[100px]">
+            <div id="empty-cart-msg" class="text-center text-gray-600 text-sm py-10 italic border border-dashed border-white/10 rounded-lg">
+              Sua seleção está vazia.<br>Navegue pela passarela.
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer do Painel (Total) -->
+        <div class="p-8 border-t border-white/10 bg-[#0f0f0f]">
+          <div class="flex justify-between items-end mb-4">
+            <span class="text-xs text-gray-400 uppercase tracking-widest">Total Estimado</span>
+            <span id="cart-total" class="text-xl font-mono">$0.00</span>
+          </div>
+          <button class="w-full border border-white/30 text-white py-3 uppercase text-[10px] font-bold tracking-[0.25em] hover:bg-white hover:text-black transition-colors rounded-sm">
+            Finalizar Compra
+          </button>
+        </div>
+      </aside>
+
+    </section>
+
+    <style>
+      .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+    </style>
+
+    <!-- Script Principal -->
+    <script type="module">
+      // Carregamento dinâmico do GSAP via CDN (Funciona em qualquer lugar)
+      const gsapScript = document.createElement('script');
+      gsapScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js';
+      gsapScript.onload = () => {
+        const draggableScript = document.createElement('script');
+        draggableScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js';
+        draggableScript.onload = () => {
+          const inertiaScript = document.createElement('script');
+          inertiaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/InertiaPlugin.min.js';
+          inertiaScript.onload = initApp;
+          document.head.appendChild(inertiaScript);
+        };
+        document.head.appendChild(draggableScript);
+      };
+      document.head.appendChild(gsapScript);
+
+      function initApp() {
+        const { gsap } = window;
+        const { Draggable } = window;
+        const { InertiaPlugin } = window;
+
+        gsap.registerPlugin(Draggable, InertiaPlugin);
+
+        const products = [
+          { id: 1, name: "GLACIER WHITE PUFFER", price: 1299.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+1" },
+          { id: 2, name: "POLAR GLOSS JACKET", price: 899.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+2" },
+          { id: 3, name: "STEALTH BLACK HEAVY", price: 1199.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+3" },
+          { id: 4, name: "ICEFIELD BLUE TECH", price: 999.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+4" },
+          { id: 5, name: "POLAR WHITE SHELL", price: 1499.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+5" },
+        ];
+
+        const runwayItems = [...products, ...products, ...products];
+        const singleSetCount = products.length;
+        const track = document.getElementById('runway-track');
+        
+        // Gerar HTML dos itens dinamicamente
+        runwayItems.forEach((product) => {
+          const div = document.createElement('div');
+          div.className = 'runway-item relative w-[300px] md:w-[400px] h-[500px] md:h-[600px] flex-shrink-0 flex items-center justify-center mx-[20px]';
+          div.dataset.id = product.id;
+          div.dataset.name = product.name;
+          div.dataset.price = product.price;
+          div.dataset.img = product.img;
+          
+          const img = document.createElement('img');
+          img.src = product.img;
+          img.alt = product.name;
+          img.className = 'w-full h-full object-contain drop-shadow-2xl transition-all duration-500';
+          
+          div.appendChild(img);
+          track.appendChild(div);
         });
-      }
-    });
-  }
 
-  let lastX = 0;
-  let isDragging = false;
+        const items = document.querySelectorAll('.runway-item');
+        const panelImg = document.getElementById('panel-main-img');
+        const panelName = document.getElementById('panel-name');
+        const panelPrice = document.getElementById('panel-price');
+        const cartList = document.getElementById('cart-list');
+        const cartCount = document.getElementById('cart-count');
+        const cartTotal = document.getElementById('cart-total');
+        const emptyMsg = document.getElementById('empty-cart-msg');
 
-  function setupDraggable() {
-    Draggable.create(track, {
-      type: "x",
-      inertia: true,
-      bounds: { minX: -Infinity, maxX: Infinity },
-      snap: (endValue) => Math.round(endValue / totalItemWidth) * totalItemWidth,
-      
-      onPress: function() { lastX = this.x; },
-      onDragStart: function() { isDragging = true; },
-      
-      onDrag: function() {
-        if (this.x > lastX) {
-          this.x = lastX;
-          gsap.set(track, { x: lastX });
-          return;
+        let cart = [];
+        let isUpdating = false;
+        let itemWidth = window.innerWidth < 768 ? 300 : 400;
+        const gap = 40; 
+        let totalItemWidth = itemWidth + gap;
+        let setWidth = singleSetCount * totalItemWidth;
+        let lastX = 0;
+
+        function getFocusPoint() {
+          return window.innerWidth < 768 ? window.innerWidth * 0.5 : window.innerWidth * 0.35;
         }
-        lastX = this.x;
-        checkLoop();
-        updateVisuals();
-      },
-      
-      onThrowUpdate: function() {
-        if (this.x > lastX) {
-          this.x = lastX;
-          gsap.set(track, { x: lastX });
-          this.update();
-          return;
+
+        function updateVisuals() {
+          if (isUpdating) return;
+          isUpdating = true;
+
+          const focusPoint = getFocusPoint();
+          const trackX = gsap.getProperty(track, "x");
+          let closestItem = null;
+          let smallestDistance = Infinity;
+
+          items.forEach((item) => {
+            const index = Array.from(items).indexOf(item);
+            const itemScreenX = trackX + (index * totalItemWidth) + (itemWidth / 2);
+            const distance = Math.abs(focusPoint - itemScreenX);
+            if (distance < smallestDistance) {
+              smallestDistance = distance;
+              closestItem = item;
+            }
+          });
+
+          items.forEach((item) => {
+            const index = Array.from(items).indexOf(item);
+            const itemScreenX = trackX + (index * totalItemWidth) + (itemWidth / 2);
+            const distance = Math.abs(focusPoint - itemScreenX);
+            const isActive = item === closestItem;
+            
+            gsap.to(item, {
+              scale: isActive ? 1.2 : Math.max(0.6, 1 - (distance / (window.innerWidth * 0.8))),
+              filter: `blur(${isActive ? 0 : Math.min(8, distance / 100)}px)`,
+              opacity: isActive ? 1 : Math.max(0.3, 1 - (distance / (window.innerWidth * 0.6))),
+              zIndex: isActive ? 50 : 1,
+              duration: 0.4,
+              ease: "power2.out",
+              overwrite: true
+            });
+          });
+
+          if (closestItem) {
+            const name = closestItem.dataset.name;
+            const price = closestItem.dataset.price;
+            const img = closestItem.dataset.img;
+            if (panelName.innerText !== name) {
+              gsap.to([panelImg, panelName, panelPrice], {
+                opacity: 0, y: 10, duration: 0.2,
+                onComplete: () => {
+                  panelImg.src = img;
+                  panelName.innerText = name;
+                  panelPrice.innerText = `$${parseFloat(price).toFixed(2)}`;
+                  gsap.to([panelImg, panelName, panelPrice], { opacity: 1, y: 0, duration: 0.3, stagger: 0.05 });
+                }
+              });
+            }
+          }
+          requestAnimationFrame(() => { isUpdating = false; });
         }
-        lastX = this.x;
-        checkLoop();
-        updateVisuals();
-      },
-      
-      onRelease: function() {
-        isDragging = false;
-        updateVisuals();
+
+        Draggable.create(track, {
+          type: "x",
+          inertia: true,
+          bounds: { minX: -Infinity, maxX: Infinity },
+          snap: (endValue) => Math.round(endValue / totalItemWidth) * totalItemWidth,
+          onPress: function() { lastX = this.x; },
+          onDrag: function() {
+            if (this.x > lastX) { this.x = lastX; gsap.set(track, { x: lastX }); return; }
+            lastX = this.x;
+            checkLoop();
+            updateVisuals();
+          },
+          onThrowUpdate: function() {
+            if (this.x > lastX) { this.x = lastX; gsap.set(track, { x: lastX }); this.update(); return; }
+            lastX = this.x;
+            checkLoop();
+            updateVisuals();
+          },
+          onRelease: function() { updateVisuals(); }
+        });
+
+        function checkLoop() {
+          let currentX = gsap.getProperty(track, "x");
+          if (currentX <= -setWidth * 1.5) {
+            currentX += setWidth;
+            gsap.set(track, { x: currentX });
+          } else if (currentX >= -setWidth * 0.5) {
+            currentX -= setWidth;
+            gsap.set(track, { x: currentX });
+          }
+        }
+
+        gsap.ticker.add(checkLoop);
+
+        // Inicialização
+        setTimeout(() => {
+          const focusPoint = getFocusPoint();
+          const startItemIndex = singleSetCount + 2; 
+          const initialX = focusPoint - (startItemIndex * totalItemWidth) - (itemWidth / 2);
+          const snappedX = Math.round(initialX / totalItemWidth) * totalItemWidth;
+          gsap.set(track, { x: snappedX });
+          lastX = snappedX;
+          updateVisuals();
+        }, 100);
+
+        window.addEventListener('resize', () => {
+          itemWidth = window.innerWidth < 768 ? 300 : 400;
+          totalItemWidth = itemWidth + gap;
+          setWidth = singleSetCount * totalItemWidth;
+          updateVisuals();
+        });
+
+        // Lógica do Carrinho
+        window.addToCart = function() {
+          const name = panelName.innerText;
+          const price = parseFloat(panelPrice.innerText.replace('$', ''));
+          const img = panelImg.src;
+          const existingItem = cart.find(item => item.name === name);
+          
+          if (existingItem) { existingItem.qty++; } 
+          else { cart.push({ id: Date.now(), name, price, img, qty: 1 }); }
+          
+          renderCart();
+          const btn = document.querySelector('button[onclick="addToCart()"]');
+          if(btn) {
+            const originalText = btn.innerText;
+            btn.innerText = "ADICIONADO!";
+            btn.classList.add('bg-green-500', 'text-white');
+            setTimeout(() => { btn.innerText = originalText; btn.classList.remove('bg-green-500', 'text-white'); }, 1000);
+          }
+        };
+
+        window.removeFromCart = function(id) {
+          cart = cart.filter(item => item.id !== id);
+          renderCart();
+        };
+
+        function renderCart() {
+          cartList.innerHTML = '';
+          if (cart.length === 0) {
+            cartList.appendChild(emptyMsg);
+            emptyMsg.style.display = 'block';
+            cartCount.innerText = '0 itens';
+            cartTotal.innerText = '$0.00';
+            return;
+          }
+          emptyMsg.style.display = 'none';
+          let total = 0;
+          let totalQty = 0;
+          cart.forEach(item => {
+            total += item.price * item.qty;
+            totalQty += item.qty;
+            const itemEl = document.createElement('div');
+            itemEl.className = 'flex items-center gap-4 bg-white/5 p-3 rounded-lg border border-white/5';
+            itemEl.innerHTML = `
+              <img src="${item.img}" class="w-12 h-12 object-contain bg-white/5 rounded" />
+              <div class="flex-1 min-w-0">
+                <h4 class="text-xs font-bold uppercase truncate text-gray-200">${item.name}</h4>
+                <p class="text-xs text-gray-400">$${item.price.toFixed(2)} x ${item.qty}</p>
+              </div>
+              <button onclick="removeFromCart(${item.id})" class="text-gray-500 hover:text-red-400 transition-colors p-2">✕</button>
+            `;
+            cartList.appendChild(itemEl);
+          });
+          cartCount.innerText = `${totalQty} item${totalQty !== 1 ? 's' : ''}`;
+          cartTotal.innerText = `$${total.toFixed(2)}`;
+        }
       }
-    });
-
-    gsap.ticker.add(checkLoop);
-  }
-
-  function checkLoop() {
-    let currentX = gsap.getProperty(track, "x");
-    
-    if (currentX <= -setWidth * 1.5) {
-      currentX += setWidth;
-      gsap.set(track, { x: currentX });
-    }
-    else if (currentX >= -setWidth * 0.5) {
-      currentX -= setWidth;
-      gsap.set(track, { x: currentX });
-    }
-  }
-
-  function initPosition() {
-    const focusPoint = getFocusPoint();
-    const startItemIndex = singleSetCount + 2; 
-    
-    const initialX = focusPoint - (startItemIndex * totalItemWidth) - (itemWidth / 2);
-    const snappedX = Math.round(initialX / totalItemWidth) * totalItemWidth;
-    
-    gsap.set(track, { x: snappedX });
-    lastX = snappedX;
-    updateVisuals();
-  }
-
-  // --- LÓGICA DO CARRINHO ---
-
-  window.addToCart = function() {
-    const name = panelName.innerText;
-    const priceText = panelPrice.innerText.replace('$', '');
-    const price = parseFloat(priceText);
-    const img = panelImg.src;
-    
-    const existingItem = cart.find(item => item.name === name);
-    
-    if (existingItem) {
-      existingItem.qty++;
-    } else {
-      cart.push({
-        id: Date.now(),
-        name: name,
-        price: price,
-        img: img,
-        qty: 1
-      });
-    }
-    
-    renderCart();
-    
-    const btn = document.querySelector('button[onclick="addToCart()"]');
-    if(btn) {
-      const originalText = btn.innerText;
-      btn.innerText = "ADICIONADO!";
-      btn.classList.add('bg-green-500', 'text-white');
-      setTimeout(() => {
-        btn.innerText = originalText;
-        btn.classList.remove('bg-green-500', 'text-white');
-      }, 1000);
-    }
-  };
-
-  window.removeFromCart = function(id) {
-    cart = cart.filter(item => item.id !== id);
-    renderCart();
-  };
-
-  function renderCart() {
-    if (!cartList) return;
-    
-    cartList.innerHTML = '';
-    
-    if (cart.length === 0) {
-      cartList.appendChild(emptyMsg);
-      emptyMsg.style.display = 'block';
-      cartCount.innerText = '0 itens';
-      cartTotal.innerText = '$0.00';
-      return;
-    }
-    
-    emptyMsg.style.display = 'none';
-    let total = 0;
-    let totalQty = 0;
-
-    cart.forEach(item => {
-      total += item.price * item.qty;
-      totalQty += item.qty;
-      
-      const itemEl = document.createElement('div');
-      itemEl.className = 'flex items-center gap-4 bg-white/5 p-3 rounded-lg border border-white/5 animate-fade-in';
-      itemEl.innerHTML = `
-        <img src="${item.img}" class="w-12 h-12 object-contain bg-white/5 rounded" />
-        <div class="flex-1 min-w-0">
-          <h4 class="text-xs font-bold uppercase truncate text-gray-200">${item.name}</h4>
-          <p class="text-xs text-gray-400">$${item.price.toFixed(2)} x ${item.qty}</p>
-        </div>
-        <button onclick="removeFromCart(${item.id})" class="text-gray-500 hover:text-red-400 transition-colors p-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-        </button>
-      `;
-      cartList.appendChild(itemEl);
-    });
-
-    cartCount.innerText = `${totalQty} item${totalQty !== 1 ? 's' : ''}`;
-    cartTotal.innerText = `$${total.toFixed(2)}`;
-  }
-</script>
-
-<section class="relative w-full h-screen overflow-hidden bg-[#0a0a0a] text-white font-sans selection:bg-white selection:text-black">
-  
-  <!-- ÁREA 1: RUNWAY (Fundo Visual) -->
-  <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-    <div id="runway-track" class="flex items-center absolute will-change-transform cursor-grab active:cursor-grabbing pointer-events-auto">
-      {runwayItems.map((product, index) => (
-        <div 
-          class="runway-item relative w-[300px] md:w-[400px] h-[500px] md:h-[600px] flex-shrink-0 flex items-center justify-center mx-[20px]"
-          data-id={product.id}
-          data-name={product.name}
-          data-price={product.price}
-          data-img={product.img}
-        >
-          <img 
-            src={product.img} 
-            alt={product.name} 
-            class="w-full h-full object-contain drop-shadow-2xl transition-all duration-500" 
-          />
-        </div>
-      ))}
-    </div>
-  </div>
-
-  <!-- Overlay gradiente para profundidade -->
-  <div class="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-transparent to-[#0a0a0a] pointer-events-none z-10 opacity-80"></div>
-
-  <!-- ÁREA 2: SHOPPING PANEL (Lateral Fixa) -->
-  <aside class="absolute right-0 top-0 h-full w-full md:w-[400px] bg-[#111]/90 backdrop-blur-md border-l border-white/10 z-20 flex flex-col shadow-2xl transform transition-transform duration-300 translate-x-0">
-    
-    <!-- Header do Painel -->
-    <div class="p-8 border-b border-white/10">
-      <h2 class="text-xs font-bold tracking-[0.3em] text-gray-400 uppercase mb-1">Em Destaque</h2>
-      
-      <!-- Conteúdo Dinâmico do Produto Atual -->
-      <div id="active-product-display" class="mt-6 group">
-        <div class="aspect-[3/4] w-full bg-white/5 rounded-lg overflow-hidden mb-6 relative">
-           <img id="panel-main-img" src={products[0].img} class="w-full h-full object-contain p-4 transition-transform duration-700 group-hover:scale-105" />
-        </div>
-        
-        <div class="space-y-2">
-          <h3 id="panel-name" class="text-xl font-bold uppercase tracking-wide leading-tight">{products[0].name}</h3>
-          <p id="panel-price" class="text-2xl font-light text-gray-300">${products[0].price.toFixed(2)}</p>
-        </div>
-
-        <button 
-          onclick="addToCart()"
-          class="w-full mt-6 bg-white text-black py-4 uppercase text-[10px] font-bold tracking-[0.25em] hover:bg-gray-200 active:scale-95 transition-all rounded-sm"
-        >
-          Adicionar à Seleção
-        </button>
-      </div>
-    </div>
-
-    <!-- Histórico / Minha Seleção -->
-    <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xs font-bold tracking-[0.3em] text-gray-400 uppercase">Minha Seleção</h2>
-        <span id="cart-count" class="text-xs bg-white/10 px-2 py-1 rounded-full">0 itens</span>
-      </div>
-
-      <!-- Lista de Itens -->
-      <div id="cart-list" class="space-y-4 min-h-[100px]">
-        <!-- Itens serão injetados aqui via JS -->
-        <div id="empty-cart-msg" class="text-center text-gray-600 text-sm py-10 italic border border-dashed border-white/10 rounded-lg">
-          Sua seleção está vazia.<br>Navegue pela passarela.
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer do Painel (Total) -->
-    <div class="p-8 border-t border-white/10 bg-[#0f0f0f]">
-      <div class="flex justify-between items-end mb-4">
-        <span class="text-xs text-gray-400 uppercase tracking-widest">Total Estimado</span>
-        <span id="cart-total" class="text-xl font-mono">$0.00</span>
-      </div>
-      <button class="w-full border border-white/30 text-white py-3 uppercase text-[10px] font-bold tracking-[0.25em] hover:bg-white hover:text-black transition-colors rounded-sm">
-        Finalizar Compra
-      </button>
-    </div>
-  </aside>
-
-</section>
-
-<style>
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-  }
-</style>
+    </script>
+  </body>
+</html>
