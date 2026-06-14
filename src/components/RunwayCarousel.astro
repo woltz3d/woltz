@@ -1,163 +1,210 @@
 ---
 const models = [
-  { id: 1, name: "GLACIER WHITE PUFFER", price: 1299.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+1" },
-  { id: 2, name: "POLAR GLOSS JACKET", price: 899.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+2" },
-  { id: 3, name: "STEALTH BLACK HEAVY", price: 1199.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+3" },
-  { id: 4, name: "ICEFIELD BLUE TECH", price: 999.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+4" },
-  { id: 5, name: "POLAR WHITE SHELL", price: 1499.99, img: "https://placehold.co/400x600/transparent/e1e1e6?text=Model+5" },
+  {
+    id: 1,
+    name: "GLACIER WHITE PUFFER",
+    price: 1299.99,
+    img: "/images/model1.png"
+  },
+  {
+    id: 2,
+    name: "POLAR GLOSS JACKET",
+    price: 899.99,
+    img: "/images/model2.png"
+  },
+  {
+    id: 3,
+    name: "STEALTH BLACK HEAVY",
+    price: 1199.99,
+    img: "/images/model3.png"
+  },
+  {
+    id: 4,
+    name: "ICEFIELD BLUE TECH",
+    price: 999.99,
+    img: "/images/model4.png"
+  },
+  {
+    id: 5,
+    name: "POLAR WHITE SHELL",
+    price: 1499.99,
+    img: "/images/model5.png"
+  }
 ];
-
-const infiniteModels = [...models, ...models, ...models];
 ---
 
-<section class="relative w-full h-[85vh] overflow-hidden flex items-center bg-woltz-bg select-none">
+<section
+  class="relative h-screen overflow-hidden bg-black"
+>
 
   <div
-    id="carousel-track"
-    class="flex items-center absolute will-change-transform cursor-grab active:cursor-grabbing"
+    id="runway-stage"
+    class="absolute inset-0"
   >
-    {infiniteModels.map((model) => (
+
+    {models.map((model) => (
+
       <div
-        class="carousel-item relative w-[350px] h-[550px] flex-shrink-0 flex items-center justify-center"
+        class="runway-model absolute left-1/2 top-1/2"
+        data-id={model.id}
         data-name={model.name}
         data-price={model.price}
         data-img={model.img}
       >
+
         <img
           src={model.img}
           alt={model.name}
-          class="w-full h-full object-contain pointer-events-none"
+          class="pointer-events-none"
         />
 
-        <div class="item-label absolute -bottom-10 left-0 w-full text-center opacity-0">
-          <p class="text-xs font-bold uppercase tracking-[0.2em] text-woltz-muted">
-            {model.name}
-          </p>
-        </div>
       </div>
+
     ))}
+
   </div>
 
-  <div
-    id="product-panel"
-    class="absolute right-8 top-1/2 -translate-y-1/2 w-[320px] bg-woltz-surface/60 backdrop-blur-xl border border-woltz-border/40 rounded-xl p-6 hidden lg:block z-30 shadow-2xl"
+  <aside
+    class="absolute right-12 top-1/2 -translate-y-1/2 w-[320px]"
   >
-    <div class="flex flex-col gap-6">
 
-      <div class="aspect-[3/4] w-full bg-woltz-bg/40 rounded-lg overflow-hidden flex items-center justify-center border border-woltz-border/30">
-        <img
-          id="panel-img"
-          src={models[4].img}
-          alt="Produto"
-          class="w-full h-full object-contain p-6"
-        />
-      </div>
+    <img
+      id="panel-img"
+      src={models[0].img}
+      class="w-full"
+    />
 
-      <div class="text-center space-y-2">
-        <h2
-          id="panel-name"
-          class="text-lg font-bold uppercase tracking-wide text-woltz-accent"
-        >
-          {models[4].name}
-        </h2>
+    <h2
+      id="panel-name"
+    >
+      {models[0].name}
+    </h2>
 
-        <p
-          id="panel-price"
-          class="text-2xl font-masque text-woltz-text"
-        >
-          ${models[4].price.toFixed(2)}
-        </p>
-      </div>
+    <p
+      id="panel-price"
+    >
+      ${models[0].price}
+    </p>
 
-      <button
-        class="w-full bg-white text-black py-4 uppercase text-[10px] font-bold tracking-[0.25em] hover:bg-gray-200 transition-colors"
-      >
-        Adicionar ao Carrinho
-      </button>
-
-    </div>
-  </div>
+  </aside>
 
 </section>
 
 <script>
+
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
-import { InertiaPlugin } from "gsap/InertiaPlugin";
 
 gsap.registerPlugin(
-  Draggable,
-  InertiaPlugin
+  Draggable
 );
 
-const track =
-  document.getElementById("carousel-track");
-
-const items =
-  [...document.querySelectorAll(".carousel-item")];
-
-const labels =
-  items.map(item =>
-    item.querySelector(".item-label")
-  );
+const cards =
+[
+  ...document.querySelectorAll(
+    ".runway-model"
+  )
+];
 
 const panelImg =
-  document.getElementById("panel-img");
+document.getElementById(
+  "panel-img"
+);
 
 const panelName =
-  document.getElementById("panel-name");
+document.getElementById(
+  "panel-name"
+);
 
 const panelPrice =
-  document.getElementById("panel-price");
+document.getElementById(
+  "panel-price"
+);
 
-const ITEM_WIDTH = 350;
-const GAP = 40;
+const slots =
+[
+  {
+    x: -850,
+    y: -140,
+    scale: 0.22,
+    opacity: 0.15,
+    rotation: -10,
+    z: 1
+  },
 
-const STEP =
-  ITEM_WIDTH + GAP;
+  {
+    x: -520,
+    y: -90,
+    scale: 0.42,
+    opacity: 0.35,
+    rotation: -7,
+    z: 2
+  },
 
-const ORIGINAL_COUNT =
-  items.length / 3;
+  {
+    x: -180,
+    y: -40,
+    scale: 0.72,
+    opacity: 0.65,
+    rotation: -4,
+    z: 3
+  },
 
-const LOOP_WIDTH =
-  ORIGINAL_COUNT * STEP;
+  {
+    x: 180,
+    y: 0,
+    scale: 1.05,
+    opacity: 0.95,
+    rotation: -1,
+    z: 4
+  },
 
-let currentProduct = null;
+  {
+    x: 560,
+    y: 20,
+    scale: 1.45,
+    opacity: 1,
+    rotation: 0,
+    z: 10
+  }
+];
 
-function focusPoint() {
-  return window.innerWidth * 0.65;
-}
+let activeIndex = 0;
 
-function updatePanel(item) {
+function updatePanel() {
 
-  if (currentProduct === item)
-    return;
-
-  currentProduct = item;
+  const card =
+    cards[activeIndex];
 
   gsap.to(
-    [panelImg, panelName, panelPrice],
+    [
+      panelImg,
+      panelName,
+      panelPrice
+    ],
     {
       opacity: 0,
-      y: 10,
       duration: 0.15,
 
-      onComplete: () => {
+      onComplete() {
 
         panelImg.src =
-          item.dataset.img;
+          card.dataset.img;
 
         panelName.textContent =
-          item.dataset.name;
+          card.dataset.name;
 
         panelPrice.textContent =
-          `$${Number(item.dataset.price).toFixed(2)}`;
+          `$${card.dataset.price}`;
 
         gsap.to(
-          [panelImg, panelName, panelPrice],
+          [
+            panelImg,
+            panelName,
+            panelPrice
+          ],
           {
             opacity: 1,
-            y: 0,
             duration: 0.25
           }
         );
@@ -168,197 +215,99 @@ function updatePanel(item) {
 
 function render() {
 
-  const x =
-    gsap.getProperty(track, "x");
+  cards.forEach(
+    (card, index) => {
 
-  const focus =
-    focusPoint();
+      const relative =
+        (
+          index -
+          activeIndex +
+          cards.length
+        ) %
+        cards.length;
 
-  let closestItem = null;
-  let closestDistance = Infinity;
+      const slot =
+        slots[relative];
 
-  items.forEach((item, index) => {
-
-    const center =
-      x +
-      index * STEP +
-      ITEM_WIDTH / 2;
-
-    const distance =
-      Math.abs(focus - center);
-
-    if (
-      distance <
-      closestDistance
-    ) {
-      closestDistance =
-        distance;
-
-      closestItem =
-        item;
-    }
-  });
-
-  items.forEach((item, index) => {
-
-    const center =
-      x +
-      index * STEP +
-      ITEM_WIDTH / 2;
-
-    const distance =
-      Math.abs(focus - center);
-
-    const normalized =
-      Math.min(
-        distance /
-        (window.innerWidth * 0.6),
-        1
+      gsap.to(
+        card,
+        {
+          x: slot.x,
+          y: slot.y,
+          scale: slot.scale,
+          opacity: slot.opacity,
+          rotation: slot.rotation,
+          zIndex: slot.z,
+          duration: 0.9,
+          ease: "power3.out"
+        }
       );
-
-    const scale =
-      1.12 -
-      normalized * 0.42;
-
-    const opacity =
-      1 -
-      normalized * 0.55;
-
-    const blur =
-      normalized * 4;
-
-    gsap.set(item, {
-      scale,
-      opacity,
-      filter: `blur(${blur}px)`,
-      zIndex:
-        item === closestItem
-          ? 10
-          : 1
-    });
-
-    gsap.set(
-      labels[index],
-      {
-        opacity:
-          item === closestItem
-            ? 1
-            : 0
-      }
-    );
-  });
-
-  updatePanel(
-    closestItem
-  );
-}
-
-function loopTrack() {
-
-  let x =
-    gsap.getProperty(track, "x");
-
-  if (
-    x <=
-    -(LOOP_WIDTH * 2)
-  ) {
-    x += LOOP_WIDTH;
-
-    gsap.set(track, {
-      x
-    });
-  }
-
-  if (
-    x >=
-    -LOOP_WIDTH
-  ) {
-    x -= LOOP_WIDTH;
-
-    gsap.set(track, {
-      x
-    });
-  }
-}
-
-let lastX = 0;
-
-Draggable.create(track, {
-
-  type: "x",
-
-  inertia: true,
-
-  onPress() {
-    lastX = this.x;
-  },
-
-  onDrag() {
-
-    if (
-      this.x >
-      lastX
-    ) {
-      this.x = lastX;
-
-      gsap.set(track, {
-        x: lastX
-      });
-
-      return;
     }
+  );
 
-    lastX =
-      this.x;
+  updatePanel();
+}
 
-    loopTrack();
-    render();
-  },
+function next() {
 
-  onThrowUpdate() {
-    loopTrack();
-    render();
-  },
+  activeIndex++;
 
-  snap(value) {
-    return (
-      Math.round(
-        value / STEP
-      ) * STEP
-    );
+  if (
+    activeIndex >= cards.length
+  ) {
+    activeIndex = 0;
   }
-});
-
-gsap.ticker.add(
-  loopTrack
-);
-
-function initialize() {
-
-  const focus =
-    focusPoint();
-
-  const startIndex =
-    ORIGINAL_COUNT + 4;
-
-  const x =
-    focus -
-    startIndex * STEP -
-    ITEM_WIDTH / 2;
-
-  gsap.set(track, {
-    x
-  });
-
-  lastX = x;
 
   render();
 }
 
-window.addEventListener(
-  "resize",
-  render
+function prev() {
+
+  activeIndex--;
+
+  if (
+    activeIndex < 0
+  ) {
+    activeIndex =
+      cards.length - 1;
+  }
+
+  render();
+}
+
+Draggable.create(
+  "#runway-stage",
+  {
+    type: "x",
+
+    inertia: false,
+
+    minimumMovement: 30,
+
+    onDragEnd() {
+
+      if (
+        this.endX <
+        this.startX
+      ) {
+
+        next();
+
+      } else {
+
+        prev();
+      }
+
+      gsap.set(
+        this.target,
+        {
+          x: 0
+        }
+      );
+    }
+  }
 );
 
-initialize();
+render();
+
 </script>
