@@ -5,19 +5,19 @@ export default {
     extend: {
       colors: {
         woltz: {
-          bg: '#121214',
-          surface: '#1c1c1f',
-          border: '#2a2a2d',
-          text: '#e1e1e6',
-          muted: '#8d8d99',
-          accent: '#ffffff'
+          bg: '#0a0e17',
+          surface: '#111827',
+          border: '#1e293b',
+          text: '#e2e8f0',
+          muted: '#64748b',
+          accent: '#a8b5c4'
         }
       },
       fontFamily: {
-        masque: ['Masque', 'sans-serif'],
+        display: ['Anton', 'sans-serif'],
         sans: ['Inter', 'system-ui', 'sans-serif']
       }
     }
   },
   plugins: []
-}
+};
