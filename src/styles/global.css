@@ -1,7 +1,17 @@
-/* src/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap');
+
 :root {
-  --accent-color: #ffffff; /* Mude esta cor para mudar o destaque da coleção */
-  --bg-color: #0a0a0a;
+  --accent-color: #a8b5c4;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 html {
@@ -9,49 +19,40 @@ html {
 }
 
 body {
-  background-color: var(--bg-color);
-  color: var(--accent-color);
   font-family: 'Inter', sans-serif;
+  background-color: #121214;
+  color: #e1e1e6;
   overflow-x: hidden;
-  cursor: none; /* Esconde o cursor padrão no desktop */
+  cursor: none;
 }
 
-/* Cursor Personalizado */
+@media (hover: none) and (pointer: coarse) {
+  body {
+    cursor: auto;
+  }
+}
+
 .custom-cursor {
   position: fixed;
   top: 0;
   left: 0;
   width: 20px;
   height: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(168, 181, 196, 0.6);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
-  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
   mix-blend-mode: difference;
 }
 
 .custom-cursor.hovering {
   width: 50px;
   height: 50px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: #fff;
+  background-color: rgba(168, 181, 196, 0.2);
 }
 
-.custom-cursor.clicking {
-  width: 15px;
-  height: 15px;
-  background-color: #fff;
-}
-
-/* Esconde o cursor customizado em telas de toque (celular/tablet) */
-@media (hover: none) and (pointer: coarse) {
-  body { cursor: auto; }
-  .custom-cursor { display: none; }
-}
-
-/* Animações de Entrada */
 .fade-in-up {
   opacity: 0;
   transform: translateY(30px);
