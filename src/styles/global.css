@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap');
-
-:root {
-  --accent-color: #a8b5c4;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -20,8 +14,8 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #121214;
-  color: #e1e1e6;
+  background-color: #0a0e17;
+  color: #e2e8f0;
   overflow-x: hidden;
   cursor: none;
 }
@@ -30,33 +24,51 @@ body {
   body {
     cursor: auto;
   }
+  .custom-cursor {
+    display: none !important;
+  }
 }
 
+/* Cursor Personalizado */
 .custom-cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 20px;
-  height: 20px;
-  border: 1px solid rgba(168, 181, 196, 0.6);
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(168, 181, 196, 0.5);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
-  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.4s ease,
+              border-color 0.4s ease;
   mix-blend-mode: difference;
 }
 
 .custom-cursor.hovering {
-  width: 50px;
-  height: 50px;
-  background-color: rgba(168, 181, 196, 0.2);
+  width: 60px;
+  height: 60px;
+  background-color: rgba(168, 181, 196, 0.15);
+  border-color: rgba(168, 181, 196, 0.8);
+}
+
+/* Animações */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .fade-in-up {
   opacity: 0;
-  transform: translateY(30px);
-  animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform: translateY(40px);
+  animation: fadeInUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
 }
 
 @keyframes fadeInUp {
@@ -66,7 +78,7 @@ body {
   }
 }
 
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-500 { animation-delay: 0.5s; }
+.delay-100 { animation-delay: 0.15s; }
+.delay-200 { animation-delay: 0.3s; }
+.delay-300 { animation-delay: 0.45s; }
+.delay-500 { animation-delay: 0.7s; }
