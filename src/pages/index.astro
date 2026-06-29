@@ -1,136 +1,141 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
 ---
 
 <Layout title="WOLTZ | NOCTIS VOL. I">
-  
-  <main class="relative w-full h-screen overflow-hidden bg-[#1a1f2e]">
-    
-    <!-- Imagem Principal -->
+
+  <main class="relative w-full h-screen overflow-hidden bg-[#0a0e17]">
+
+    <!-- Imagem Principal de Fundo -->
     <div class="absolute inset-0 z-0">
-      <img 
-        id="hero-main-img" 
-        src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=2000&auto=format&fit=crop" 
-        alt="WOLTZ Collection" 
-        class="w-full h-full object-cover transition-all duration-700"
+      <img
+        id="hero-main-img"
+        src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=2400&auto=format&fit=crop"
+        alt="WOLTZ Noctis Collection"
+        class="w-full h-full object-cover transition-all duration-1000 ease-out"
       />
-      <!-- Overlay azulado -->
-      <div class="absolute inset-0 bg-gradient-to-br from-[#1a1f2e]/80 via-[#1a1f2e]/40 to-transparent"></div>
+      <!-- Overlay azulado escuro -->
+      <div class="absolute inset-0 bg-gradient-to-br from-[#0a0e17]/85 via-[#0a0e17]/50 to-[#0a0e17]/30"></div>
+      <div class="absolute inset-0 bg-[#1a2744]/20 mix-blend-overlay"></div>
     </div>
 
-    <!-- Header -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 md:px-16 py-6">
-      <div class="text-xl font-light tracking-[0.4em] text-white">WOLTZ</div>
-      
-      <nav class="hidden md:flex gap-8 text-[10px] tracking-[0.25em] text-white/70 uppercase">
-        <a href="#" class="hover:text-white transition-colors duration-300 clickable">[ Catalog ]</a>
-        <a href="#" class="hover:text-white transition-colors duration-300 clickable">[ Puffers ]</a>
-        <a href="#" class="hover:text-white transition-colors duration-300 clickable">[ Boots ]</a>
-        <a href="#" class="hover:text-white transition-colors duration-300 clickable">[ Collections ]</a>
+    <!-- HEADER -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 md:px-16 py-8">
+      <div class="text-lg font-light tracking-[0.5em] text-white">WOLTZ</div>
+
+      <nav class="hidden md:flex gap-10 text-[10px] tracking-[0.3em] text-white/60 uppercase font-light">
+        <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Catalog ]</a>
+        <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Puffers ]</a>
+        <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Boots ]</a>
+        <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Collections ]</a>
       </nav>
 
-      <div class="flex gap-4 text-white/70">
-        <button class="hover:text-white transition-colors clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <div class="flex gap-5 text-white/60">
+        <button class="hover:text-white transition-colors duration-500 clickable">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </button>
-        <button class="hover:text-white transition-colors clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <button class="hover:text-white transition-colors duration-500 clickable">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         </button>
       </div>
     </header>
 
-    <!-- Conteúdo Principal -->
-    <div class="relative z-10 w-full h-full flex items-center px-8 md:px-16">
-      
-      <!-- Lado Esquerdo: Títulos e Informações -->
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="relative z-10 w-full h-full flex items-center px-8 md:px-16 lg:px-24">
+
+      <!-- Lado Esquerdo -->
       <div class="max-w-2xl fade-in-up">
-        <div class="text-[10px] tracking-[0.3em] text-white/50 mb-6 uppercase">
+
+        <div class="text-[10px] tracking-[0.4em] text-white/40 mb-8 uppercase font-light">
           [ Series: Noctis Vol. I ] &nbsp;·&nbsp; [ Series ]
         </div>
-        
-        <h1 class="font-['Anton'] text-6xl md:text-8xl lg:text-9xl leading-[0.9] tracking-tight mb-8 uppercase text-white">
+
+        <h1 class="font-['Anton'] text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-10 uppercase text-white">
           Collection<br/>
-          Noctis 01™
+          Artic 01<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>
         </h1>
 
-        <div class="space-y-4 mb-10">
-          <div class="flex items-center gap-8">
-            <span class="text-[10px] tracking-[0.2em] text-white/50 uppercase w-16">Size</span>
-            <div class="flex gap-4 text-xs tracking-widest">
-              <span class="text-white/40 cursor-pointer hover:text-white transition-colors clickable">S</span>
-              <span class="text-white/40 cursor-pointer hover:text-white transition-colors clickable">M</span>
-              <span class="text-white cursor-pointer clickable">L</span>
-              <span class="text-white/40 cursor-pointer hover:text-white transition-colors clickable">XL</span>
-            </div>
-          </div>
-          
-          <div class="flex items-center gap-8">
-            <span class="text-[10px] tracking-[0.2em] text-white/50 uppercase w-16">Colour</span>
-            <div class="flex gap-4 text-xs tracking-widest">
-              <span class="text-white cursor-pointer clickable">Black</span>
-              <span class="text-white/40 cursor-pointer hover:text-white transition-colors clickable">Silver</span>
-            </div>
+        <!-- Seletor de Tamanho -->
+        <div class="flex items-center gap-8 mb-5">
+          <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Size</span>
+          <div class="flex gap-6 text-xs tracking-[0.2em] font-light">
+            <span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable">S</span>
+            <span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable">M</span>
+            <span class="text-white cursor-pointer clickable">L</span>
+            <span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable">XL</span>
           </div>
         </div>
 
+        <!-- Seletor de Cor -->
+        <div class="flex items-center gap-8 mb-12">
+          <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Colour</span>
+          <div class="flex gap-6 text-xs tracking-[0.2em] font-light">
+            <span class="text-white cursor-pointer clickable">White</span>
+            <span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable">Silver</span>
+          </div>
+        </div>
+
+        <!-- Botão Octogonal + Preço -->
         <div class="flex items-center gap-8">
-          <!-- Botão Octogonal -->
-          <button class="group relative w-20 h-20 flex items-center justify-center clickable">
+          <button class="group relative w-24 h-24 flex items-center justify-center clickable">
             <svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full">
-              <polygon 
-                points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30" 
-                fill="none" 
-                stroke="rgba(255,255,255,0.3)" 
+              <polygon
+                points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30"
+                fill="none"
+                stroke="rgba(168,181,196,0.4)"
                 stroke-width="1"
-                class="group-hover:stroke-white transition-all duration-500"
+                class="transition-all duration-700 group-hover:stroke-white group-hover:stroke-[1.5]"
               />
             </svg>
-            <svg class="w-5 h-5 text-white/70 group-hover:text-white transition-colors duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 text-white/70 group-hover:text-white transition-all duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/>
             </svg>
           </button>
-          
+
           <div>
-            <div class="text-[10px] tracking-[0.2em] text-white/50 uppercase mb-1">Add to Cart</div>
-            <div class="text-2xl font-light text-white">$899.99</div>
+            <div class="text-[10px] tracking-[0.3em] text-white/40 uppercase mb-2 font-light">Add to Cart</div>
+            <div class="text-3xl font-extralight text-white tracking-tight">$899.99</div>
           </div>
         </div>
+
       </div>
 
       <!-- Lado Direito: Miniaturas -->
-      <div class="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 flex flex-col gap-4 fade-in-up delay-300">
-        <div class="flex flex-col gap-3">
-          <img 
-            src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=400&auto=format&fit=crop" 
-            onclick="changeHeroImage(this.src.replace('w=400', 'w=2000'), 0)"
-            class="thumbnail w-20 h-28 md:w-24 md:h-32 object-cover border border-white/60 opacity-100 cursor-pointer transition-all duration-500 clickable" 
+      <div class="absolute right-8 md:right-16 lg:right-24 top-1/2 -translate-y-1/2 flex flex-col items-end gap-5 fade-in-up delay-300">
+
+        <div class="flex flex-col gap-4">
+          <img
+            src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=400&auto=format&fit=crop"
+            onclick="changeHeroImage(this.src.replace('w=400','w=2400'), 0)"
+            class="thumbnail w-20 h-28 md:w-24 md:h-32 object-cover border border-white/70 opacity-100 cursor-pointer transition-all duration-500 clickable"
           />
-          <img 
-            src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=400&auto=format&fit=crop" 
-            onclick="changeHeroImage(this.src.replace('w=400', 'w=2000'), 1)"
-            class="thumbnail w-20 h-28 md:w-24 md:h-32 object-cover border border-transparent opacity-50 hover:opacity-100 cursor-pointer transition-all duration-500 clickable" 
+          <img
+            src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=400&auto=format&fit=crop"
+            onclick="changeHeroImage(this.src.replace('w=400','w=2400'), 1)"
+            class="thumbnail w-20 h-28 md:w-24 md:h-32 object-cover border border-transparent opacity-40 hover:opacity-100 cursor-pointer transition-all duration-500 clickable"
           />
-          <img 
-            src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=400&auto=format&fit=crop" 
-            onclick="changeHeroImage(this.src.replace('w=400', 'w=2000'), 2)"
-            class="thumbnail w-20 h-28 md:w-24 md:h-32 object-cover border border-transparent opacity-50 hover:opacity-100 cursor-pointer transition-all duration-500 clickable" 
+          <img
+            src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=400&auto=format&fit=crop"
+            onclick="changeHeroImage(this.src.replace('w=400','w=2400'), 2)"
+            class="thumbnail w-20 h-28 md:w-24 md:h-32 object-cover border border-transparent opacity-40 hover:opacity-100 cursor-pointer transition-all duration-500 clickable"
           />
         </div>
 
-        <div class="text-[10px] tracking-[0.2em] text-white/50 text-right mt-2" id="image-indicator">
+        <div class="text-[10px] tracking-[0.3em] text-white/40 text-right mt-2 font-light" id="image-indicator">
           01 — 07
         </div>
       </div>
 
       <!-- Redes Sociais -->
-      <div class="absolute bottom-8 right-8 md:bottom-16 md:right-16 flex gap-4 fade-in-up delay-500">
-        <a href="#" class="text-white/40 hover:text-white transition-colors clickable">
+      <div class="absolute bottom-8 right-8 md:bottom-12 md:right-16 lg:right-24 flex gap-5 fade-in-up delay-500">
+        <a href="#" class="text-white/30 hover:text-white transition-colors duration-500 clickable">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
         </a>
-        <a href="#" class="text-white/40 hover:text-white transition-colors clickable">
+        <a href="#" class="text-white/30 hover:text-white transition-colors duration-500 clickable">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
         </a>
-        <a href="#" class="text-white/40 hover:text-white transition-colors clickable">
+        <a href="#" class="text-white/30 hover:text-white transition-colors duration-500 clickable">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
         </a>
       </div>
