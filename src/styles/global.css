@@ -1,1 +1,71 @@
+/* src/styles/global.css */
+:root {
+  --accent-color: #ffffff; /* Mude esta cor para mudar o destaque da coleção */
+  --bg-color: #0a0a0a;
+}
 
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--accent-color);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  cursor: none; /* Esconde o cursor padrão no desktop */
+}
+
+/* Cursor Personalizado */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  mix-blend-mode: difference;
+}
+
+.custom-cursor.hovering {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+}
+
+.custom-cursor.clicking {
+  width: 15px;
+  height: 15px;
+  background-color: #fff;
+}
+
+/* Esconde o cursor customizado em telas de toque (celular/tablet) */
+@media (hover: none) and (pointer: coarse) {
+  body { cursor: auto; }
+  .custom-cursor { display: none; }
+}
+
+/* Animações de Entrada */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-500 { animation-delay: 0.5s; }
