@@ -10,7 +10,6 @@
   "dependencies": {
     "@astrojs/tailwind": "^5.1.0",
     "astro": "^4.3.5",
-    "tailwindcss": "^3.4.1",
-    "gsap": "^3.12.5"
+    "tailwindcss": "^3.4.1"
   }
 }
