@@ -88,7 +88,7 @@ import '../styles/global.css';
   </main>
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 2: GRADE EDITORIAL (ALTURA UNIFORME) -->
+  <!-- SEÇÃO 2: GRADE EDITORIAL (LAYOUT CORRETO) -->
   <!-- ========================================== -->
   <section class="relative w-full bg-[#6b7c93] py-24 px-6 md:px-12 lg:px-20 min-h-screen">
     
@@ -120,11 +120,11 @@ import '../styles/global.css';
       </button>
     </div>
 
-    <!-- PRIMEIRA FILEIRA: Card Aurora (mais largo) + 3 Cards Verticais -->
-    <!-- Todos com altura fixa de 450px -->
+    <!-- PRIMEIRA FILEIRA: 4 Cards (1 Coleção + 3 Produtos) -->
+    <!-- Grid de 4 colunas: Coleção ocupa 2, Produtos ocupam 1 cada -->
     <div class="grid grid-cols-4 gap-4 md:gap-6 mb-16 md:mb-24">
       
-      <!-- CARD AURORA - MAIS LARGO (col-span-2) mas mesma altura -->
+      <!-- CARD COLEÇÃO (AURORA) - Ocupa 2 colunas -->
       <div class="col-span-2 relative group clickable h-[450px]">
         <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Aurora" />
@@ -146,7 +146,7 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 2 - Mesma altura (450px) -->
+      <!-- PRODUTO 2 - Ocupa 1 coluna -->
       <div class="col-span-1 relative group clickable flex flex-col h-[450px]">
         <div class="relative w-full flex-1 overflow-hidden mb-3 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Aurora Silver" />
@@ -166,7 +166,7 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 3 - Mesma altura (450px) -->
+      <!-- PRODUTO 3 - Ocupa 1 coluna -->
       <div class="col-span-1 relative group clickable flex flex-col h-[450px]">
         <div class="relative w-full flex-1 overflow-hidden mb-3 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Orbit Silver" />
@@ -184,7 +184,7 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 4 - Mesma altura (450px) -->
+      <!-- PRODUTO 4 - Ocupa 1 coluna -->
       <div class="col-span-1 relative group clickable flex flex-col h-[450px]">
         <div class="relative w-full flex-1 overflow-hidden mb-3 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Black" />
@@ -206,7 +206,7 @@ import '../styles/global.css';
 
     </div>
 
-    <!-- SEGUNDA FILEIRA: 5 Cards Verticais - Mesma altura (450px) -->
+    <!-- SEGUNDA FILEIRA: 5 Cards Verticais -->
     <div class="grid grid-cols-5 gap-4 md:gap-6">
       
       <!-- PRODUTO 5 -->
