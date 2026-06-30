@@ -88,7 +88,7 @@ import '../styles/global.css';
   </main>
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 2: GRADE EDITORIAL (GEOMETRIA FINAL) -->
+  <!-- SEÇÃO 2: GRADE EDITORIAL (ALINHAMENTO PERFEITO) -->
   <!-- ========================================== -->
   <section class="relative w-full bg-[#6b7c93] py-24 px-4 md:px-8 lg:px-12 min-h-screen">
     
@@ -120,16 +120,17 @@ import '../styles/global.css';
       </button>
     </div>
 
-    <!-- Grid de Produtos: 4 Colunas Rígidas -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+    <!-- Grid de Produtos: Altura Fixa para Alinhamento Perfeito -->
+    <!-- Usamos grid-rows-[500px] para forçar todas as linhas terem a mesma altura -->
+    <div class="grid grid-cols-2 md:grid-cols-4 auto-rows-[500px] gap-4 md:gap-6">
       
-      <!-- CARD PRINCIPAL (AURORA) - Posição 1 -->
-      <!-- Aspect ratio ajustado para ser mais largo/quadrado e alinhar altura -->
-      <div class="col-span-2 md:col-span-1 row-span-1 relative group clickable h-full">
-        <div class="relative w-full aspect-[4/5] md:aspect-square overflow-hidden tech-card-asymmetric">
+      <!-- CARD PRINCIPAL (AURORA) - HORIZONTAL -->
+      <!-- Ocupa 1 coluna, mas é horizontal dentro da célula de 500px -->
+      <div class="col-span-1 row-span-1 relative group clickable w-full h-full">
+        <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Aurora Silver" />
           
-          <!-- Info flutuante à direita -->
+          <!-- Info flutuante à direita/baixo -->
           <div class="absolute bottom-6 right-6 z-10 text-right">
             <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">AURORA™</h3>
             <p class="text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-3 font-vcr">REFLECTIVE SHELL JACKET</p>
@@ -147,9 +148,9 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 2 - Posição 2 -->
-      <div class="relative group clickable flex flex-col">
-        <div class="relative aspect-[3/4] overflow-hidden mb-3 tech-card-asymmetric">
+      <!-- PRODUTO 2 - VERTICAL -->
+      <div class="col-span-1 row-span-1 relative group clickable flex flex-col w-full h-full">
+        <div class="relative w-full h-full overflow-hidden mb-3 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Aurora Silver" />
         </div>
         <div class="mt-auto">
@@ -165,9 +166,9 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 3 - Posição 3 -->
-      <div class="relative group clickable flex flex-col">
-        <div class="relative aspect-[3/4] overflow-hidden mb-3 tech-card-asymmetric">
+      <!-- PRODUTO 3 - VERTICAL -->
+      <div class="col-span-1 row-span-1 relative group clickable flex flex-col w-full h-full">
+        <div class="relative w-full h-full overflow-hidden mb-3 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Orbit Silver" />
         </div>
         <div class="mt-auto">
@@ -182,9 +183,9 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 4 - Posição 4 -->
-      <div class="relative group clickable flex flex-col">
-        <div class="relative aspect-[3/4] overflow-hidden mb-3 tech-card-asymmetric">
+      <!-- PRODUTO 4 - VERTICAL -->
+      <div class="col-span-1 row-span-1 relative group clickable flex flex-col w-full h-full">
+        <div class="relative w-full h-full overflow-hidden mb-3 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Black" />
         </div>
         <div class="mt-auto">
@@ -200,16 +201,11 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- LINHA 2: 5 CARDS -->
-      <!-- Para caber 5 cards em 4 colunas, usamos col-span-2 no último ou ajustamos gap. 
-           Mas para manter a rigidez, vamos fazer o último card ocupar o espaço restante ou 
-           usar uma sub-grid. Aqui, faremos o 5º card ocupar a primeira coluna da linha 2,
-           e os outros seguirem. Se precisar de 5 IGUAIS, teríamos que mudar para grid-cols-5 
-           ou reduzir tamanho. Vou manter grid-cols-4 e fazer o 5º card iniciar nova linha. -->
+      <!-- LINHA 2: 4 CARDS VERTICAIS -->
       
-      <!-- PRODUTO 5 - Linha 2, Col 1 -->
-      <div class="relative group clickable flex flex-col">
-        <div class="relative aspect-[3/4] overflow-hidden mb-3 tech-card-asymmetric">
+      <!-- PRODUTO 5 -->
+      <div class="col-span-1 row-span-1 relative group clickable flex flex-col w-full h-full">
+        <div class="relative w-full h-full overflow-hidden mb-3 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Glacier White" />
         </div>
         <div class="mt-auto">
@@ -224,9 +220,9 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 6 - Linha 2, Col 2 -->
-      <div class="relative group clickable flex flex-col">
-        <div class="relative aspect-[3/4] overflow-hidden mb-3 tech-card-asymmetric">
+      <!-- PRODUTO 6 -->
+      <div class="col-span-1 row-span-1 relative group clickable flex flex-col w-full h-full">
+        <div class="relative w-full h-full overflow-hidden mb-3 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1550928431-ee0ec6db30d3?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Polar Gloss" />
         </div>
         <div class="mt-auto">
@@ -241,9 +237,9 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 7 - Linha 2, Col 3 -->
-      <div class="relative group clickable flex flex-col">
-        <div class="relative aspect-[3/4] overflow-hidden mb-3 tech-card-asymmetric">
+      <!-- PRODUTO 7 -->
+      <div class="col-span-1 row-span-1 relative group clickable flex flex-col w-full h-full">
+        <div class="relative w-full h-full overflow-hidden mb-3 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Heavy" />
         </div>
         <div class="mt-auto">
@@ -259,9 +255,9 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 8 - Linha 2, Col 4 -->
-      <div class="relative group clickable flex flex-col">
-        <div class="relative aspect-[3/4] overflow-hidden mb-3 tech-card-asymmetric">
+      <!-- PRODUTO 8 -->
+      <div class="col-span-1 row-span-1 relative group clickable flex flex-col w-full h-full">
+        <div class="relative w-full h-full overflow-hidden mb-3 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Icefield Blue" />
         </div>
         <div class="mt-auto">
@@ -275,8 +271,6 @@ import '../styles/global.css';
           </div>
         </div>
       </div>
-
-       <!-- PRODUTO 9 (Se houver mais, ele inicia linha 3 automaticamente) -->
 
     </div>
   </section>
