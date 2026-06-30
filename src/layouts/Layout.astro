@@ -38,32 +38,41 @@ const { title } = Astro.props;
         }
       }
       
-      /* Cursor Personalizado - SEM mix-blend-mode */
+      /* Cursor SEMPRE VISÍVEL */
       #cursor {
         position: fixed;
         top: 0;
         left: 0;
         width: 24px;
         height: 24px;
-        border: 1.5px solid rgba(255, 255, 255, 0.5);
+        border: 1.5px solid rgba(255, 255, 255, 0.6);
         border-radius: 50%;
         pointer-events: none;
         z-index: 99999;
-        transform: translate(-50%, -50%);
-        transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
-        will-change: transform, width, height;
+        opacity: 1; /* SEMPRE VISÍVEL */
+        visibility: visible; /* SEMPRE VISÍVEL */
+        transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
       }
       
-      #cursor.hovering {
+      /* Estado normal do cursor */
+      #cursor.normal {
+        width: 24px;
+        height: 24px;
+        border-color: rgba(255, 255, 255, 0.6);
+        background-color: transparent;
+      }
+      
+      /* Estado hover do cursor */
+      #cursor.hover {
         width: 60px;
         height: 60px;
-        border-color: rgba(255, 255, 255, 0.8);
+        border-color: rgba(255, 255, 255, 0.9);
         background-color: rgba(255, 255, 255, 0.1);
       }
     </style>
   </head>
   <body>
-    <div id="cursor"></div>
+    <div id="cursor" class="normal"></div>
     <slot />
     <script is:inline src="/src/scripts/main.js"></script>
   </body>
