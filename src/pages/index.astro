@@ -86,8 +86,9 @@ import '../styles/global.css';
 
       <!-- ========================================== -->
       <!-- LADO DIREITO: MINIATURAS HORIZONTAIS EMPILHADAS -->
+      <!-- POSIÇÃO AJUSTADA PARA TOP-[25%] -->
       <!-- ========================================== -->
-      <div class="absolute right-8 md:right-16 lg:right-24 top-1/2 -translate-y-1/2 flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
+      <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
         
         <!-- Container Vertical (Empilhado) -->
         <div class="flex flex-col gap-4 w-full">
@@ -97,7 +98,6 @@ import '../styles/global.css';
             class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100" 
             onclick="switchCollection(0)"
           >
-            <!-- Imagem Horizontal (Paisagem) -->
             <img 
               src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" 
               class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500"
