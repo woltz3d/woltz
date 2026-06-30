@@ -6,7 +6,7 @@ import '../styles/global.css';
 <Layout title="WOLTZ | NOCTIS VOL. I">
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 1: HERO BANNER (ORIGINAL COMPLETO)  -->
+  <!-- SEÇÃO 1: HERO BANNER                       -->
   <!-- ========================================== -->
   <main class="relative w-full h-screen overflow-hidden bg-[#121214]">
     <div class="absolute inset-0 z-0">
@@ -60,7 +60,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- Miniaturas Horizontais Empilhadas -->
       <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
         <div class="flex flex-col gap-4 w-full">
           <div id="thumb-0" class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100">
@@ -90,9 +89,8 @@ import '../styles/global.css';
   <!-- ========================================== -->
   <!-- SEÇÃO 2: GRADE EDITORIAL                   -->
   <!-- ========================================== -->
-  <section class="relative w-full bg-[#6b7c93] py-24 px-6 md:px-12 lg:px-20 min-h-screen">
+  <section class="relative w-full bg-[#6b7c93] py-24 px-6 md:px-12 lg:px-20">
     
-    <!-- Cabeçalho da Seção -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
       <div class="flex-1">
         <h2 class="font-['Anton'] text-6xl md:text-8xl uppercase text-white tracking-tight mb-6">NEW COLLECTION</h2>
@@ -115,23 +113,19 @@ import '../styles/global.css';
         </div>
       </div>
       
-      <button class="border border-white/30 px-6 py-2 text-[10px] tracking-[0.2em] text-white hover:bg-white hover:text-[#6b7c93] transition-all duration-300 uppercase backdrop-blur-sm font-vcr tech-button">
+      <button class="border border-white/30 px-6 py-2 text-[10px] tracking-[0.2em] text-white hover:bg-white hover:text-[#6b7c93] transition-all duration-300 uppercase backdrop-blur-sm font-vcr">
         Filters
       </button>
     </div>
 
-    <!-- PRIMEIRA FILEIRA: Card AURORA (menor) + 3 produtos (maiores) -->
     <div class="grid grid-cols-5 gap-4 md:gap-6 mb-16 md:mb-24">
       
-      <!-- CARD AURORA - MANTÉM ALTURA ORIGINAL (450px) -->
       <div class="col-span-2 relative group clickable h-[450px]">
         <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Aurora" />
-          
           <div class="absolute bottom-6 right-6 z-10 text-right">
             <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">AURORA™</h3>
             <p class="text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-3 font-vcr">REFLECTIVE SHELL JACKET</p>
-            
             <div class="flex items-center justify-end gap-3">
                <div class="text-right hidden md:block">
                   <p class="text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Add to Cart</p>
@@ -145,7 +139,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 2 - AUMENTADO (550px) -->
       <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
         <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Aurora Silver" />
@@ -165,7 +158,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 3 - AUMENTADO (550px) -->
       <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
         <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Orbit Silver" />
@@ -183,7 +175,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 4 - AUMENTADO (550px) -->
       <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
         <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Black" />
@@ -205,10 +196,8 @@ import '../styles/global.css';
 
     </div>
 
-    <!-- SEGUNDA FILEIRA: 5 Cards Verticais (550px) -->
     <div class="grid grid-cols-5 gap-4 md:gap-6">
       
-      <!-- PRODUTO 5 -->
       <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
         <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Glacier White" />
@@ -226,7 +215,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 6 -->
       <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
         <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1550928431-ee0ec6db30d3?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Polar Gloss" />
@@ -244,7 +232,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 7 -->
       <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
         <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Heavy" />
@@ -264,7 +251,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 8 -->
       <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
         <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Icefield Blue" />
@@ -282,7 +268,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- PRODUTO 9 -->
       <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
         <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
           <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Polar White" />
@@ -302,6 +287,155 @@ import '../styles/global.css';
 
     </div>
   </section>
+
+  <!-- ========================================== -->
+  <!-- FOOTER: ESTILO FRZN / WOLTZ               -->
+  <!-- ========================================== -->
+  <footer class="relative w-full bg-[#6b7c93] pt-24 pb-12 px-6 md:px-12 lg:px-20 overflow-hidden">
+    
+    <!-- Texto Gigante de Fundo (WOLTZ PUFFERS) -->
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+      <h2 class="font-['Anton'] text-[18vw] md:text-[15vw] leading-none text-white/[0.07] tracking-tight select-none whitespace-nowrap">
+        WOLTZ PUFFERS
+      </h2>
+    </div>
+
+    <!-- Topo do Footer: Info + Newsletter + Menu + Logo -->
+    <div class="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-24 md:mb-32">
+      
+      <!-- Coluna 1: Código de Barras + Copyright + Endereço -->
+      <div class="flex flex-col gap-6">
+        <!-- Código de Barras SVG -->
+        <svg class="w-48 h-10 text-white/80" viewBox="0 0 200 40" fill="currentColor">
+          <rect x="0" y="0" width="2" height="40"/>
+          <rect x="4" y="0" width="1" height="40"/>
+          <rect x="7" y="0" width="3" height="40"/>
+          <rect x="12" y="0" width="1" height="40"/>
+          <rect x="15" y="0" width="2" height="40"/>
+          <rect x="19" y="0" width="4" height="40"/>
+          <rect x="25" y="0" width="1" height="40"/>
+          <rect x="28" y="0" width="2" height="40"/>
+          <rect x="32" y="0" width="3" height="40"/>
+          <rect x="37" y="0" width="1" height="40"/>
+          <rect x="40" y="0" width="2" height="40"/>
+          <rect x="44" y="0" width="1" height="40"/>
+          <rect x="47" y="0" width="3" height="40"/>
+          <rect x="52" y="0" width="2" height="40"/>
+          <rect x="56" y="0" width="1" height="40"/>
+          <rect x="59" y="0" width="4" height="40"/>
+          <rect x="65" y="0" width="1" height="40"/>
+          <rect x="68" y="0" width="2" height="40"/>
+          <rect x="72" y="0" width="1" height="40"/>
+          <rect x="75" y="0" width="3" height="40"/>
+          <rect x="80" y="0" width="2" height="40"/>
+          <rect x="84" y="0" width="1" height="40"/>
+          <rect x="87" y="0" width="2" height="40"/>
+          <rect x="91" y="0" width="3" height="40"/>
+          <rect x="96" y="0" width="1" height="40"/>
+          <rect x="99" y="0" width="2" height="40"/>
+          <rect x="103" y="0" width="4" height="40"/>
+          <rect x="109" y="0" width="1" height="40"/>
+          <rect x="112" y="0" width="2" height="40"/>
+          <rect x="116" y="0" width="1" height="40"/>
+          <rect x="119" y="0" width="3" height="40"/>
+          <rect x="124" y="0" width="2" height="40"/>
+          <rect x="128" y="0" width="1" height="40"/>
+          <rect x="131" y="0" width="2" height="40"/>
+          <rect x="135" y="0" width="3" height="40"/>
+          <rect x="140" y="0" width="1" height="40"/>
+          <rect x="143" y="0" width="2" height="40"/>
+          <rect x="147" y="0" width="1" height="40"/>
+          <rect x="150" y="0" width="4" height="40"/>
+          <rect x="156" y="0" width="1" height="40"/>
+          <rect x="159" y="0" width="2" height="40"/>
+          <rect x="163" y="0" width="3" height="40"/>
+          <rect x="168" y="0" width="1" height="40"/>
+          <rect x="171" y="0" width="2" height="40"/>
+          <rect x="175" y="0" width="1" height="40"/>
+          <rect x="178" y="0" width="3" height="40"/>
+          <rect x="183" y="0" width="2" height="40"/>
+          <rect x="187" y="0" width="1" height="40"/>
+          <rect x="190" y="0" width="2" height="40"/>
+          <rect x="194" y="0" width="3" height="40"/>
+          <rect x="199" y="0" width="1" height="40"/>
+        </svg>
+        
+        <div class="font-vcr text-[10px] tracking-[0.15em] text-white/80 uppercase leading-relaxed">
+          <p>©2026 WOLTZ WEAR</p>
+          <p>ALL RIGHTS RESERVED</p>
+        </div>
+
+        <div class="font-vcr text-[10px] tracking-[0.15em] text-white/60 uppercase leading-relaxed">
+          <p>WAREHOUSE ZONE / INDUSTRIAL</p>
+          <p>PIER / COLD STORAGE DISTRICT</p>
+          <p class="mt-2">419 PIER AVE, BROOKLYN, NY</p>
+        </div>
+      </div>
+
+      <!-- Coluna 2: Newsletter -->
+      <div class="flex flex-col gap-4">
+        <div class="font-vcr text-[10px] tracking-[0.2em] text-white/80 uppercase">
+          <p>NEWSLETTER SIGN UP</p>
+          <p class="text-white/50 mt-1">BE THE FIRST WHO KNOWS</p>
+        </div>
+        
+        <div class="relative mt-4 max-w-[280px]">
+          <input 
+            type="email" 
+            placeholder="EMAIL" 
+            class="w-full bg-transparent border-b border-white/40 pb-2 font-vcr text-[11px] tracking-[0.2em] text-white placeholder:text-white/40 focus:outline-none focus:border-white transition-colors uppercase"
+          />
+          <button class="absolute right-0 bottom-2 text-white/60 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Coluna 3: Menu de Navegação -->
+      <div class="flex flex-col gap-3">
+        <nav class="flex flex-col gap-2 font-vcr text-[10px] tracking-[0.2em] text-white/70 uppercase">
+          <a href="#" class="hover:text-white transition-colors duration-300">[ CATALOG ]</a>
+          <a href="#" class="hover:text-white transition-colors duration-300">[ PUFFERS ]</a>
+          <a href="#" class="hover:text-white transition-colors duration-300">[ BOOTS ]</a>
+          <a href="#" class="hover:text-white transition-colors duration-300">[ ABOUT US ]</a>
+          <a href="#" class="hover:text-white transition-colors duration-300">[ NEWS ]</a>
+        </nav>
+      </div>
+
+      <!-- Coluna 4: Logo + Redes Sociais -->
+      <div class="flex flex-col items-start md:items-end gap-6">
+        <div class="font-['Anton'] text-3xl tracking-[0.2em] text-white">WOLTZ</div>
+        
+        <div class="flex gap-4">
+          <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </a>
+          <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+            </svg>
+          </a>
+          <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Linha divisória inferior -->
+    <div class="relative z-10 border-t border-white/20 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 font-vcr text-[9px] tracking-[0.2em] text-white/40 uppercase">
+      <p>MADE WITH PRECISION IN BROOKLYN</p>
+      <p>TERMS · PRIVACY · COOKIES</p>
+    </div>
+
+  </footer>
 
   <!-- Scripts Globais e de Animação -->
   <script is:inline>
