@@ -1,0 +1,100 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Login | WOLTZ Admin">
+  
+  <div class="min-h-screen bg-[#0a0a0b] flex items-center justify-center p-4">
+    
+    <div class="w-full max-w-md">
+      
+      <!-- Logo -->
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold tracking-[0.3em] text-white mb-2">WOLTZ</h1>
+        <p class="text-sm text-white/40 tracking-wider">ADMIN PANEL</p>
+      </div>
+
+      <!-- Login Form -->
+      <div class="bg-[#111113] border border-white/5 rounded-2xl p-8">
+        
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold text-white mb-2">Welcome back</h2>
+          <p class="text-sm text-white/40">Enter your credentials to access the admin panel</p>
+        </div>
+
+        <form id="loginForm" class="space-y-4">
+          <div>
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              placeholder="Enter password"
+              class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 transition-colors"
+              required
+            >
+          </div>
+
+          <div id="errorMessage" class="hidden">
+            <p class="text-sm text-red-400 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+              Invalid password. Please try again.
+            </p>
+          </div>
+
+          <button 
+            type="submit" 
+            class="w-full bg-white text-black px-4 py-3 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors"
+          >
+            Sign In
+          </button>
+        </form>
+
+        <div class="mt-6 pt-6 border-t border-white/5">
+          <p class="text-xs text-white/40 text-center">
+            Protected area. Unauthorized access is prohibited.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="text-center mt-8">
+        <p class="text-xs text-white/20">© 2026 WOLTZ. All rights reserved.</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script is:inline>
+    // Senha de acesso (pode ser alterada aqui)
+    const ADMIN_PASSWORD = 'woltz2026';
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('errorMessage');
+      
+      if (password === ADMIN_PASSWORD) {
+        // Salva autenticação no localStorage
+        localStorage.setItem('woltz_admin_auth', 'true');
+        localStorage.setItem('woltz_admin_login_time', Date.now().toString());
+        
+        // Redireciona para o dashboard
+        window.location.href = '/admin/';
+      } else {
+        // Mostra erro
+        errorMessage.classList.remove('hidden');
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+      }
+    });
+
+    // Se já estiver autenticado, redireciona para o dashboard
+    if (localStorage.getItem('woltz_admin_auth') === 'true') {
+      window.location.href = '/admin/';
+    }
+  </script>
+
+</Layout>
