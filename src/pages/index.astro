@@ -5,20 +5,15 @@ import '../styles/global.css';
 
 <Layout title="WOLTZ | NOCTIS VOL. I">
 
+  <!-- ========================================== -->
+  <!-- SEÇÃO 1: HERO BANNER (INALTERADA)          -->
+  <!-- ========================================== -->
   <main class="relative w-full h-screen overflow-hidden bg-[#121214]">
-
-    <!-- Imagem Principal de Fundo -->
     <div class="absolute inset-0 z-0">
-      <img
-        id="hero-main-img"
-        src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=2400&auto=format&fit=crop"
-        alt="WOLTZ Collection"
-        class="w-full h-full object-cover transition-all duration-1000 ease-out"
-      />
+      <img id="hero-main-img" src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=2400&auto=format&fit=crop" alt="WOLTZ Collection" class="w-full h-full object-cover transition-all duration-1000 ease-out" />
       <div class="absolute inset-0 bg-gradient-to-br from-[#121214]/90 via-[#121214]/60 to-transparent"></div>
     </div>
 
-    <!-- HEADER -->
     <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 md:px-16 py-8">
       <div class="text-lg font-light tracking-[0.5em] text-white">WOLTZ</div>
       <nav class="hidden md:flex gap-10 text-[10px] tracking-[0.3em] text-white/60 uppercase font-light">
@@ -28,28 +23,15 @@ import '../styles/global.css';
         <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Collections ]</a>
       </nav>
       <div class="flex gap-5 text-white/60">
-        <button class="hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        </button>
-        <button class="hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        </button>
+        <button class="hover:text-white transition-colors duration-500 clickable"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+        <button class="hover:text-white transition-colors duration-500 clickable"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></button>
       </div>
     </header>
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <div class="relative z-10 w-full h-full flex items-center px-8 md:px-16 lg:px-24">
-
-      <!-- Lado Esquerdo: Textos Dinâmicos -->
       <div class="max-w-2xl fade-in-up">
-        <div id="collection-series" class="text-[10px] tracking-[0.4em] text-white/40 mb-8 uppercase font-light transition-opacity duration-500">
-          [ Series: Noctis Vol. I ] &nbsp;·&nbsp; [ Series ]
-        </div>
-        
-        <h1 id="collection-title" class="font-['Anton'] text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-10 uppercase text-white transition-opacity duration-500">
-          Collection<br/>Artic 01<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>
-        </h1>
-
+        <div id="collection-series" class="text-[10px] tracking-[0.4em] text-white/40 mb-8 uppercase font-light transition-opacity duration-500">[ Series: Noctis Vol. I ] &nbsp;·&nbsp; [ Series ]</div>
+        <h1 id="collection-title" class="font-['Anton'] text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-10 uppercase text-white transition-opacity duration-500">Collection<br/>Artic 01<span class="text-white/60 text-5xl md:text-6xl align-top">™</span></h1>
         <div class="flex items-center gap-8 mb-5">
           <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Size</span>
           <div class="flex gap-6 text-xs tracking-[0.2em] font-light">
@@ -59,7 +41,6 @@ import '../styles/global.css';
             <span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable">XL</span>
           </div>
         </div>
-
         <div class="flex items-center gap-8 mb-12">
           <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Colour</span>
           <div id="collection-colors" class="flex gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500">
@@ -67,15 +48,10 @@ import '../styles/global.css';
             <span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable">Silver</span>
           </div>
         </div>
-
         <div class="flex items-center gap-8">
           <button class="group relative w-24 h-24 flex items-center justify-center clickable">
-            <svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full">
-              <polygon points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30" fill="none" stroke="rgba(168,181,196,0.4)" stroke-width="1" class="transition-all duration-700 group-hover:stroke-white group-hover:stroke-[1.5]"/>
-            </svg>
-            <svg class="w-6 h-6 text-white/70 group-hover:text-white transition-all duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/>
-            </svg>
+            <svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full"><polygon points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30" fill="none" stroke="rgba(168,181,196,0.4)" stroke-width="1" class="transition-all duration-700 group-hover:stroke-white group-hover:stroke-[1.5]"/></svg>
+            <svg class="w-6 h-6 text-white/70 group-hover:text-white transition-all duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
           </button>
           <div>
             <div class="text-[10px] tracking-[0.3em] text-white/40 uppercase mb-2 font-light">Add to Cart</div>
@@ -84,165 +60,294 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- ========================================== -->
-      <!-- LADO DIREITO: MINIATURAS HORIZONTAIS EMPILHADAS -->
-      <!-- POSIÇÃO AJUSTADA PARA TOP-[25%] -->
-      <!-- ========================================== -->
+      <!-- Miniaturas Horizontais Empilhadas (Posição Ajustada) -->
       <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
-        
-        <!-- Container Vertical (Empilhado) -->
         <div class="flex flex-col gap-4 w-full">
-          
-          <!-- Miniatura 1: Artic 01 (Ativa) -->
-          <div 
-            class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100" 
-            onclick="switchCollection(0)"
-          >
-            <img 
-              src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" 
-              class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500"
-              alt="Artic 01"
-            />
+          <div class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100" onclick="switchCollection(0)">
+            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500" alt="Artic 01" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
-
-          <!-- Miniatura 2: Noctis Vol. II -->
-          <div 
-            class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0" 
-            onclick="switchCollection(1)"
-          >
-            <img 
-              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" 
-              class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500"
-              alt="Noctis Vol. II"
-            />
+          <div class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0" onclick="switchCollection(1)">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500" alt="Noctis Vol. II" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
-
-          <!-- Miniatura 3: Urban Shell -->
-          <div 
-            class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0" 
-            onclick="switchCollection(2)"
-          >
-            <img 
-              src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" 
-              class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500"
-              alt="Urban Shell"
-            />
+          <div class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0" onclick="switchCollection(2)">
+            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500" alt="Urban Shell" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
-
         </div>
-
-        <!-- Indicador -->
-        <div class="text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-2 w-full flex justify-end" id="image-indicator">
-          01 — 03
-        </div>
-
+        <div class="text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-2 w-full flex justify-end" id="image-indicator">01 — 03</div>
       </div>
 
-      <!-- Redes Sociais -->
       <div class="absolute bottom-8 right-8 md:bottom-12 md:right-16 lg:right-24 flex gap-5 fade-in-up delay-500">
-        <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-        </a>
-        <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-        </a>
-        <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
-        </a>
+        <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
+        <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg></a>
       </div>
-
     </div>
   </main>
 
-  <!-- Script de Troca de Coleção Completa -->
+  <!-- ========================================== -->
+  <!-- SEÇÃO 2: CARROSSEL PREMIUM (LOOKBOOK)      -->
+  <!-- Inspirado na experiência do vídeo          -->
+  <!-- ========================================== -->
+  <section id="lookbook-carousel" class="relative w-full min-h-screen bg-[#121214] py-32 overflow-hidden">
+    
+    <!-- Título da Seção -->
+    <div class="container mx-auto px-8 md:px-16 mb-20">
+      <h2 class="font-['Anton'] text-5xl md:text-7xl uppercase text-white tracking-tight reveal-text">The Lookbook</h2>
+      <p class="text-white/40 font-light tracking-widest text-sm mt-4 reveal-text">Explore the details of Artic 01™ collection.</p>
+    </div>
+
+    <!-- Container do Carrossel -->
+    <div class="carousel-track-container w-full overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing">
+      <div class="carousel-track flex gap-8 md:gap-12 px-8 md:px-16 pb-10 min-w-max">
+        
+        <!-- Item 1 -->
+        <div class="carousel-item relative group w-[300px] md:w-[400px] flex-shrink-0">
+          <div class="aspect-[3/4] overflow-hidden bg-[#1c1c1f]">
+            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800&auto=format&fit=crop" alt="Look 01" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+          </div>
+          <div class="mt-6 flex justify-between items-end">
+            <div>
+              <h3 class="text-white text-lg font-light tracking-wide">Puffer Jacket</h3>
+              <p class="text-white/40 text-xs tracking-widest mt-1">OUTERWEAR</p>
+            </div>
+            <span class="text-white font-extralight text-xl">$899</span>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="carousel-item relative group w-[300px] md:w-[400px] flex-shrink-0 mt-12 md:mt-24">
+          <div class="aspect-[3/4] overflow-hidden bg-[#1c1c1f]">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" alt="Look 02" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+          </div>
+          <div class="mt-6 flex justify-between items-end">
+            <div>
+              <h3 class="text-white text-lg font-light tracking-wide">Knit Sweater</h3>
+              <p class="text-white/40 text-xs tracking-widest mt-1">KNITWEAR</p>
+            </div>
+            <span class="text-white font-extralight text-xl">$450</span>
+          </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="carousel-item relative group w-[300px] md:w-[400px] flex-shrink-0">
+          <div class="aspect-[3/4] overflow-hidden bg-[#1c1c1f]">
+            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop" alt="Look 03" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+          </div>
+          <div class="mt-6 flex justify-between items-end">
+            <div>
+              <h3 class="text-white text-lg font-light tracking-wide">Bomber Shell</h3>
+              <p class="text-white/40 text-xs tracking-widest mt-1">JACKETS</p>
+            </div>
+            <span class="text-white font-extralight text-xl">$749</span>
+          </div>
+        </div>
+
+        <!-- Item 4 -->
+        <div class="carousel-item relative group w-[300px] md:w-[400px] flex-shrink-0 mt-12 md:mt-24">
+          <div class="aspect-[3/4] overflow-hidden bg-[#1c1c1f]">
+            <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=800&auto=format&fit=crop" alt="Look 04" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+          </div>
+          <div class="mt-6 flex justify-between items-end">
+            <div>
+              <h3 class="text-white text-lg font-light tracking-wide">Cargo Pants</h3>
+              <p class="text-white/40 text-xs tracking-widest mt-1">BOTTOMS</p>
+            </div>
+            <span class="text-white font-extralight text-xl">$320</span>
+          </div>
+        </div>
+
+         <!-- Item 5 -->
+         <div class="carousel-item relative group w-[300px] md:w-[400px] flex-shrink-0">
+          <div class="aspect-[3/4] overflow-hidden bg-[#1c1c1f]">
+            <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=800&auto=format&fit=crop" alt="Look 05" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+          </div>
+          <div class="mt-6 flex justify-between items-end">
+            <div>
+              <h3 class="text-white text-lg font-light tracking-wide">Tech Vest</h3>
+              <p class="text-white/40 text-xs tracking-widest mt-1">ACCESSORIES</p>
+            </div>
+            <span class="text-white font-extralight text-xl">$280</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Indicador de Scroll / Drag -->
+    <div class="absolute bottom-10 right-8 md:right-16 flex items-center gap-4 text-white/40 text-[10px] tracking-[0.3em] uppercase">
+      <span>Drag to explore</span>
+      <div class="w-12 h-[1px] bg-white/20"></div>
+    </div>
+
+  </section>
+
+  <!-- Scripts Globais e de Animação -->
   <script is:inline>
-    const collections = [
-      {
-        image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=2400&auto=format&fit=crop',
-        series: '[ Series: Noctis Vol. I ] · [ Series ]',
-        title: 'Collection<br/>Artic 01<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
-        colors: '<span class="text-white cursor-pointer clickable">White</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Silver</span>',
-        price: '$899.99'
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2400&auto=format&fit=crop',
-        series: '[ Series: Noctis Vol. II ] · [ Series ]',
-        title: 'Collection<br/>Noctis 02<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
-        colors: '<span class="text-white cursor-pointer clickable">Black</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Navy</span>',
-        price: '$1,249.00'
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=2400&auto=format&fit=crop',
-        series: '[ Series: Urban Shell ] · [ Series ]',
-        title: 'Collection<br/>Shell 03<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
-        colors: '<span class="text-white cursor-pointer clickable">Olive</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Sand</span>',
-        price: '$749.50'
+    // Importando Lenis e GSAP via CDN para garantir funcionamento imediato no Cloudflare Pages
+    import Lenis from 'https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/+esm';
+    import gsap from 'https://cdn.skypack.dev/gsap@3.12.5';
+    import ScrollTrigger from 'https://cdn.skypack.dev/gsap@3.12.5/ScrollTrigger';
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      // 1. Inicialização do Smooth Scroll (Lenis)
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Easing exponencial premium
+        smooth: true,
+        mouseMultiplier: 1,
+        smoothTouch: false,
+        touchMultiplier: 2,
+      });
+
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
       }
-    ];
+      requestAnimationFrame(raf);
 
-    function switchCollection(index) {
-      const data = collections[index];
-      const mainImg = document.getElementById('hero-main-img');
-      const seriesEl = document.getElementById('collection-series');
-      const titleEl = document.getElementById('collection-title');
-      const colorsEl = document.getElementById('collection-colors');
-      const priceEl = document.getElementById('collection-price');
-      const indicator = document.getElementById('image-indicator');
-      const wrappers = document.querySelectorAll('.thumbnail-wrapper');
+      // Conectar Lenis ao ScrollTrigger do GSAP
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+      });
+      gsap.ticker.lagSmoothing(0);
 
-      // Fade out elementos de texto e imagem principal
-      [seriesEl, titleEl, colorsEl, priceEl].forEach(el => el.style.opacity = '0');
-      mainImg.style.opacity = '0';
-      mainImg.style.filter = 'blur(15px) scale(1.05)';
+      // 2. Animações de Entrada da Seção Lookbook
+      gsap.from(".reveal-text", {
+        scrollTrigger: {
+          trigger: "#lookbook-carousel",
+          start: "top 80%",
+        },
+        y: 50,
+        opacity: 0,
+        duration: 1.5,
+        stagger: 0.2,
+        ease: "power3.out"
+      });
 
-      setTimeout(() => {
-        // Atualiza conteúdo
-        mainImg.src = data.image;
-        seriesEl.innerHTML = data.series;
-        titleEl.innerHTML = data.title;
-        colorsEl.innerHTML = data.colors;
-        priceEl.textContent = data.price;
+      // 3. Animação Parallax/Stagger nos itens do carrossel ao entrar na tela
+      gsap.from(".carousel-item", {
+        scrollTrigger: {
+          trigger: ".carousel-track",
+          start: "top 90%",
+        },
+        y: 100,
+        opacity: 0,
+        duration: 1.2,
+        stagger: 0.15,
+        ease: "power3.out"
+      });
 
-        // Fade in imagem principal
-        mainImg.onload = () => {
-          mainImg.style.opacity = '1';
-          mainImg.style.filter = 'blur(0px) scale(1)';
-        };
-        setTimeout(() => {
-          mainImg.style.opacity = '1';
-          mainImg.style.filter = 'blur(0px) scale(1)';
-        }, 600);
+      // 4. Lógica de Drag (Arrastar) para o Carrossel
+      const slider = document.querySelector('.carousel-track-container');
+      let isDown = false;
+      let startX;
+      let scrollLeft;
 
-        // Fade in textos
-        [seriesEl, titleEl, colorsEl, priceEl].forEach(el => el.style.opacity = '1');
+      slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.classList.add('active');
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+      });
+      slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.classList.remove('active');
+      });
+      slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.classList.remove('active');
+      });
+      slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2; // Velocidade do arrasto
+        slider.scrollLeft = scrollLeft - walk;
+      });
 
-        // Atualiza estado visual das miniaturas
-        wrappers.forEach((w, i) => {
-          const img = w.querySelector('img');
-          if (i === index) {
-            // Ativo
-            w.classList.remove('opacity-60', 'grayscale');
-            w.classList.add('opacity-100');
-            img.classList.remove('border-transparent');
-            img.classList.add('border-white/80');
-          } else {
-            // Inativo
-            w.classList.remove('opacity-100');
-            w.classList.add('opacity-60', 'grayscale');
-            img.classList.remove('border-white/80');
-            img.classList.add('border-transparent');
+      // 5. Script Original da Hero Section (Troca de Coleção)
+      window.switchCollection = function(index) {
+        const collections = [
+          {
+            image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=2400&auto=format&fit=crop',
+            series: '[ Series: Noctis Vol. I ] · [ Series ]',
+            title: 'Collection<br/>Artic 01<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
+            colors: '<span class="text-white cursor-pointer clickable">White</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Silver</span>',
+            price: '$899.99'
+          },
+          {
+            image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2400&auto=format&fit=crop',
+            series: '[ Series: Noctis Vol. II ] · [ Series ]',
+            title: 'Collection<br/>Noctis 02<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
+            colors: '<span class="text-white cursor-pointer clickable">Black</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Navy</span>',
+            price: '$1,249.00'
+          },
+          {
+            image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=2400&auto=format&fit=crop',
+            series: '[ Series: Urban Shell ] · [ Series ]',
+            title: 'Collection<br/>Shell 03<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
+            colors: '<span class="text-white cursor-pointer clickable">Olive</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Sand</span>',
+            price: '$749.50'
           }
-        });
+        ];
 
-        // Atualiza indicador numérico
-        if (indicator) {
-          indicator.textContent = `0${index + 1} — 0${collections.length}`;
-        }
-      }, 500);
-    }
+        const data = collections[index];
+        const mainImg = document.getElementById('hero-main-img');
+        const seriesEl = document.getElementById('collection-series');
+        const titleEl = document.getElementById('collection-title');
+        const colorsEl = document.getElementById('collection-colors');
+        const priceEl = document.getElementById('collection-price');
+        const indicator = document.getElementById('image-indicator');
+        const wrappers = document.querySelectorAll('.thumbnail-wrapper');
+
+        [seriesEl, titleEl, colorsEl, priceEl].forEach(el => el.style.opacity = '0');
+        mainImg.style.opacity = '0';
+        mainImg.style.filter = 'blur(15px) scale(1.05)';
+
+        setTimeout(() => {
+          mainImg.src = data.image;
+          seriesEl.innerHTML = data.series;
+          titleEl.innerHTML = data.title;
+          colorsEl.innerHTML = data.colors;
+          priceEl.textContent = data.price;
+
+          mainImg.onload = () => {
+            mainImg.style.opacity = '1';
+            mainImg.style.filter = 'blur(0px) scale(1)';
+          };
+          setTimeout(() => {
+            mainImg.style.opacity = '1';
+            mainImg.style.filter = 'blur(0px) scale(1)';
+          }, 600);
+
+          [seriesEl, titleEl, colorsEl, priceEl].forEach(el => el.style.opacity = '1');
+
+          wrappers.forEach((w, i) => {
+            const img = w.querySelector('img');
+            if (i === index) {
+              w.classList.remove('opacity-60', 'grayscale');
+              w.classList.add('opacity-100');
+              img.classList.remove('border-transparent');
+              img.classList.add('border-white/80');
+            } else {
+              w.classList.remove('opacity-100');
+              w.classList.add('opacity-60', 'grayscale');
+              img.classList.remove('border-white/80');
+              img.classList.add('border-transparent');
+            }
+          });
+
+          if (indicator) indicator.textContent = `0${index + 1} — 0${collections.length}`;
+        }, 500);
+      };
+    });
   </script>
 
 </Layout>
