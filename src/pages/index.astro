@@ -88,74 +88,74 @@ import '../styles/global.css';
   </main>
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 2: HORIZONTAL RUNWAY SHOWCASE        -->
-  <!-- Scroll vertical converte em movimento horiz-->
-  <!-- com escala dinâmica no centro               -->
+  <!-- SEÇÃO 2: EDITORIAL HORIZONTAL SHOWCASE     -->
+  <!-- Scroll + Drag | Foco Único | Espaçamento   -->
   <!-- ========================================== -->
-  <section id="runway-section" class="relative w-full bg-[#121214] overflow-hidden">
+  <section id="showcase-section" class="relative w-full bg-[#121214] min-h-screen flex flex-col justify-center overflow-hidden py-24">
     
-    <!-- Container Fixo (Stage) -->
-    <div class="runway-stage sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
-      
-      <!-- Título Flutuante -->
-      <div class="absolute top-12 left-8 md:left-16 z-20 pointer-events-none select-none">
-        <h2 class="font-['Anton'] text-6xl md:text-8xl uppercase text-white/10 tracking-tight">THE COLLECTION</h2>
-      </div>
+    <!-- Título da Seção -->
+    <div class="absolute top-12 left-8 md:left-16 z-20 pointer-events-none select-none">
+      <h2 class="font-['Anton'] text-5xl md:text-7xl uppercase text-white/10 tracking-tight">THE LOOKBOOK</h2>
+      <p class="text-white/30 text-xs tracking-[0.3em] mt-2 font-light">DRAG OR SCROLL TO EXPLORE</p>
+    </div>
 
-      <!-- Faixa Horizontal de Produtos -->
-      <div class="runway-track flex items-center gap-12 md:gap-24 pl-[50vw] pr-[50vw] will-change-transform">
+    <!-- Container da Faixa Horizontal -->
+    <div class="showcase-container w-full h-[70vh] flex items-center overflow-visible cursor-grab active:cursor-grabbing touch-pan-x">
+      
+      <!-- A Faixa que se move -->
+      <div class="showcase-track flex items-center gap-[15vw] md:gap-[20vw] pl-[50vw] pr-[50vw] will-change-transform">
         
         <!-- Produto 1 -->
-        <div class="runway-item relative w-[300px] md:w-[400px] aspect-[3/4] flex-shrink-0 origin-center">
-          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
-            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800&auto=format&fit=crop" alt="Look 01" class="w-full h-full object-cover" loading="lazy" />
+        <div class="showcase-item relative w-[70vw] md:w-[60vw] max-w-[500px] aspect-[3/4] flex-shrink-0 origin-center transition-shadow duration-500">
+          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50 rounded-sm">
+            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1000&auto=format&fit=crop" alt="Look 01" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500 pointer-events-none">
-            <h3 class="text-white text-xl font-light tracking-wide">Puffer Jacket</h3>
+          <div class="absolute -bottom-12 left-0 w-full text-center item-info opacity-0 transition-opacity duration-500">
+            <h3 class="text-white text-2xl font-light tracking-wide">Puffer Jacket</h3>
             <p class="text-white/40 text-xs tracking-[0.2em] mt-1">OUTERWEAR • $899</p>
           </div>
         </div>
 
         <!-- Produto 2 -->
-        <div class="runway-item relative w-[300px] md:w-[400px] aspect-[3/4] flex-shrink-0 origin-center">
-          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
-            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" alt="Look 02" class="w-full h-full object-cover" loading="lazy" />
+        <div class="showcase-item relative w-[70vw] md:w-[60vw] max-w-[500px] aspect-[3/4] flex-shrink-0 origin-center transition-shadow duration-500">
+          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50 rounded-sm">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop" alt="Look 02" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500 pointer-events-none">
-            <h3 class="text-white text-xl font-light tracking-wide">Knit Sweater</h3>
+          <div class="absolute -bottom-12 left-0 w-full text-center item-info opacity-0 transition-opacity duration-500">
+            <h3 class="text-white text-2xl font-light tracking-wide">Knit Sweater</h3>
             <p class="text-white/40 text-xs tracking-[0.2em] mt-1">KNITWEAR • $450</p>
           </div>
         </div>
 
         <!-- Produto 3 -->
-        <div class="runway-item relative w-[300px] md:w-[400px] aspect-[3/4] flex-shrink-0 origin-center">
-          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
-            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop" alt="Look 03" class="w-full h-full object-cover" loading="lazy" />
+        <div class="showcase-item relative w-[70vw] md:w-[60vw] max-w-[500px] aspect-[3/4] flex-shrink-0 origin-center transition-shadow duration-500">
+          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50 rounded-sm">
+            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1000&auto=format&fit=crop" alt="Look 03" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500 pointer-events-none">
-            <h3 class="text-white text-xl font-light tracking-wide">Bomber Shell</h3>
+          <div class="absolute -bottom-12 left-0 w-full text-center item-info opacity-0 transition-opacity duration-500">
+            <h3 class="text-white text-2xl font-light tracking-wide">Bomber Shell</h3>
             <p class="text-white/40 text-xs tracking-[0.2em] mt-1">JACKETS • $749</p>
           </div>
         </div>
 
         <!-- Produto 4 -->
-        <div class="runway-item relative w-[300px] md:w-[400px] aspect-[3/4] flex-shrink-0 origin-center">
-          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
-            <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=800&auto=format&fit=crop" alt="Look 04" class="w-full h-full object-cover" loading="lazy" />
+        <div class="showcase-item relative w-[70vw] md:w-[60vw] max-w-[500px] aspect-[3/4] flex-shrink-0 origin-center transition-shadow duration-500">
+          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50 rounded-sm">
+            <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=1000&auto=format&fit=crop" alt="Look 04" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500 pointer-events-none">
-            <h3 class="text-white text-xl font-light tracking-wide">Cargo Pants</h3>
+          <div class="absolute -bottom-12 left-0 w-full text-center item-info opacity-0 transition-opacity duration-500">
+            <h3 class="text-white text-2xl font-light tracking-wide">Cargo Pants</h3>
             <p class="text-white/40 text-xs tracking-[0.2em] mt-1">BOTTOMS • $320</p>
           </div>
         </div>
 
          <!-- Produto 5 -->
-         <div class="runway-item relative w-[300px] md:w-[400px] aspect-[3/4] flex-shrink-0 origin-center">
-          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
-            <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=800&auto=format&fit=crop" alt="Look 05" class="w-full h-full object-cover" loading="lazy" />
+         <div class="showcase-item relative w-[70vw] md:w-[60vw] max-w-[500px] aspect-[3/4] flex-shrink-0 origin-center transition-shadow duration-500">
+          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50 rounded-sm">
+            <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=1000&auto=format&fit=crop" alt="Look 05" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500 pointer-events-none">
-            <h3 class="text-white text-xl font-light tracking-wide">Tech Vest</h3>
+          <div class="absolute -bottom-12 left-0 w-full text-center item-info opacity-0 transition-opacity duration-500">
+            <h3 class="text-white text-2xl font-light tracking-wide">Tech Vest</h3>
             <p class="text-white/40 text-xs tracking-[0.2em] mt-1">ACCESSORIES • $280</p>
           </div>
         </div>
@@ -163,99 +163,107 @@ import '../styles/global.css';
       </div>
     </div>
 
-    <!-- Espaçador invisível para permitir o scroll longo -->
-    <div class="h-[600vh] w-full"></div>
-
   </section>
 
   <!-- Scripts Globais e de Animação -->
   <script is:inline>
-    // Importando GSAP e ScrollTrigger via CDN
     import gsap from 'https://cdn.skypack.dev/gsap@3.12.5';
     import ScrollTrigger from 'https://cdn.skypack.dev/gsap@3.12.5/ScrollTrigger';
+    import Draggable from 'https://cdn.skypack.dev/gsap@3.12.5/Draggable';
+    import InertiaPlugin from 'https://cdn.skypack.dev/gsap@3.12.5/InertiaPlugin';
 
-    gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger, Draggable, InertiaPlugin);
 
     document.addEventListener('DOMContentLoaded', () => {
       
       // ==========================================
-      // LÓGICA DO HORIZONTAL RUNWAY SHOWCASE
+      // LÓGICA DO EDITORIAL SHOWCASE (SCROLL + DRAG)
       // ==========================================
       
-      const runwaySection = document.querySelector('#runway-section');
-      const runwayTrack = document.querySelector('.runway-track');
-      const items = gsap.utils.toArray('.runway-item');
-      
-      // Calcular a distância total que a faixa precisa percorrer
-      // (Largura total da faixa - Largura da janela + padding inicial/final)
-      const getScrollAmount = () => {
-        let trackWidth = runwayTrack.scrollWidth;
-        return -(trackWidth - window.innerWidth);
-      };
+      const track = document.querySelector('.showcase-track');
+      const items = gsap.utils.toArray('.showcase-item');
+      const container = document.querySelector('.showcase-container');
 
-      // Configuração do ScrollTrigger para "prender" a tela e mover horizontalmente
-      const tl = gsap.timeline({
+      // 1. Configurar Draggable (Arrastar) com Inércia
+      Draggable.create(track, {
+        type: "x",
+        inertia: true,
+        bounds: { minX: -(track.scrollWidth - window.innerWidth), maxX: 0 },
+        edgeResistance: 0.65,
+        dragClickables: false, // Permite clicar em links dentro dos itens
+        onDrag: updateShowcase, // Atualiza escala durante o arrasto
+        onThrowUpdate: updateShowcase // Atualiza escala durante a inércia
+      });
+
+      // 2. Conectar Scroll Vertical ao Movimento Horizontal (Parallax Runway)
+      // Isso faz com que rolar a página também mova os produtos lateralmente
+      gsap.to(track, {
+        x: () => -(track.scrollWidth - window.innerWidth),
+        ease: "none",
         scrollTrigger: {
-          trigger: runwaySection,
-          start: "top top",
-          end: () => "+=" + Math.abs(getScrollAmount()),
-          pin: true, // Mantém a stage fixa
-          scrub: 1, // Suaviza a animação atrelada ao scroll
-          anticipatePin: 1,
-          invalidateOnRefresh: true // Recalcula se a tela for redimensionada
+          trigger: "#showcase-section",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1,
+          invalidateOnRefresh: true,
+          onUpdate: self => {
+            // Sincroniza a posição do draggable com o scroll
+            gsap.set(track, { x: gsap.getProperty(track, "x") }); 
+            updateShowcase();
+          }
         }
       });
 
-      // Movimento Horizontal Principal
-      tl.to(runwayTrack, {
-        x: getScrollAmount,
-        ease: "none",
-      });
-
-      // Animação de Escala Dinâmica para cada item (Efeito Runway)
-      items.forEach((item) => {
-        const info = item.querySelector('.item-info');
+      // 3. Função Central: Atualizar Escala e Opacidade baseado na posição
+      function updateShowcase() {
+        const centerX = window.innerWidth / 2;
         
-        // Estado Inicial: Menor e transparente
-        gsap.set(item, { scale: 0.7, opacity: 0.5 });
+        items.forEach(item => {
+          // Pega a posição atual do item na tela
+          const rect = item.getBoundingClientRect();
+          const itemCenterX = rect.left + rect.width / 2;
+          
+          // Calcula a distância do centro da tela
+          const distanceFromCenter = Math.abs(centerX - itemCenterX);
+          
+          // Define thresholds para o efeito "Runway"
+          // Quanto menor o threshold, mais rápido ele diminui ao sair do centro
+          const maxDistance = window.innerWidth * 0.6; 
+          
+          // Normaliza a distância (0 = centro, 1 = longe)
+          let progress = Math.min(distanceFromCenter / maxDistance, 1);
+          
+          // Aplica easing para suavizar a transição de escala
+          // No centro (progress 0) -> scale 1.1
+          // Nas bordas (progress 1) -> scale 0.75
+          const scale = gsap.utils.interpolate(1.1, 0.75, progress);
+          const opacity = gsap.utils.interpolate(1, 0.3, progress);
+          const blur = gsap.utils.interpolate(0, 4, progress); // Leve desfoque nas bordas
+          const zIndex = Math.round((1 - progress) * 10);
 
-        // Criar uma timeline individual para cada item baseada na posição dele na faixa
-        gsap.timeline({
-          scrollTrigger: {
-            trigger: item,
-            containerAnimation: tl, // Vincula ao movimento horizontal principal!
-            start: "left center+=200", // Começa a crescer quando entra na área central
-            end: "right center-=200",   // Termina de diminuir quando sai da área central
-            scrub: true,
-            toggleActions: "play none none reverse"
-          }
-        })
-        .to(item, { 
-          scale: 1.1, 
-          opacity: 1, 
-          zIndex: 10,
-          duration: 1, 
-          ease: "power2.out" 
-        }, 0) // Fase de entrada/crescimento
-        .to(item, { 
-          scale: 0.7, 
-          opacity: 0.5, 
-          zIndex: 1,
-          duration: 1, 
-          ease: "power2.in" 
-        }, 1); // Fase de saída/diminuição
+          // Aplica as transformações
+          gsap.set(item, {
+            scale: scale,
+            opacity: opacity,
+            filter: `blur(${blur}px)`,
+            zIndex: zIndex
+          });
 
-        // Informações aparecem apenas no pico do destaque
-        gsap.to(info, {
-          opacity: 1,
-          scrollTrigger: {
-            trigger: item,
-            containerAnimation: tl,
-            start: "center center-=50",
-            end: "center center+50",
-            scrub: true
+          // Controla a visibilidade das informações (texto)
+          const info = item.querySelector('.item-info');
+          if (info) {
+            gsap.set(info, { opacity: progress < 0.3 ? 1 : 0 });
           }
         });
+      }
+
+      // Inicializa o estado visual
+      updateShowcase();
+      
+      // Atualiza no resize da janela
+      window.addEventListener('resize', () => {
+        ScrollTrigger.refresh();
+        updateShowcase();
       });
 
 
