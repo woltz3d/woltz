@@ -88,106 +88,88 @@ import '../styles/global.css';
   </main>
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 2: CARROSSEL PREMIUM (LOOKBOOK)      -->
-  <!-- Inspirado na experiência do vídeo          -->
+  <!-- SEÇÃO 2: VERTICAL RUNWAY GALLERY           -->
+  <!-- Scroll-driven desfile com escala dinâmica  -->
   <!-- ========================================== -->
-  <section id="lookbook-carousel" class="relative w-full min-h-screen bg-[#121214] py-32 overflow-hidden">
+  <section id="runway-section" class="relative w-full bg-[#121214] overflow-hidden">
     
-    <!-- Título da Seção -->
-    <div class="container mx-auto px-8 md:px-16 mb-20">
-      <h2 class="font-['Anton'] text-5xl md:text-7xl uppercase text-white tracking-tight reveal-text">The Lookbook</h2>
-      <p class="text-white/40 font-light tracking-widest text-sm mt-4 reveal-text">Explore the details of Artic 01™ collection.</p>
-    </div>
+    <!-- Container Fixo (Onde o desfile acontece) -->
+    <div class="runway-stage sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+      
+      <!-- Título Flutuante -->
+      <div class="absolute top-12 left-8 md:left-16 z-20 pointer-events-none">
+        <h2 class="font-['Anton'] text-6xl md:text-8xl uppercase text-white/10 tracking-tight select-none">THE COLLECTION</h2>
+      </div>
 
-    <!-- Container do Carrossel -->
-    <div class="carousel-track-container w-full overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing">
-      <div class="carousel-track flex gap-8 md:gap-12 px-8 md:px-16 pb-10 min-w-max">
+      <!-- Lista de Produtos (Desfile) -->
+      <div class="runway-list absolute w-full h-full flex flex-col items-center justify-start pt-[100vh] pb-[50vh]">
         
-        <!-- Item 1 -->
-        <div class="carousel-item relative group w-[300px] md:w-[400px] flex-shrink-0">
-          <div class="aspect-[3/4] overflow-hidden bg-[#1c1c1f]">
-            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800&auto=format&fit=crop" alt="Look 01" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+        <!-- Produto 1 -->
+        <div class="runway-item absolute w-[300px] md:w-[400px] aspect-[3/4] origin-center will-change-transform">
+          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
+            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800&auto=format&fit=crop" alt="Look 01" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="mt-6 flex justify-between items-end">
-            <div>
-              <h3 class="text-white text-lg font-light tracking-wide">Puffer Jacket</h3>
-              <p class="text-white/40 text-xs tracking-widest mt-1">OUTERWEAR</p>
-            </div>
-            <span class="text-white font-extralight text-xl">$899</span>
+          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500">
+            <h3 class="text-white text-xl font-light tracking-wide">Puffer Jacket</h3>
+            <p class="text-white/40 text-xs tracking-[0.2em] mt-1">OUTERWEAR • $899</p>
           </div>
         </div>
 
-        <!-- Item 2 -->
-        <div class="carousel-item relative group w-[300px] md:w-[400px] flex-shrink-0 mt-12 md:mt-24">
-          <div class="aspect-[3/4] overflow-hidden bg-[#1c1c1f]">
-            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" alt="Look 02" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+        <!-- Produto 2 -->
+        <div class="runway-item absolute w-[300px] md:w-[400px] aspect-[3/4] origin-center will-change-transform">
+          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" alt="Look 02" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="mt-6 flex justify-between items-end">
-            <div>
-              <h3 class="text-white text-lg font-light tracking-wide">Knit Sweater</h3>
-              <p class="text-white/40 text-xs tracking-widest mt-1">KNITWEAR</p>
-            </div>
-            <span class="text-white font-extralight text-xl">$450</span>
+          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500">
+            <h3 class="text-white text-xl font-light tracking-wide">Knit Sweater</h3>
+            <p class="text-white/40 text-xs tracking-[0.2em] mt-1">KNITWEAR • $450</p>
           </div>
         </div>
 
-        <!-- Item 3 -->
-        <div class="carousel-item relative group w-[300px] md:w-[400px] flex-shrink-0">
-          <div class="aspect-[3/4] overflow-hidden bg-[#1c1c1f]">
-            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop" alt="Look 03" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+        <!-- Produto 3 -->
+        <div class="runway-item absolute w-[300px] md:w-[400px] aspect-[3/4] origin-center will-change-transform">
+          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
+            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop" alt="Look 03" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="mt-6 flex justify-between items-end">
-            <div>
-              <h3 class="text-white text-lg font-light tracking-wide">Bomber Shell</h3>
-              <p class="text-white/40 text-xs tracking-widest mt-1">JACKETS</p>
-            </div>
-            <span class="text-white font-extralight text-xl">$749</span>
+          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500">
+            <h3 class="text-white text-xl font-light tracking-wide">Bomber Shell</h3>
+            <p class="text-white/40 text-xs tracking-[0.2em] mt-1">JACKETS • $749</p>
           </div>
         </div>
 
-        <!-- Item 4 -->
-        <div class="carousel-item relative group w-[300px] md:w-[400px] flex-shrink-0 mt-12 md:mt-24">
-          <div class="aspect-[3/4] overflow-hidden bg-[#1c1c1f]">
-            <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=800&auto=format&fit=crop" alt="Look 04" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+        <!-- Produto 4 -->
+        <div class="runway-item absolute w-[300px] md:w-[400px] aspect-[3/4] origin-center will-change-transform">
+          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
+            <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=800&auto=format&fit=crop" alt="Look 04" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="mt-6 flex justify-between items-end">
-            <div>
-              <h3 class="text-white text-lg font-light tracking-wide">Cargo Pants</h3>
-              <p class="text-white/40 text-xs tracking-widest mt-1">BOTTOMS</p>
-            </div>
-            <span class="text-white font-extralight text-xl">$320</span>
+          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500">
+            <h3 class="text-white text-xl font-light tracking-wide">Cargo Pants</h3>
+            <p class="text-white/40 text-xs tracking-[0.2em] mt-1">BOTTOMS • $320</p>
           </div>
         </div>
 
-         <!-- Item 5 -->
-         <div class="carousel-item relative group w-[300px] md:w-[400px] flex-shrink-0">
-          <div class="aspect-[3/4] overflow-hidden bg-[#1c1c1f]">
-            <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=800&auto=format&fit=crop" alt="Look 05" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+         <!-- Produto 5 -->
+         <div class="runway-item absolute w-[300px] md:w-[400px] aspect-[3/4] origin-center will-change-transform">
+          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
+            <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=800&auto=format&fit=crop" alt="Look 05" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="mt-6 flex justify-between items-end">
-            <div>
-              <h3 class="text-white text-lg font-light tracking-wide">Tech Vest</h3>
-              <p class="text-white/40 text-xs tracking-widest mt-1">ACCESSORIES</p>
-            </div>
-            <span class="text-white font-extralight text-xl">$280</span>
+          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500">
+            <h3 class="text-white text-xl font-light tracking-wide">Tech Vest</h3>
+            <p class="text-white/40 text-xs tracking-[0.2em] mt-1">ACCESSORIES • $280</p>
           </div>
         </div>
 
       </div>
     </div>
 
-    <!-- Indicador de Scroll / Drag -->
-    <div class="absolute bottom-10 right-8 md:right-16 flex items-center gap-4 text-white/40 text-[10px] tracking-[0.3em] uppercase">
-      <span>Drag to explore</span>
-      <div class="w-12 h-[1px] bg-white/20"></div>
-    </div>
+    <!-- Espaçador invisível para permitir o scroll longo -->
+    <div class="h-[500vh] w-full"></div>
 
   </section>
 
   <!-- Scripts Globais e de Animação -->
   <script is:inline>
-    // Importando Lenis e GSAP via CDN para garantir funcionamento imediato no Cloudflare Pages
-    import Lenis from 'https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/+esm';
+    // Importando GSAP e ScrollTrigger via CDN
     import gsap from 'https://cdn.skypack.dev/gsap@3.12.5';
     import ScrollTrigger from 'https://cdn.skypack.dev/gsap@3.12.5/ScrollTrigger';
 
@@ -195,84 +177,78 @@ import '../styles/global.css';
 
     document.addEventListener('DOMContentLoaded', () => {
       
-      // 1. Inicialização do Smooth Scroll (Lenis)
-      const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Easing exponencial premium
-        smooth: true,
-        mouseMultiplier: 1,
-        smoothTouch: false,
-        touchMultiplier: 2,
+      // ==========================================
+      // LÓGICA DO DESFILE VERTICAL (RUNWAY)
+      // ==========================================
+      
+      const runwaySection = document.querySelector('#runway-section');
+      const runwayStage = document.querySelector('.runway-stage');
+      const items = gsap.utils.toArray('.runway-item');
+      
+      // Configuração do ScrollTrigger para "prender" a tela
+      ScrollTrigger.create({
+        trigger: runwaySection,
+        start: "top top",
+        end: "bottom bottom",
+        pin: runwayStage, // Mantém a stage fixa enquanto rola
+        scrub: 1, // Suaviza a animação atrelada ao scroll
+        anticipatePin: 1
       });
 
-      function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      }
-      requestAnimationFrame(raf);
+      // Animação de cada item do desfile
+      items.forEach((item, i) => {
+        const info = item.querySelector('.item-info');
+        
+        // Criamos uma timeline para cada produto
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: item,
+            containerAnimation: null, // Como estamos usando pin, usamos o scroll global
+            start: "top center+=200", // Começa a animar quando o item está 200px abaixo do centro
+            end: "bottom center-=200", // Termina quando sai 200px acima do centro
+            scrub: true,
+            toggleActions: "play none none reverse"
+          }
+        });
 
-      // Conectar Lenis ao ScrollTrigger do GSAP
-      lenis.on('scroll', ScrollTrigger.update);
-      gsap.ticker.add((time) => {
-        lenis.raf(time * 1000);
-      });
-      gsap.ticker.lagSmoothing(0);
+        // Estado Inicial (Entrando de baixo, pequeno e transparente)
+        gsap.set(item, { 
+          y: 300, 
+          scale: 0.6, 
+          opacity: 0,
+          zIndex: i 
+        });
 
-      // 2. Animações de Entrada da Seção Lookbook
-      gsap.from(".reveal-text", {
-        scrollTrigger: {
-          trigger: "#lookbook-carousel",
-          start: "top 80%",
-        },
-        y: 50,
-        opacity: 0,
-        duration: 1.5,
-        stagger: 0.2,
-        ease: "power3.out"
-      });
+        // Animação de Entrada -> Centro (Protagonista)
+        tl.to(item, {
+          y: 0,
+          scale: 1,
+          opacity: 1,
+          duration: 1,
+          ease: "power2.out"
+        }, 0); // Começa no tempo 0 da timeline relativa ao scroll
 
-      // 3. Animação Parallax/Stagger nos itens do carrossel ao entrar na tela
-      gsap.from(".carousel-item", {
-        scrollTrigger: {
-          trigger: ".carousel-track",
-          start: "top 90%",
-        },
-        y: 100,
-        opacity: 0,
-        duration: 1.2,
-        stagger: 0.15,
-        ease: "power3.out"
-      });
+        // Mostra as informações apenas quando está no centro
+        tl.to(info, { opacity: 1, duration: 0.5 }, 0.5);
 
-      // 4. Lógica de Drag (Arrastar) para o Carrossel
-      const slider = document.querySelector('.carousel-track-container');
-      let isDown = false;
-      let startX;
-      let scrollLeft;
+        // Animação de Saída (Continuando para cima, diminuindo)
+        // Nota: O ScrollTrigger cuida do movimento Y principal. 
+        // Aqui adicionamos o efeito de escala e opacidade na saída.
+        tl.to(item, {
+          y: -300,
+          scale: 0.6,
+          opacity: 0,
+          duration: 1,
+          ease: "power2.in"
+        }, 1); // Começa na metade da timeline
 
-      slider.addEventListener('mousedown', (e) => {
-        isDown = true;
-        slider.classList.add('active');
-        startX = e.pageX - slider.offsetLeft;
-        scrollLeft = slider.scrollLeft;
-      });
-      slider.addEventListener('mouseleave', () => {
-        isDown = false;
-        slider.classList.remove('active');
-      });
-      slider.addEventListener('mouseup', () => {
-        isDown = false;
-        slider.classList.remove('active');
-      });
-      slider.addEventListener('mousemove', (e) => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - slider.offsetLeft;
-        const walk = (x - startX) * 2; // Velocidade do arrasto
-        slider.scrollLeft = scrollLeft - walk;
+        tl.to(info, { opacity: 0, duration: 0.2 }, 0.8);
       });
 
-      // 5. Script Original da Hero Section (Troca de Coleção)
+
+      // ==========================================
+      // SCRIPT ORIGINAL DA HERO SECTION
+      // ==========================================
       window.switchCollection = function(index) {
         const collections = [
           {
