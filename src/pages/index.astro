@@ -85,57 +85,57 @@ import '../styles/global.css';
       </div>
 
       <!-- ========================================== -->
-      <!-- LADO DIREITO: MINIATURAS HORIZONTAIS -->
-      <!-- Posicionadas na altura marcada em vermelho -->
+      <!-- LADO DIREITO: MINIATURAS HORIZONTAIS EMPILHADAS -->
       <!-- ========================================== -->
-      <div class="absolute right-8 md:right-16 lg:right-24 top-[55%] -translate-y-1/2 flex flex-col items-end gap-4 fade-in-up delay-300">
+      <div class="absolute right-8 md:right-16 lg:right-24 top-1/2 -translate-y-1/2 flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
         
-        <!-- Container Horizontal -->
-        <div class="flex flex-row gap-3 md:gap-4">
+        <!-- Container Vertical (Empilhado) -->
+        <div class="flex flex-col gap-4 w-full">
           
           <!-- Miniatura 1: Artic 01 (Ativa) -->
           <div 
-            class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100 scale-100" 
+            class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100" 
             onclick="switchCollection(0)"
           >
+            <!-- Imagem Horizontal (Paisagem) -->
             <img 
-              src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=400&auto=format&fit=crop" 
-              class="w-24 h-32 md:w-28 md:h-40 object-cover border border-white/80 transition-all duration-500"
+              src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" 
+              class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500"
               alt="Artic 01"
             />
-            <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
 
           <!-- Miniatura 2: Noctis Vol. II -->
           <div 
-            class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-50 scale-95 hover:opacity-80" 
+            class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0" 
             onclick="switchCollection(1)"
           >
             <img 
-              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=400&auto=format&fit=crop" 
-              class="w-24 h-32 md:w-28 md:h-40 object-cover border border-transparent transition-all duration-500"
+              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" 
+              class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500"
               alt="Noctis Vol. II"
             />
-            <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
 
           <!-- Miniatura 3: Urban Shell -->
           <div 
-            class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-50 scale-95 hover:opacity-80" 
+            class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0" 
             onclick="switchCollection(2)"
           >
             <img 
-              src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=400&auto=format&fit=crop" 
-              class="w-24 h-32 md:w-28 md:h-40 object-cover border border-transparent transition-all duration-500"
+              src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" 
+              class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500"
               alt="Urban Shell"
             />
-            <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
 
         </div>
 
         <!-- Indicador -->
-        <div class="text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-2" id="image-indicator">
+        <div class="text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-2 w-full flex justify-end" id="image-indicator">
           01 — 03
         </div>
 
@@ -193,7 +193,7 @@ import '../styles/global.css';
       const indicator = document.getElementById('image-indicator');
       const wrappers = document.querySelectorAll('.thumbnail-wrapper');
 
-      // Fade out todos os elementos
+      // Fade out elementos de texto e imagem principal
       [seriesEl, titleEl, colorsEl, priceEl].forEach(el => el.style.opacity = '0');
       mainImg.style.opacity = '0';
       mainImg.style.filter = 'blur(15px) scale(1.05)';
@@ -206,35 +206,38 @@ import '../styles/global.css';
         colorsEl.innerHTML = data.colors;
         priceEl.textContent = data.price;
 
-        // Fade in
+        // Fade in imagem principal
         mainImg.onload = () => {
           mainImg.style.opacity = '1';
           mainImg.style.filter = 'blur(0px) scale(1)';
         };
-        // Fallback
         setTimeout(() => {
           mainImg.style.opacity = '1';
           mainImg.style.filter = 'blur(0px) scale(1)';
         }, 600);
 
+        // Fade in textos
         [seriesEl, titleEl, colorsEl, priceEl].forEach(el => el.style.opacity = '1');
 
-        // Atualiza thumbnails
+        // Atualiza estado visual das miniaturas
         wrappers.forEach((w, i) => {
+          const img = w.querySelector('img');
           if (i === index) {
-            w.classList.remove('opacity-50', 'scale-95');
-            w.classList.add('opacity-100', 'scale-100');
-            w.querySelector('img').classList.remove('border-transparent');
-            w.querySelector('img').classList.add('border-white/80');
+            // Ativo
+            w.classList.remove('opacity-60', 'grayscale');
+            w.classList.add('opacity-100');
+            img.classList.remove('border-transparent');
+            img.classList.add('border-white/80');
           } else {
-            w.classList.remove('opacity-100', 'scale-100');
-            w.classList.add('opacity-50', 'scale-95');
-            w.querySelector('img').classList.remove('border-white/80');
-            w.querySelector('img').classList.add('border-transparent');
+            // Inativo
+            w.classList.remove('opacity-100');
+            w.classList.add('opacity-60', 'grayscale');
+            img.classList.remove('border-white/80');
+            img.classList.add('border-transparent');
           }
         });
 
-        // Atualiza indicador
+        // Atualiza indicador numérico
         if (indicator) {
           indicator.textContent = `0${index + 1} — 0${collections.length}`;
         }
