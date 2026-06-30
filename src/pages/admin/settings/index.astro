@@ -1,0 +1,183 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Settings" activePage="settings">
+  
+  <!-- Top Bar -->
+  <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+    <div>
+      <h1 class="text-2xl font-semibold text-white">Settings</h1>
+      <p class="text-sm text-white/40 mt-1">Manage your store configuration</p>
+    </div>
+    <button class="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">
+      Save Changes
+    </button>
+  </header>
+
+  <!-- Content -->
+  <div class="p-8">
+    
+    <div class="grid grid-cols-4 gap-8">
+      
+      <!-- Sidebar Navigation -->
+      <div class="col-span-1">
+        <nav class="space-y-1">
+          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm bg-white/5 text-white border border-white/10">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            General
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Storefront
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v9a3 3 0 003 3z"/></svg>
+            Payments
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Notifications
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Security
+          </a>
+        </nav>
+      </div>
+
+      <!-- Settings Content -->
+      <div class="col-span-3 space-y-6">
+        
+        <!-- General Settings -->
+        <div class="bg-[#111113] border border-white/5 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-6">General Information</h3>
+          
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Store Name</label>
+                <input type="text" value="WOLTZ" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
+              </div>
+              <div>
+                <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Store URL</label>
+                <input type="text" value="woltz.pages.dev" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label>
+              <textarea rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 resize-none">Premium 3D clothing assets for Blender and game development.</textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Support Email</label>
+                <input type="email" value="support@woltz.com" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
+              </div>
+              <div>
+                <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Contact Phone</label>
+                <input type="tel" value="+1 (555) 123-4567" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Currency & Locale -->
+        <div class="bg-[#111113] border border-white/5 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-6">Currency & Locale</h3>
+          
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Default Currency</label>
+              <select class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none">
+                <option>USD ($)</option>
+                <option>BRL (R$)</option>
+                <option>EUR (€)</option>
+                <option>GBP (£)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Language</label>
+              <select class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none">
+                <option>English</option>
+                <option>Portuguese</option>
+                <option>Spanish</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Timezone</label>
+              <select class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none">
+                <option>America/New_York (EST)</option>
+                <option>America/Sao_Paulo (BRT)</option>
+                <option>Europe/London (GMT)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEO Settings -->
+        <div class="bg-[#111113] border border-white/5 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-6">SEO Settings</h3>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Meta Title</label>
+              <input type="text" value="WOLTZ - Premium 3D Clothing Assets" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
+            </div>
+            <div>
+              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Meta Description</label>
+              <textarea rows="2" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 resize-none">High-quality 3D clothing models for Blender, Unreal Engine, and game development. Professional PBR textures and rigged models.</textarea>
+            </div>
+            <div>
+              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Keywords (comma separated)</label>
+              <input type="text" value="3d clothing, blender models, puffer jacket, game assets, pbr textures" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
+            </div>
+          </div>
+        </div>
+
+        <!-- Integrations -->
+        <div class="bg-[#111113] border border-white/5 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-6">Integrations</h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-white">Google Analytics</p>
+                  <p class="text-xs text-white/40">Track visitor behavior</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-white">Facebook Pixel</p>
+                  <p class="text-xs text-white/40">Ad tracking & retargeting</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer">
+                <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</AdminLayout>
