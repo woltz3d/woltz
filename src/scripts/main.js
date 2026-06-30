@@ -2,23 +2,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const cursor = document.getElementById('cursor');
   
   if (!cursor) {
-    console.error('Cursor element not found!');
+    console.error(' Cursor element not found!');
     return;
   }
+  
+  console.log('✅ Cursor initialized');
 
-  // Posição inicial do cursor (centro da tela)
   let mouseX = window.innerWidth / 2;
   let mouseY = window.innerHeight / 2;
   let cursorX = mouseX;
   let cursorY = mouseY;
 
-  // Atualiza posição do mouse constantemente
+  // Rastreia movimento do mouse
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
   });
 
-  // Animação suave do cursor seguindo o mouse
+  // Animação suave
   function animateCursor() {
     cursorX += (mouseX - cursorX) * 0.15;
     cursorY += (mouseY - cursorY) * 0.15;
@@ -27,29 +28,31 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(animateCursor);
   }
   
-  // Inicia a animação imediatamente
   animateCursor();
 
-  // Adiciona classe "hover" quando passa por elementos interativos
-  const clickables = document.querySelectorAll('a, button, [onclick], .clickable, img[onclick]');
+  // Efeito hover em elementos interativos
+  const clickables = document.querySelectorAll('a, button, [onclick], .clickable');
   clickables.forEach(el => {
     el.addEventListener('mouseenter', () => {
-      cursor.classList.remove('normal');
-      cursor.classList.add('hover');
+      cursor.style.width = '60px';
+      cursor.style.height = '60px';
+      cursor.style.borderColor = 'rgba(255, 255, 255, 0.9)';
+      cursor.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
     });
     el.addEventListener('mouseleave', () => {
-      cursor.classList.remove('hover');
-      cursor.classList.add('normal');
+      cursor.style.width = '24px';
+      cursor.style.height = '24px';
+      cursor.style.borderColor = 'rgba(255, 255, 255, 0.7)';
+      cursor.style.backgroundColor = 'transparent';
     });
   });
 
-  // Troca de imagem do hero
+  // Troca de imagem
   window.changeHeroImage = function(newSrc, index) {
     const mainImg = document.getElementById('hero-main-img');
     const indicator = document.getElementById('image-indicator');
     
     if (mainImg) {
-      mainImg.style.transition = 'opacity 0.5s ease, filter 0.5s ease';
       mainImg.style.opacity = '0';
       mainImg.style.filter = 'blur(10px)';
       
