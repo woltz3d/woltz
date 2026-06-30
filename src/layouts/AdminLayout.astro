@@ -1,0 +1,75 @@
+---
+interface Props {
+  title: string;
+  activePage?: string;
+}
+const { title, activePage = 'overview' } = Astro.props;
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | WOLTZ Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#0a0a0b] text-white font-sans antialiased">
+    <div class="flex min-h-screen">
+      
+      <!-- Sidebar -->
+      <aside class="w-64 bg-[#111113] border-r border-white/5 flex flex-col fixed h-screen">
+        
+        <!-- Logo -->
+        <div class="p-6 border-b border-white/5">
+          <h1 class="text-xl font-bold tracking-[0.3em] text-white">WOLTZ</h1>
+          <p class="text-[10px] text-white/40 mt-1 tracking-wider">ADMIN PANEL</p>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 p-4 space-y-1">
+          <a href="/admin/" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all {activePage === 'overview' ? 'bg-white/5 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Overview
+          </a>
+          
+          <a href="/admin/products/" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all {activePage === 'products' ? 'bg-white/5 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            Products
+          </a>
+          
+          <a href="/admin/collections/" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all {activePage === 'collections' ? 'bg-white/5 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            Collections
+          </a>
+          
+          <a href="/admin/theme-editor/" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all {activePage === 'theme' ? 'bg-white/5 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+            Theme Editor
+          </a>
+        </nav>
+
+        <!-- User Profile -->
+        <div class="p-4 border-t border-white/5">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center text-sm font-medium">
+              W
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-white truncate">Admin</p>
+              <p class="text-xs text-white/40 truncate">admin@woltz.com</p>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 ml-64">
+        <slot />
+      </main>
+
+    </div>
+  </body>
+</html>
