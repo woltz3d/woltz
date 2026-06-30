@@ -6,7 +6,7 @@ import '../styles/global.css';
 <Layout title="WOLTZ | NOCTIS VOL. I">
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 1: HERO BANNER (COM CORREÇÃO DE CLIQUE) -->
+  <!-- SEÇÃO 1: HERO BANNER                       -->
   <!-- ========================================== -->
   <main class="relative w-full h-screen overflow-hidden bg-[#121214]">
     <div class="absolute inset-0 z-0">
@@ -60,10 +60,9 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- Miniaturas Horizontais Empilhadas (Corrigidas) -->
+      <!-- Miniaturas Horizontais Empilhadas -->
       <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
         <div class="flex flex-col gap-4 w-full">
-          <!-- Usando IDs únicos para garantir o clique -->
           <div id="thumb-0" class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100">
             <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500 pointer-events-none" alt="Artic 01" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -89,16 +88,16 @@ import '../styles/global.css';
   </main>
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 2: GRADE EDITORIAL (NOVA COLLECTION) -->
-  <!-- Baseada na referência visual enviada       -->
+  <!-- SEÇÃO 2: GRADE EDITORIAL (AJUSTADA)        -->
+  <!-- Imagem Horizontal + Cards Menores          -->
   <!-- ========================================== -->
-  <section class="relative w-full bg-[#6b7c93] py-24 px-8 md:px-16 lg:px-24 min-h-screen">
+  <section class="relative w-full bg-[#6b7c93] py-20 px-6 md:px-12 lg:px-20 min-h-screen">
     
     <!-- Cabeçalho da Seção -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 border-b border-white/10 pb-8">
       <div>
-        <h2 class="font-['Anton'] text-6xl md:text-8xl uppercase text-white tracking-tight mb-4">NEW COLLECTION</h2>
-        <div class="flex flex-col md:flex-row gap-8 md:gap-16 text-[10px] tracking-[0.2em] text-white/70 uppercase font-light">
+        <h2 class="font-['Anton'] text-5xl md:text-7xl uppercase text-white tracking-tight mb-3">NEW COLLECTION</h2>
+        <div class="flex flex-wrap gap-x-12 gap-y-4 text-[9px] tracking-[0.2em] text-white/60 uppercase font-light">
           <div class="flex flex-col gap-1">
             <span>[ NEW COLLECTION ]</span>
             <span>[ SERIES_01 ]</span>
@@ -108,156 +107,166 @@ import '../styles/global.css';
             <span>PUFFER JACKETS</span>
             <span>METAL EDITION</span>
             <span>GLOSS SERIES</span>
+          </div>
+          <div class="flex flex-col gap-1">
             <span>EXTREME COLD LINE</span>
+            <span>TECH FABRIC</span>
+            <span>WINTER 2026</span>
           </div>
         </div>
       </div>
       
-      <button class="border border-white/30 px-6 py-2 text-xs tracking-[0.2em] text-white hover:bg-white hover:text-[#6b7c93] transition-all duration-300 uppercase">
+      <button class="border border-white/20 px-5 py-1.5 text-[10px] tracking-[0.2em] text-white hover:bg-white hover:text-[#6b7c93] transition-all duration-300 uppercase backdrop-blur-sm">
         Filters
       </button>
     </div>
 
     <!-- Grid de Produtos -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-[minmax(300px,auto)]">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
       
-      <!-- Hero Product (Ocupa 2 colunas e 2 linhas) -->
-      <div class="md:col-span-2 md:row-span-2 relative group overflow-hidden bg-[#5a6a7e] p-8 flex flex-col justify-between clickable">
-        <div class="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" alt="Aurora Silver" />
-          <div class="absolute inset-0 bg-gradient-to-t from-[#6b7c93]/80 to-transparent"></div>
-        </div>
-        
-        <div class="relative z-10 self-end text-right">
-          <h3 class="font-['Anton'] text-4xl md:text-5xl uppercase text-white tracking-tight mb-2">AURORA™</h3>
-          <div class="flex items-center justify-end gap-4 mt-4">
-             <button class="w-12 h-12 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-             </button>
-             <div class="text-right">
-                <p class="text-[10px] tracking-widest text-white/70 uppercase">Add to Cart</p>
-                <p class="text-xl font-light text-white">$1,999</p>
+      <!-- HERO PRODUCT HORIZONTAL (Ocupa 2 colunas, 1 linha) -->
+      <div class="col-span-2 row-span-1 relative group overflow-hidden bg-[#5f7085] border border-white/5 p-1 clickable">
+        <div class="relative w-full aspect-[2/1] md:aspect-[2.5/1] overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Aurora Silver" />
+          <div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
+          
+          <!-- Info sobreposta na imagem horizontal -->
+          <div class="absolute bottom-4 left-4 md:bottom-6 md:left-6 z-10">
+            <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1">AURORA™</h3>
+            <p class="text-[10px] tracking-[0.2em] text-white/70 uppercase">REFLECTIVE SHELL JACKET</p>
+          </div>
+
+          <div class="absolute bottom-4 right-4 md:bottom-6 md:right-6 z-10 flex items-center gap-3">
+             <div class="text-right hidden md:block">
+                <p class="text-[9px] tracking-widest text-white/60 uppercase">Price</p>
+                <p class="text-lg font-light text-white">$1,999</p>
              </div>
+             <button class="w-10 h-10 rounded-full border border-white/40 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+             </button>
           </div>
         </div>
       </div>
 
       <!-- Produto 2 -->
-      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
-        <div class="aspect-[3/4] overflow-hidden mb-4">
+      <div class="relative group bg-[#5f7085] border border-white/5 p-3 flex flex-col justify-between clickable hover:border-white/20 transition-all duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-3 bg-[#55667a]">
           <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Aurora Silver" />
         </div>
         <div>
-          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">AURORA SILVER</h4>
-          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">REFLECTIVE PUFFER JACKET</p>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="w-2 h-2 rounded-full bg-white"></span> <span class="text-[10px] text-white/70">WHITE</span>
-            <span class="w-2 h-2 rounded-full bg-blue-400 ml-2"></span> <span class="text-[10px] text-white/70">BLUE</span>
+          <h4 class="text-white text-xs font-medium tracking-wide uppercase mb-0.5">AURORA SILVER</h4>
+          <p class="text-white/50 text-[9px] tracking-wider uppercase mb-2">REFLECTIVE PUFFER</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-white"></span>
+              <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+            </div>
+            <p class="text-white text-xs font-light">$999</p>
           </div>
-          <p class="text-white font-extralight">$999.99</p>
         </div>
       </div>
 
       <!-- Produto 3 -->
-      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
-        <div class="aspect-[3/4] overflow-hidden mb-4">
+      <div class="relative group bg-[#5f7085] border border-white/5 p-3 flex flex-col justify-between clickable hover:border-white/20 transition-all duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-3 bg-[#55667a]">
           <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Orbit Silver" />
         </div>
         <div>
-          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">ORBIT SILVER</h4>
-          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">HIGH-GLOSS PUFFER</p>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="w-2 h-2 rounded-full bg-gray-300"></span> <span class="text-[10px] text-white/70">SILVER</span>
+          <h4 class="text-white text-xs font-medium tracking-wide uppercase mb-0.5">ORBIT SILVER</h4>
+          <p class="text-white/50 text-[9px] tracking-wider uppercase mb-2">HIGH-GLOSS PUFFER</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-gray-300"></span>
+            </div>
+            <p class="text-white text-xs font-light">$1,299</p>
           </div>
-          <p class="text-white font-extralight">$1,299.99</p>
         </div>
       </div>
 
       <!-- Produto 4 -->
-      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
-        <div class="aspect-[3/4] overflow-hidden mb-4">
+      <div class="relative group bg-[#5f7085] border border-white/5 p-3 flex flex-col justify-between clickable hover:border-white/20 transition-all duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-3 bg-[#55667a]">
           <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Black" />
         </div>
         <div>
-          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">STEALTH BLACK</h4>
-          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">HEAVY SHIELD PUFFER</p>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="w-2 h-2 rounded-full bg-black border border-white/20"></span> <span class="text-[10px] text-white/70">BLACK</span>
-            <span class="w-2 h-2 rounded-full bg-white ml-2"></span> <span class="text-[10px] text-white/70">WHITE</span>
+          <h4 class="text-white text-xs font-medium tracking-wide uppercase mb-0.5">STEALTH BLACK</h4>
+          <p class="text-white/50 text-[9px] tracking-wider uppercase mb-2">HEAVY SHIELD PUFFER</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-black border border-white/30"></span>
+              <span class="w-2 h-2 rounded-full bg-white"></span>
+            </div>
+            <p class="text-white text-xs font-light">$1,199</p>
           </div>
-          <p class="text-white font-extralight">$1,199.99</p>
         </div>
       </div>
 
-      <!-- Linha Inferior de Produtos -->
-      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
-        <div class="aspect-[3/4] overflow-hidden mb-4">
+      <!-- Produto 5 -->
+      <div class="relative group bg-[#5f7085] border border-white/5 p-3 flex flex-col justify-between clickable hover:border-white/20 transition-all duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-3 bg-[#55667a]">
           <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Glacier White" />
         </div>
         <div>
-          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">GLACIER WHITE</h4>
-          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">INSULATED PUFFER JACKET</p>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="w-2 h-2 rounded-full bg-gray-400"></span> <span class="text-[10px] text-white/70">GREY</span>
+          <h4 class="text-white text-xs font-medium tracking-wide uppercase mb-0.5">GLACIER WHITE</h4>
+          <p class="text-white/50 text-[9px] tracking-wider uppercase mb-2">INSULATED PUFFER</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+            </div>
+            <p class="text-white text-xs font-light">$1,299</p>
           </div>
-          <p class="text-white font-extralight">$1,299.99</p>
         </div>
       </div>
 
-      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
-        <div class="aspect-[3/4] overflow-hidden mb-4">
+      <!-- Produto 6 -->
+      <div class="relative group bg-[#5f7085] border border-white/5 p-3 flex flex-col justify-between clickable hover:border-white/20 transition-all duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-3 bg-[#55667a]">
           <img src="https://images.unsplash.com/photo-1550928431-ee0ec6db30d3?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Polar Gloss" />
         </div>
         <div>
-          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">POLAR GLOSS</h4>
-          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">BLUE PUFFER JACKET</p>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="w-2 h-2 rounded-full bg-blue-300"></span> <span class="text-[10px] text-white/70">BLUE GLOSS</span>
+          <h4 class="text-white text-xs font-medium tracking-wide uppercase mb-0.5">POLAR GLOSS</h4>
+          <p class="text-white/50 text-[9px] tracking-wider uppercase mb-2">BLUE PUFFER JACKET</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-300"></span>
+            </div>
+            <p class="text-white text-xs font-light">$899</p>
           </div>
-          <p class="text-white font-extralight">$899.99</p>
         </div>
       </div>
 
-      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
-        <div class="aspect-[3/4] overflow-hidden mb-4">
-          <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Black Heavy" />
+      <!-- Produto 7 -->
+      <div class="relative group bg-[#5f7085] border border-white/5 p-3 flex flex-col justify-between clickable hover:border-white/20 transition-all duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-3 bg-[#55667a]">
+          <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Heavy" />
         </div>
         <div>
-          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">STEALTH BLACK</h4>
-          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">HEAVY PUFFER JACKET</p>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="w-2 h-2 rounded-full bg-blue-900"></span> <span class="text-[10px] text-white/70">NAVY BLUE</span>
-            <span class="w-2 h-2 rounded-full bg-black border border-white/20 ml-2"></span> <span class="text-[10px] text-white/70">BLACK</span>
+          <h4 class="text-white text-xs font-medium tracking-wide uppercase mb-0.5">STEALTH HEAVY</h4>
+          <p class="text-white/50 text-[9px] tracking-wider uppercase mb-2">HEAVY PUFFER JACKET</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-900"></span>
+              <span class="w-2 h-2 rounded-full bg-black border border-white/30"></span>
+            </div>
+            <p class="text-white text-xs font-light">$1,199</p>
           </div>
-          <p class="text-white font-extralight">$1,199.99</p>
         </div>
       </div>
 
-      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
-        <div class="aspect-[3/4] overflow-hidden mb-4">
+      <!-- Produto 8 -->
+      <div class="relative group bg-[#5f7085] border border-white/5 p-3 flex flex-col justify-between clickable hover:border-white/20 transition-all duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-3 bg-[#55667a]">
           <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Icefield Blue" />
         </div>
         <div>
-          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">ICEFIELD BLUE</h4>
-          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">TECH PUFFER JACKET</p>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="w-2 h-2 rounded-full bg-blue-400"></span> <span class="text-[10px] text-white/70">BLUE</span>
+          <h4 class="text-white text-xs font-medium tracking-wide uppercase mb-0.5">ICEFIELD BLUE</h4>
+          <p class="text-white/50 text-[9px] tracking-wider uppercase mb-2">TECH PUFFER JACKET</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+            </div>
+            <p class="text-white text-xs font-light">$999</p>
           </div>
-          <p class="text-white font-extralight">$999.99</p>
-        </div>
-      </div>
-
-      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
-        <div class="aspect-[3/4] overflow-hidden mb-4">
-          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Polar White" />
-        </div>
-        <div>
-          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">POLAR WHITE</h4>
-          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">SHELL PUFFER JACKET</p>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="w-2 h-2 rounded-full bg-white"></span> <span class="text-[10px] text-white/70">WHITE</span>
-          </div>
-          <p class="text-white font-extralight">$1,499.99</p>
         </div>
       </div>
 
@@ -269,7 +278,7 @@ import '../styles/global.css';
     document.addEventListener('DOMContentLoaded', () => {
       
       // ==========================================
-      // LÓGICA DA HERO SECTION (CORRIGIDA)
+      // LÓGICA DA HERO SECTION
       // ==========================================
       const collections = [
         {
@@ -305,7 +314,6 @@ import '../styles/global.css';
         const indicator = document.getElementById('image-indicator');
         const wrappers = document.querySelectorAll('.thumbnail-wrapper');
 
-        // Fade out
         [seriesEl, titleEl, colorsEl, priceEl].forEach(el => el.style.opacity = '0');
         if(mainImg) {
             mainImg.style.opacity = '0';
@@ -313,30 +321,25 @@ import '../styles/global.css';
         }
 
         setTimeout(() => {
-          // Update Content
           if(mainImg) mainImg.src = data.image;
           if(seriesEl) seriesEl.innerHTML = data.series;
           if(titleEl) titleEl.innerHTML = data.title;
           if(colorsEl) colorsEl.innerHTML = data.colors;
           if(priceEl) priceEl.textContent = data.price;
 
-          // Fade In Image
           if(mainImg) {
               mainImg.onload = () => {
                 mainImg.style.opacity = '1';
                 mainImg.style.filter = 'blur(0px) scale(1)';
               };
-              // Fallback
               setTimeout(() => {
                 mainImg.style.opacity = '1';
                 mainImg.style.filter = 'blur(0px) scale(1)';
               }, 600);
           }
 
-          // Fade In Text
           [seriesEl, titleEl, colorsEl, priceEl].forEach(el => el.style.opacity = '1');
 
-          // Update Thumbnails UI
           wrappers.forEach((w, i) => {
             const img = w.querySelector('img');
             if (i === index) {
@@ -360,7 +363,6 @@ import '../styles/global.css';
         }, 500);
       }
 
-      // Anexar eventos de clique manualmente para garantir funcionamento
       const thumb0 = document.getElementById('thumb-0');
       const thumb1 = document.getElementById('thumb-1');
       const thumb2 = document.getElementById('thumb-2');
