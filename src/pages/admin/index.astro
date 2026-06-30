@@ -1,0 +1,255 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Overview" activePage="overview">
+  
+  <!-- Top Bar -->
+  <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+    <div>
+      <h1 class="text-2xl font-semibold text-white">Overview</h1>
+      <p class="text-sm text-white/40 mt-1">Welcome back, Admin.</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="relative">
+        <input type="text" placeholder="Search anything..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 pl-10 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 w-64">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="p-8">
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-4 gap-6 mb-8">
+      <div class="bg-[#111113] border border-white/5 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
+            <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          </div>
+          <span class="text-xs text-green-400 flex items-center gap-1">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            23.6%
+          </span>
+        </div>
+        <p class="text-xs text-white/40 uppercase tracking-wider mb-1">Total Revenue</p>
+        <p class="text-2xl font-semibold text-white">$24,780.50</p>
+        <p class="text-xs text-white/40 mt-2">vs last month</p>
+      </div>
+
+      <div class="bg-[#111113] border border-white/5 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
+            <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          </div>
+          <span class="text-xs text-green-400 flex items-center gap-1">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            18.4%
+          </span>
+        </div>
+        <p class="text-xs text-white/40 uppercase tracking-wider mb-1">Orders</p>
+        <p class="text-2xl font-semibold text-white">342</p>
+        <p class="text-xs text-white/40 mt-2">vs last month</p>
+      </div>
+
+      <div class="bg-[#111113] border border-white/5 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
+            <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+          </div>
+          <span class="text-xs text-green-400 flex items-center gap-1">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            11.2%
+          </span>
+        </div>
+        <p class="text-xs text-white/40 uppercase tracking-wider mb-1">Avg. Ticket</p>
+        <p class="text-2xl font-semibold text-white">$72.46</p>
+        <p class="text-xs text-white/40 mt-2">vs last month</p>
+      </div>
+
+      <div class="bg-[#111113] border border-white/5 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
+            <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <span class="text-xs text-green-400 flex items-center gap-1">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            8.7%
+          </span>
+        </div>
+        <p class="text-xs text-white/40 uppercase tracking-wider mb-1">Conversion</p>
+        <p class="text-2xl font-semibold text-white">3.92%</p>
+        <p class="text-xs text-white/40 mt-2">vs last month</p>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-3 gap-6 mb-8">
+      
+      <!-- Revenue Chart -->
+      <div class="col-span-2 bg-[#111113] border border-white/5 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="text-lg font-semibold text-white">Revenue</h3>
+            <p class="text-sm text-white/40 mt-1">Last 30 days</p>
+          </div>
+          <select class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+            <option>Last 30 days</option>
+            <option>Last 7 days</option>
+            <option>Last 90 days</option>
+          </select>
+        </div>
+        
+        <!-- Simple SVG Chart -->
+        <div class="h-64 relative">
+          <svg class="w-full h-full" viewBox="0 0 800 250" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="white" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="white" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M 0 200 Q 50 180 100 160 T 200 140 T 300 120 T 400 100 T 500 80 T 600 60 T 700 40 T 800 20 L 800 250 L 0 250 Z" fill="url(#chartGradient)"/>
+            <path d="M 0 200 Q 50 180 100 160 T 200 140 T 300 120 T 400 100 T 500 80 T 600 60 T 700 40 T 800 20" fill="none" stroke="white" stroke-width="2"/>
+          </svg>
+          <div class="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-white/40 px-2">
+            <span>30 May</span>
+            <span>06 Jun</span>
+            <span>13 Jun</span>
+            <span>20 Jun</span>
+            <span>27 Jun</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Collections -->
+      <div class="bg-[#111113] border border-white/5 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold text-white">Top Collections</h3>
+          <button class="text-xs text-white/60 hover:text-white">View all</button>
+        </div>
+        
+        <div class="space-y-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-sm font-medium">1</div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">Artic 01</p>
+              <p class="text-xs text-white/40">36% of sales</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-sm font-medium">2</div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">Noctis Vol. 1</p>
+              <p class="text-xs text-white/40">26% of sales</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-sm font-medium">3</div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">Puffer Series</p>
+              <p class="text-xs text-white/40">17% of sales</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-sm font-medium">4</div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">Shadow Line</p>
+              <p class="text-xs text-white/40">12% of sales</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-sm font-medium">5</div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">Tech Edition</p>
+              <p class="text-xs text-white/40">9% of sales</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="bg-[#111113] border border-white/5 rounded-xl p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-white">Recent Orders</h3>
+        <button class="text-xs text-white/60 hover:text-white">View all</button>
+      </div>
+      
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-white/5">
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider pb-3 font-medium">Order</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider pb-3 font-medium">Customer</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider pb-3 font-medium">Product</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider pb-3 font-medium">Collection</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider pb-3 font-medium">Value</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider pb-3 font-medium">Currency</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider pb-3 font-medium">Date</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider pb-3 font-medium">Status</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm">
+          <tr class="border-b border-white/5">
+            <td class="py-4 text-white font-mono">#10234</td>
+            <td class="py-4 text-white/60">joao.silva@email.com</td>
+            <td class="py-4 text-white">Artic 01 - Full Pack</td>
+            <td class="py-4 text-white/60">Artic 01</td>
+            <td class="py-4 text-white">$69.00</td>
+            <td class="py-4 text-white/60">USD</td>
+            <td class="py-4 text-white/60">30 Jun, 2026</td>
+            <td class="py-4"><span class="px-2 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Paid</span></td>
+          </tr>
+          <tr class="border-b border-white/5">
+            <td class="py-4 text-white font-mono">#10233</td>
+            <td class="py-4 text-white/60">marina.lima@email.com</td>
+            <td class="py-4 text-white">Noctis Vol. 1 - Set 02</td>
+            <td class="py-4 text-white/60">Noctis Vol. 1</td>
+            <td class="py-4 text-white">R$ 89.00</td>
+            <td class="py-4 text-white/60">BRL</td>
+            <td class="py-4 text-white/60">30 Jun, 2026</td>
+            <td class="py-4"><span class="px-2 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Paid</span></td>
+          </tr>
+          <tr class="border-b border-white/5">
+            <td class="py-4 text-white font-mono">#10232</td>
+            <td class="py-4 text-white/60">lucas@outlook.com</td>
+            <td class="py-4 text-white">Puffer Series - Set 01</td>
+            <td class="py-4 text-white/60">Puffer Series</td>
+            <td class="py-4 text-white">$29.00</td>
+            <td class="py-4 text-white/60">USD</td>
+            <td class="py-4 text-white/60">29 Jun, 2026</td>
+            <td class="py-4"><span class="px-2 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Paid</span></td>
+          </tr>
+          <tr class="border-b border-white/5">
+            <td class="py-4 text-white font-mono">#10231</td>
+            <td class="py-4 text-white/60">gabriel@protonmail.com</td>
+            <td class="py-4 text-white">Shadow Line - Full Pack</td>
+            <td class="py-4 text-white/60">Shadow Line</td>
+            <td class="py-4 text-white">R$ 129.00</td>
+            <td class="py-4 text-white/60">BRL</td>
+            <td class="py-4 text-white/60">29 Jun, 2026</td>
+            <td class="py-4"><span class="px-2 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Paid</span></td>
+          </tr>
+          <tr>
+            <td class="py-4 text-white font-mono">#10230</td>
+            <td class="py-4 text-white/60">ana.carol@icloud.com</td>
+            <td class="py-4 text-white">Tech Edition - Set 03</td>
+            <td class="py-4 text-white/60">Tech Edition</td>
+            <td class="py-4 text-white">$39.00</td>
+            <td class="py-4 text-white/60">USD</td>
+            <td class="py-4 text-white/60">29 Jun, 2026</td>
+            <td class="py-4"><span class="px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs">Pending</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</AdminLayout>
