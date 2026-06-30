@@ -6,42 +6,40 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Posição inicial
+  // Posição inicial do cursor (centro da tela)
   let mouseX = window.innerWidth / 2;
   let mouseY = window.innerHeight / 2;
   let cursorX = mouseX;
   let cursorY = mouseY;
 
-  // Atualiza posição do mouse
+  // Atualiza posição do mouse constantemente
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
   });
 
-  // Animação suave do cursor
+  // Animação suave do cursor seguindo o mouse
   function animateCursor() {
     cursorX += (mouseX - cursorX) * 0.15;
     cursorY += (mouseY - cursorY) * 0.15;
-    cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
     requestAnimationFrame(animateCursor);
   }
   
+  // Inicia a animação imediatamente
   animateCursor();
 
-  // Efeito hover em elementos clicáveis
-  const clickables = document.querySelectorAll('a, button, [onclick], .clickable');
+  // Adiciona classe "hover" quando passa por elementos interativos
+  const clickables = document.querySelectorAll('a, button, [onclick], .clickable, img[onclick]');
   clickables.forEach(el => {
     el.addEventListener('mouseenter', () => {
-      cursor.style.width = '60px';
-      cursor.style.height = '60px';
-      cursor.style.borderColor = 'rgba(255, 255, 255, 0.8)';
-      cursor.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+      cursor.classList.remove('normal');
+      cursor.classList.add('hover');
     });
     el.addEventListener('mouseleave', () => {
-      cursor.style.width = '24px';
-      cursor.style.height = '24px';
-      cursor.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-      cursor.style.backgroundColor = 'transparent';
+      cursor.classList.remove('hover');
+      cursor.classList.add('normal');
     });
   });
 
