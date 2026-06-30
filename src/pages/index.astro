@@ -6,7 +6,7 @@ import '../styles/global.css';
 <Layout title="WOLTZ | NOCTIS VOL. I">
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 1: HERO BANNER (INALTERADA)          -->
+  <!-- SEÇÃO 1: HERO BANNER (COM CORREÇÃO DE CLIQUE) -->
   <!-- ========================================== -->
   <main class="relative w-full h-screen overflow-hidden bg-[#121214]">
     <div class="absolute inset-0 z-0">
@@ -60,19 +60,20 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- Miniaturas Horizontais Empilhadas (Posição Ajustada) -->
+      <!-- Miniaturas Horizontais Empilhadas (Corrigidas) -->
       <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
         <div class="flex flex-col gap-4 w-full">
-          <div class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100" onclick="switchCollection(0)">
-            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500" alt="Artic 01" />
+          <!-- Usando IDs únicos para garantir o clique -->
+          <div id="thumb-0" class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100">
+            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500 pointer-events-none" alt="Artic 01" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
-          <div class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0" onclick="switchCollection(1)">
-            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500" alt="Noctis Vol. II" />
+          <div id="thumb-1" class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt="Noctis Vol. II" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
-          <div class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0" onclick="switchCollection(2)">
-            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500" alt="Urban Shell" />
+          <div id="thumb-2" class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0">
+            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt="Urban Shell" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
         </div>
@@ -88,192 +89,213 @@ import '../styles/global.css';
   </main>
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 2: VERTICAL RUNWAY GALLERY           -->
-  <!-- Scroll-driven desfile com escala dinâmica  -->
+  <!-- SEÇÃO 2: GRADE EDITORIAL (NOVA COLLECTION) -->
+  <!-- Baseada na referência visual enviada       -->
   <!-- ========================================== -->
-  <section id="runway-section" class="relative w-full bg-[#121214] overflow-hidden">
+  <section class="relative w-full bg-[#6b7c93] py-24 px-8 md:px-16 lg:px-24 min-h-screen">
     
-    <!-- Container Fixo (Onde o desfile acontece) -->
-    <div class="runway-stage sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+    <!-- Cabeçalho da Seção -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
+      <div>
+        <h2 class="font-['Anton'] text-6xl md:text-8xl uppercase text-white tracking-tight mb-4">NEW COLLECTION</h2>
+        <div class="flex flex-col md:flex-row gap-8 md:gap-16 text-[10px] tracking-[0.2em] text-white/70 uppercase font-light">
+          <div class="flex flex-col gap-1">
+            <span>[ NEW COLLECTION ]</span>
+            <span>[ SERIES_01 ]</span>
+            <span>[ PUFFERS ]</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span>PUFFER JACKETS</span>
+            <span>METAL EDITION</span>
+            <span>GLOSS SERIES</span>
+            <span>EXTREME COLD LINE</span>
+          </div>
+        </div>
+      </div>
       
-      <!-- Título Flutuante -->
-      <div class="absolute top-12 left-8 md:left-16 z-20 pointer-events-none">
-        <h2 class="font-['Anton'] text-6xl md:text-8xl uppercase text-white/10 tracking-tight select-none">THE COLLECTION</h2>
-      </div>
-
-      <!-- Lista de Produtos (Desfile) -->
-      <div class="runway-list absolute w-full h-full flex flex-col items-center justify-start pt-[100vh] pb-[50vh]">
-        
-        <!-- Produto 1 -->
-        <div class="runway-item absolute w-[300px] md:w-[400px] aspect-[3/4] origin-center will-change-transform">
-          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
-            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800&auto=format&fit=crop" alt="Look 01" class="w-full h-full object-cover" loading="lazy" />
-          </div>
-          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500">
-            <h3 class="text-white text-xl font-light tracking-wide">Puffer Jacket</h3>
-            <p class="text-white/40 text-xs tracking-[0.2em] mt-1">OUTERWEAR • $899</p>
-          </div>
-        </div>
-
-        <!-- Produto 2 -->
-        <div class="runway-item absolute w-[300px] md:w-[400px] aspect-[3/4] origin-center will-change-transform">
-          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
-            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" alt="Look 02" class="w-full h-full object-cover" loading="lazy" />
-          </div>
-          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500">
-            <h3 class="text-white text-xl font-light tracking-wide">Knit Sweater</h3>
-            <p class="text-white/40 text-xs tracking-[0.2em] mt-1">KNITWEAR • $450</p>
-          </div>
-        </div>
-
-        <!-- Produto 3 -->
-        <div class="runway-item absolute w-[300px] md:w-[400px] aspect-[3/4] origin-center will-change-transform">
-          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
-            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop" alt="Look 03" class="w-full h-full object-cover" loading="lazy" />
-          </div>
-          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500">
-            <h3 class="text-white text-xl font-light tracking-wide">Bomber Shell</h3>
-            <p class="text-white/40 text-xs tracking-[0.2em] mt-1">JACKETS • $749</p>
-          </div>
-        </div>
-
-        <!-- Produto 4 -->
-        <div class="runway-item absolute w-[300px] md:w-[400px] aspect-[3/4] origin-center will-change-transform">
-          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
-            <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=800&auto=format&fit=crop" alt="Look 04" class="w-full h-full object-cover" loading="lazy" />
-          </div>
-          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500">
-            <h3 class="text-white text-xl font-light tracking-wide">Cargo Pants</h3>
-            <p class="text-white/40 text-xs tracking-[0.2em] mt-1">BOTTOMS • $320</p>
-          </div>
-        </div>
-
-         <!-- Produto 5 -->
-         <div class="runway-item absolute w-[300px] md:w-[400px] aspect-[3/4] origin-center will-change-transform">
-          <div class="w-full h-full overflow-hidden bg-[#1c1c1f] shadow-2xl shadow-black/50">
-            <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=800&auto=format&fit=crop" alt="Look 05" class="w-full h-full object-cover" loading="lazy" />
-          </div>
-          <div class="absolute -bottom-16 left-0 w-full text-center opacity-0 item-info transition-opacity duration-500">
-            <h3 class="text-white text-xl font-light tracking-wide">Tech Vest</h3>
-            <p class="text-white/40 text-xs tracking-[0.2em] mt-1">ACCESSORIES • $280</p>
-          </div>
-        </div>
-
-      </div>
+      <button class="border border-white/30 px-6 py-2 text-xs tracking-[0.2em] text-white hover:bg-white hover:text-[#6b7c93] transition-all duration-300 uppercase">
+        Filters
+      </button>
     </div>
 
-    <!-- Espaçador invisível para permitir o scroll longo -->
-    <div class="h-[500vh] w-full"></div>
+    <!-- Grid de Produtos -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-[minmax(300px,auto)]">
+      
+      <!-- Hero Product (Ocupa 2 colunas e 2 linhas) -->
+      <div class="md:col-span-2 md:row-span-2 relative group overflow-hidden bg-[#5a6a7e] p-8 flex flex-col justify-between clickable">
+        <div class="absolute inset-0 z-0">
+          <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" alt="Aurora Silver" />
+          <div class="absolute inset-0 bg-gradient-to-t from-[#6b7c93]/80 to-transparent"></div>
+        </div>
+        
+        <div class="relative z-10 self-end text-right">
+          <h3 class="font-['Anton'] text-4xl md:text-5xl uppercase text-white tracking-tight mb-2">AURORA™</h3>
+          <div class="flex items-center justify-end gap-4 mt-4">
+             <button class="w-12 h-12 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+             </button>
+             <div class="text-right">
+                <p class="text-[10px] tracking-widest text-white/70 uppercase">Add to Cart</p>
+                <p class="text-xl font-light text-white">$1,999</p>
+             </div>
+          </div>
+        </div>
+      </div>
 
+      <!-- Produto 2 -->
+      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-4">
+          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Aurora Silver" />
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">AURORA SILVER</h4>
+          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">REFLECTIVE PUFFER JACKET</p>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 rounded-full bg-white"></span> <span class="text-[10px] text-white/70">WHITE</span>
+            <span class="w-2 h-2 rounded-full bg-blue-400 ml-2"></span> <span class="text-[10px] text-white/70">BLUE</span>
+          </div>
+          <p class="text-white font-extralight">$999.99</p>
+        </div>
+      </div>
+
+      <!-- Produto 3 -->
+      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-4">
+          <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Orbit Silver" />
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">ORBIT SILVER</h4>
+          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">HIGH-GLOSS PUFFER</p>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 rounded-full bg-gray-300"></span> <span class="text-[10px] text-white/70">SILVER</span>
+          </div>
+          <p class="text-white font-extralight">$1,299.99</p>
+        </div>
+      </div>
+
+      <!-- Produto 4 -->
+      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-4">
+          <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Black" />
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">STEALTH BLACK</h4>
+          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">HEAVY SHIELD PUFFER</p>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 rounded-full bg-black border border-white/20"></span> <span class="text-[10px] text-white/70">BLACK</span>
+            <span class="w-2 h-2 rounded-full bg-white ml-2"></span> <span class="text-[10px] text-white/70">WHITE</span>
+          </div>
+          <p class="text-white font-extralight">$1,199.99</p>
+        </div>
+      </div>
+
+      <!-- Linha Inferior de Produtos -->
+      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-4">
+          <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Glacier White" />
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">GLACIER WHITE</h4>
+          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">INSULATED PUFFER JACKET</p>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 rounded-full bg-gray-400"></span> <span class="text-[10px] text-white/70">GREY</span>
+          </div>
+          <p class="text-white font-extralight">$1,299.99</p>
+        </div>
+      </div>
+
+      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-4">
+          <img src="https://images.unsplash.com/photo-1550928431-ee0ec6db30d3?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Polar Gloss" />
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">POLAR GLOSS</h4>
+          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">BLUE PUFFER JACKET</p>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 rounded-full bg-blue-300"></span> <span class="text-[10px] text-white/70">BLUE GLOSS</span>
+          </div>
+          <p class="text-white font-extralight">$899.99</p>
+        </div>
+      </div>
+
+      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-4">
+          <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Black Heavy" />
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">STEALTH BLACK</h4>
+          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">HEAVY PUFFER JACKET</p>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 rounded-full bg-blue-900"></span> <span class="text-[10px] text-white/70">NAVY BLUE</span>
+            <span class="w-2 h-2 rounded-full bg-black border border-white/20 ml-2"></span> <span class="text-[10px] text-white/70">BLACK</span>
+          </div>
+          <p class="text-white font-extralight">$1,199.99</p>
+        </div>
+      </div>
+
+      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-4">
+          <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Icefield Blue" />
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">ICEFIELD BLUE</h4>
+          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">TECH PUFFER JACKET</p>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 rounded-full bg-blue-400"></span> <span class="text-[10px] text-white/70">BLUE</span>
+          </div>
+          <p class="text-white font-extralight">$999.99</p>
+        </div>
+      </div>
+
+      <div class="relative group bg-[#5a6a7e] p-4 flex flex-col justify-between clickable hover:bg-[#63748a] transition-colors duration-300">
+        <div class="aspect-[3/4] overflow-hidden mb-4">
+          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Polar White" />
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-light tracking-wide uppercase mb-1">POLAR WHITE</h4>
+          <p class="text-white/60 text-[10px] tracking-wider uppercase mb-2">SHELL PUFFER JACKET</p>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 rounded-full bg-white"></span> <span class="text-[10px] text-white/70">WHITE</span>
+          </div>
+          <p class="text-white font-extralight">$1,499.99</p>
+        </div>
+      </div>
+
+    </div>
   </section>
 
   <!-- Scripts Globais e de Animação -->
   <script is:inline>
-    // Importando GSAP e ScrollTrigger via CDN
-    import gsap from 'https://cdn.skypack.dev/gsap@3.12.5';
-    import ScrollTrigger from 'https://cdn.skypack.dev/gsap@3.12.5/ScrollTrigger';
-
-    gsap.registerPlugin(ScrollTrigger);
-
     document.addEventListener('DOMContentLoaded', () => {
       
       // ==========================================
-      // LÓGICA DO DESFILE VERTICAL (RUNWAY)
+      // LÓGICA DA HERO SECTION (CORRIGIDA)
       // ==========================================
-      
-      const runwaySection = document.querySelector('#runway-section');
-      const runwayStage = document.querySelector('.runway-stage');
-      const items = gsap.utils.toArray('.runway-item');
-      
-      // Configuração do ScrollTrigger para "prender" a tela
-      ScrollTrigger.create({
-        trigger: runwaySection,
-        start: "top top",
-        end: "bottom bottom",
-        pin: runwayStage, // Mantém a stage fixa enquanto rola
-        scrub: 1, // Suaviza a animação atrelada ao scroll
-        anticipatePin: 1
-      });
+      const collections = [
+        {
+          image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=2400&auto=format&fit=crop',
+          series: '[ Series: Noctis Vol. I ] · [ Series ]',
+          title: 'Collection<br/>Artic 01<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
+          colors: '<span class="text-white cursor-pointer clickable">White</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Silver</span>',
+          price: '$899.99'
+        },
+        {
+          image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2400&auto=format&fit=crop',
+          series: '[ Series: Noctis Vol. II ] · [ Series ]',
+          title: 'Collection<br/>Noctis 02<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
+          colors: '<span class="text-white cursor-pointer clickable">Black</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Navy</span>',
+          price: '$1,249.00'
+        },
+        {
+          image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=2400&auto=format&fit=crop',
+          series: '[ Series: Urban Shell ] · [ Series ]',
+          title: 'Collection<br/>Shell 03<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
+          colors: '<span class="text-white cursor-pointer clickable">Olive</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Sand</span>',
+          price: '$749.50'
+        }
+      ];
 
-      // Animação de cada item do desfile
-      items.forEach((item, i) => {
-        const info = item.querySelector('.item-info');
-        
-        // Criamos uma timeline para cada produto
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: item,
-            containerAnimation: null, // Como estamos usando pin, usamos o scroll global
-            start: "top center+=200", // Começa a animar quando o item está 200px abaixo do centro
-            end: "bottom center-=200", // Termina quando sai 200px acima do centro
-            scrub: true,
-            toggleActions: "play none none reverse"
-          }
-        });
-
-        // Estado Inicial (Entrando de baixo, pequeno e transparente)
-        gsap.set(item, { 
-          y: 300, 
-          scale: 0.6, 
-          opacity: 0,
-          zIndex: i 
-        });
-
-        // Animação de Entrada -> Centro (Protagonista)
-        tl.to(item, {
-          y: 0,
-          scale: 1,
-          opacity: 1,
-          duration: 1,
-          ease: "power2.out"
-        }, 0); // Começa no tempo 0 da timeline relativa ao scroll
-
-        // Mostra as informações apenas quando está no centro
-        tl.to(info, { opacity: 1, duration: 0.5 }, 0.5);
-
-        // Animação de Saída (Continuando para cima, diminuindo)
-        // Nota: O ScrollTrigger cuida do movimento Y principal. 
-        // Aqui adicionamos o efeito de escala e opacidade na saída.
-        tl.to(item, {
-          y: -300,
-          scale: 0.6,
-          opacity: 0,
-          duration: 1,
-          ease: "power2.in"
-        }, 1); // Começa na metade da timeline
-
-        tl.to(info, { opacity: 0, duration: 0.2 }, 0.8);
-      });
-
-
-      // ==========================================
-      // SCRIPT ORIGINAL DA HERO SECTION
-      // ==========================================
-      window.switchCollection = function(index) {
-        const collections = [
-          {
-            image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=2400&auto=format&fit=crop',
-            series: '[ Series: Noctis Vol. I ] · [ Series ]',
-            title: 'Collection<br/>Artic 01<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
-            colors: '<span class="text-white cursor-pointer clickable">White</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Silver</span>',
-            price: '$899.99'
-          },
-          {
-            image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2400&auto=format&fit=crop',
-            series: '[ Series: Noctis Vol. II ] · [ Series ]',
-            title: 'Collection<br/>Noctis 02<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
-            colors: '<span class="text-white cursor-pointer clickable">Black</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Navy</span>',
-            price: '$1,249.00'
-          },
-          {
-            image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=2400&auto=format&fit=crop',
-            series: '[ Series: Urban Shell ] · [ Series ]',
-            title: 'Collection<br/>Shell 03<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
-            colors: '<span class="text-white cursor-pointer clickable">Olive</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Sand</span>',
-            price: '$749.50'
-          }
-        ];
-
+      function updateHero(index) {
         const data = collections[index];
         const mainImg = document.getElementById('hero-main-img');
         const seriesEl = document.getElementById('collection-series');
@@ -283,46 +305,70 @@ import '../styles/global.css';
         const indicator = document.getElementById('image-indicator');
         const wrappers = document.querySelectorAll('.thumbnail-wrapper');
 
+        // Fade out
         [seriesEl, titleEl, colorsEl, priceEl].forEach(el => el.style.opacity = '0');
-        mainImg.style.opacity = '0';
-        mainImg.style.filter = 'blur(15px) scale(1.05)';
+        if(mainImg) {
+            mainImg.style.opacity = '0';
+            mainImg.style.filter = 'blur(15px) scale(1.05)';
+        }
 
         setTimeout(() => {
-          mainImg.src = data.image;
-          seriesEl.innerHTML = data.series;
-          titleEl.innerHTML = data.title;
-          colorsEl.innerHTML = data.colors;
-          priceEl.textContent = data.price;
+          // Update Content
+          if(mainImg) mainImg.src = data.image;
+          if(seriesEl) seriesEl.innerHTML = data.series;
+          if(titleEl) titleEl.innerHTML = data.title;
+          if(colorsEl) colorsEl.innerHTML = data.colors;
+          if(priceEl) priceEl.textContent = data.price;
 
-          mainImg.onload = () => {
-            mainImg.style.opacity = '1';
-            mainImg.style.filter = 'blur(0px) scale(1)';
-          };
-          setTimeout(() => {
-            mainImg.style.opacity = '1';
-            mainImg.style.filter = 'blur(0px) scale(1)';
-          }, 600);
+          // Fade In Image
+          if(mainImg) {
+              mainImg.onload = () => {
+                mainImg.style.opacity = '1';
+                mainImg.style.filter = 'blur(0px) scale(1)';
+              };
+              // Fallback
+              setTimeout(() => {
+                mainImg.style.opacity = '1';
+                mainImg.style.filter = 'blur(0px) scale(1)';
+              }, 600);
+          }
 
+          // Fade In Text
           [seriesEl, titleEl, colorsEl, priceEl].forEach(el => el.style.opacity = '1');
 
+          // Update Thumbnails UI
           wrappers.forEach((w, i) => {
             const img = w.querySelector('img');
             if (i === index) {
               w.classList.remove('opacity-60', 'grayscale');
               w.classList.add('opacity-100');
-              img.classList.remove('border-transparent');
-              img.classList.add('border-white/80');
+              if(img) {
+                  img.classList.remove('border-transparent');
+                  img.classList.add('border-white/80');
+              }
             } else {
               w.classList.remove('opacity-100');
               w.classList.add('opacity-60', 'grayscale');
-              img.classList.remove('border-white/80');
-              img.classList.add('border-transparent');
+              if(img) {
+                  img.classList.remove('border-white/80');
+                  img.classList.add('border-transparent');
+              }
             }
           });
 
           if (indicator) indicator.textContent = `0${index + 1} — 0${collections.length}`;
         }, 500);
-      };
+      }
+
+      // Anexar eventos de clique manualmente para garantir funcionamento
+      const thumb0 = document.getElementById('thumb-0');
+      const thumb1 = document.getElementById('thumb-1');
+      const thumb2 = document.getElementById('thumb-2');
+
+      if(thumb0) thumb0.addEventListener('click', () => updateHero(0));
+      if(thumb1) thumb1.addEventListener('click', () => updateHero(1));
+      if(thumb2) thumb2.addEventListener('click', () => updateHero(2));
+
     });
   </script>
 
