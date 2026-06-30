@@ -8,34 +8,95 @@ const { title } = Astro.props;
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="WOLTZ - Premium Streetwear" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap" rel="stylesheet">
     <title>{title}</title>
-  </head>
-  <body style="margin:0; padding:0; background-color:#121214; color:#e1e1e6; font-family:'Inter',sans-serif; overflow-x:hidden; cursor:none;">
     
-    <!-- Cursor com estilo INLINE garantido -->
-    <div id="cursor" style="
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 24px;
-      height: 24px;
-      border: 1.5px solid rgba(255, 255, 255, 0.7);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 99999;
-      transform: translate(-50%, -50%);
-      transition: all 0.3s ease;
-      opacity: 1 !important;
-      visibility: visible !important;
-      display: block !important;
-    "></div>
+    <!-- CSS INLINE PARA GARANTIR O CURSOR INDEPENDENTE DO TAILWIND -->
+    <style is:inline>
+      body {
+        margin: 0;
+        background-color: #121214;
+        color: #e1e1e6;
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+        cursor: none !important; /* Força esconder cursor padrão */
+      }
+      
+      /* Esconde cursor customizado em mobile/touch */
+      @media (hover: none) and (pointer: coarse) {
+        body { cursor: auto !important; }
+        #custom-cursor { display: none !important; }
+      }
+
+      #custom-cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 24px;
+        height: 24px;
+        border: 1.5px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 2147483647; /* Z-index máximo possível */
+        transform: translate(-50%, -50%);
+        transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+        opacity: 1 !important;
+        visibility: visible !important;
+        mix-blend-mode: normal; /* Remove blend mode que causava invisibilidade */
+      }
+
+      #custom-cursor.active {
+        width: 50px;
+        height: 50px;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Elemento do cursor sempre presente -->
+    <div id="custom-cursor"></div>
     
     <slot />
-    <script is:inline src="/src/scripts/main.js"></script>
+    
+    <script is:inline>
+      // Script inline direto no layout para evitar problemas de carregamento de arquivo externo
+      document.addEventListener('DOMContentLoaded', () => {
+        const cursor = document.getElementById('custom-cursor');
+        if (!cursor) return;
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let cursorX = mouseX;
+        let cursorY = mouseY;
+
+        document.addEventListener('mousemove', (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        });
+
+        function animate() {
+          cursorX += (mouseX - cursorX) * 0.2;
+          cursorY += (mouseY - cursorY) * 0.2;
+          cursor.style.left = cursorX + 'px';
+          cursor.style.top = cursorY + 'px';
+          requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Adiciona efeito hover em todos elementos clicáveis
+        const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input');
+        clickables.forEach(el => {
+          el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+          el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+        });
+        
+        // Garante que o cursor apareça mesmo se o JS demorar um pouco
+        cursor.style.display = 'block';
+      });
+    </script>
   </body>
 </html>
