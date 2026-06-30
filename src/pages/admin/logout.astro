@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Logout | WOLTZ Admin">
+  
+  <div class="min-h-screen bg-[#0a0a0b] flex items-center justify-center p-4">
+    
+    <div class="w-full max-w-md text-center">
+      
+      <div class="bg-[#111113] border border-white/5 rounded-2xl p-8">
+        
+        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
+          <svg class="w-8 h-8 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        </div>
+
+        <h2 class="text-xl font-semibold text-white mb-2">Logged Out</h2>
+        <p class="text-sm text-white/40 mb-6">You have been successfully logged out.</p>
+
+        <a href="/admin/login/" class="inline-block bg-white text-black px-6 py-3 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">
+          Sign In Again
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script is:inline>
+    // Garante que está deslogado
+    localStorage.removeItem('woltz_admin_auth');
+    localStorage.removeItem('woltz_admin_login_time');
+  </script>
+
+</Layout>
