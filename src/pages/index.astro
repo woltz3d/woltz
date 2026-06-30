@@ -289,23 +289,15 @@ import '../styles/global.css';
   </section>
 
   <!-- ========================================== -->
-  <!-- FOOTER: ESTILO FRZN / WOLTZ               -->
+  <!-- FOOTER: CONTEÚDO → LETREIRO → COOKIES     -->
   <!-- ========================================== -->
-  <footer class="relative w-full bg-[#6b7c93] pt-24 pb-12 px-6 md:px-12 lg:px-20 overflow-hidden">
+  <footer class="relative w-full bg-[#6b7c93] pt-16 pb-12 px-6 md:px-12 lg:px-20 overflow-hidden flex flex-col">
     
-    <!-- Texto Gigante de Fundo (WOLTZ PUFFERS) -->
-    <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-      <h2 class="font-['Anton'] text-[18vw] md:text-[15vw] leading-none text-white/[0.07] tracking-tight select-none whitespace-nowrap">
-        WOLTZ PUFFERS
-      </h2>
-    </div>
-
-    <!-- Topo do Footer: Info + Newsletter + Menu + Logo -->
-    <div class="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-24 md:mb-32">
+    <!-- CONTEÚDO PRINCIPAL (em cima) -->
+    <div class="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-8">
       
       <!-- Coluna 1: Código de Barras + Copyright + Endereço -->
       <div class="flex flex-col gap-6">
-        <!-- Código de Barras SVG -->
         <svg class="w-48 h-10 text-white/80" viewBox="0 0 200 40" fill="currentColor">
           <rect x="0" y="0" width="2" height="40"/>
           <rect x="4" y="0" width="1" height="40"/>
@@ -429,7 +421,14 @@ import '../styles/global.css';
 
     </div>
 
-    <!-- Linha divisória inferior -->
+    <!-- LETREIRO GIGANTE "WOLTZ PUFFERS" (abaixo do conteúdo) -->
+    <div class="relative w-full flex items-center justify-center py-12 md:py-16 overflow-hidden">
+      <h2 class="font-['Anton'] text-[18vw] md:text-[15vw] leading-none text-white/[0.07] tracking-tight select-none whitespace-nowrap">
+        WOLTZ PUFFERS
+      </h2>
+    </div>
+
+    <!-- LINHA DIVISÓRIA + COOKIES (no final) -->
     <div class="relative z-10 border-t border-white/20 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 font-vcr text-[9px] tracking-[0.2em] text-white/40 uppercase">
       <p>MADE WITH PRECISION IN BROOKLYN</p>
       <p>TERMS · PRIVACY · COOKIES</p>
