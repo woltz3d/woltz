@@ -1,0 +1,377 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Orders" activePage="orders">
+  
+  <!-- Top Bar -->
+  <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+    <div>
+      <h1 class="text-2xl font-semibold text-white">Orders</h1>
+      <p class="text-sm text-white/40 mt-1">Manage all customer orders</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Export
+      </button>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="p-8">
+    
+    <!-- Filters -->
+    <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6 flex items-center justify-between flex-wrap gap-4">
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="relative">
+          <input type="text" placeholder="Search orders..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 pl-10 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 w-64">
+          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        
+        <!-- Time Filter -->
+        <select class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none">
+          <option>All Time</option>
+          <option>Today</option>
+          <option>This Week</option>
+          <option>This Month</option>
+          <option>This Year</option>
+        </select>
+
+        <!-- Status Filter -->
+        <select class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none">
+          <option>All Status</option>
+          <option>Paid</option>
+          <option>Pending</option>
+          <option>Refunded</option>
+          <option>Failed</option>
+        </select>
+
+        <!-- Currency Filter -->
+        <select class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none">
+          <option>All Currencies</option>
+          <option>BRL</option>
+          <option>USD</option>
+        </select>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <button class="px-4 py-2 text-sm text-white/60 hover:text-white transition-colors">Filter</button>
+        <button class="px-4 py-2 text-sm text-white/60 hover:text-white transition-colors">Sort</button>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden">
+      <table class="w-full">
+        <thead class="bg-white/5">
+          <tr>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Order ID</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Customer</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Products</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Collection</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Value</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Currency</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Status</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Date</th>
+            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5">
+          <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="document.getElementById('orderDrawer').classList.remove('translate-x-full')">
+            <td class="py-4 px-6">
+              <span class="text-sm font-mono text-white">#10234</span>
+            </td>
+            <td class="py-4 px-6">
+              <div>
+                <p class="text-sm text-white">João Silva</p>
+                <p class="text-xs text-white/40">joao.silva@email.com</p>
+              </div>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">Artic 01 - Full Pack</td>
+            <td class="py-4 px-6 text-sm text-white/60">Artic 01</td>
+            <td class="py-4 px-6 text-sm font-medium text-white">$69.00</td>
+            <td class="py-4 px-6">
+              <span class="px-2 py-1 rounded bg-white/5 text-xs text-white/60">USD</span>
+            </td>
+            <td class="py-4 px-6">
+              <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-medium">Paid</span>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">30 Jun, 2026</td>
+            <td class="py-4 px-6">
+              <button class="text-white/40 hover:text-white">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
+              </button>
+            </td>
+          </tr>
+
+          <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="document.getElementById('orderDrawer').classList.remove('translate-x-full')">
+            <td class="py-4 px-6">
+              <span class="text-sm font-mono text-white">#10233</span>
+            </td>
+            <td class="py-4 px-6">
+              <div>
+                <p class="text-sm text-white">Marina Lima</p>
+                <p class="text-xs text-white/40">marina.lima@email.com</p>
+              </div>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">Noctis Vol. 1 - Set 02</td>
+            <td class="py-4 px-6 text-sm text-white/60">Noctis Vol. 1</td>
+            <td class="py-4 px-6 text-sm font-medium text-white">R$ 89.00</td>
+            <td class="py-4 px-6">
+              <span class="px-2 py-1 rounded bg-white/5 text-xs text-white/60">BRL</span>
+            </td>
+            <td class="py-4 px-6">
+              <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-medium">Paid</span>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">30 Jun, 2026</td>
+            <td class="py-4 px-6">
+              <button class="text-white/40 hover:text-white">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
+              </button>
+            </td>
+          </tr>
+
+          <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="document.getElementById('orderDrawer').classList.remove('translate-x-full')">
+            <td class="py-4 px-6">
+              <span class="text-sm font-mono text-white">#10232</span>
+            </td>
+            <td class="py-4 px-6">
+              <div>
+                <p class="text-sm text-white">Lucas Santos</p>
+                <p class="text-xs text-white/40">lucas@outlook.com</p>
+              </div>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">Puffer Series - Set 01</td>
+            <td class="py-4 px-6 text-sm text-white/60">Puffer Series</td>
+            <td class="py-4 px-6 text-sm font-medium text-white">$29.00</td>
+            <td class="py-4 px-6">
+              <span class="px-2 py-1 rounded bg-white/5 text-xs text-white/60">USD</span>
+            </td>
+            <td class="py-4 px-6">
+              <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-medium">Paid</span>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">29 Jun, 2026</td>
+            <td class="py-4 px-6">
+              <button class="text-white/40 hover:text-white">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
+              </button>
+            </td>
+          </tr>
+
+          <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="document.getElementById('orderDrawer').classList.remove('translate-x-full')">
+            <td class="py-4 px-6">
+              <span class="text-sm font-mono text-white">#10231</span>
+            </td>
+            <td class="py-4 px-6">
+              <div>
+                <p class="text-sm text-white">Gabriel Costa</p>
+                <p class="text-xs text-white/40">gabriel@protonmail.com</p>
+              </div>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">Shadow Line - Full Pack</td>
+            <td class="py-4 px-6 text-sm text-white/60">Shadow Line</td>
+            <td class="py-4 px-6 text-sm font-medium text-white">R$ 129.00</td>
+            <td class="py-4 px-6">
+              <span class="px-2 py-1 rounded bg-white/5 text-xs text-white/60">BRL</span>
+            </td>
+            <td class="py-4 px-6">
+              <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-medium">Paid</span>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">29 Jun, 2026</td>
+            <td class="py-4 px-6">
+              <button class="text-white/40 hover:text-white">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
+              </button>
+            </td>
+          </tr>
+
+          <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="document.getElementById('orderDrawer').classList.remove('translate-x-full')">
+            <td class="py-4 px-6">
+              <span class="text-sm font-mono text-white">#10230</span>
+            </td>
+            <td class="py-4 px-6">
+              <div>
+                <p class="text-sm text-white">Ana Carolina</p>
+                <p class="text-xs text-white/40">ana.carol@icloud.com</p>
+              </div>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">Tech Edition - Set 03</td>
+            <td class="py-4 px-6 text-sm text-white/60">Tech Edition</td>
+            <td class="py-4 px-6 text-sm font-medium text-white">$39.00</td>
+            <td class="py-4 px-6">
+              <span class="px-2 py-1 rounded bg-white/5 text-xs text-white/60">USD</span>
+            </td>
+            <td class="py-4 px-6">
+              <span class="px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs font-medium">Pending</span>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">29 Jun, 2026</td>
+            <td class="py-4 px-6">
+              <button class="text-white/40 hover:text-white">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
+              </button>
+            </td>
+          </tr>
+
+          <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="document.getElementById('orderDrawer').classList.remove('translate-x-full')">
+            <td class="py-4 px-6">
+              <span class="text-sm font-mono text-white">#10229</span>
+            </td>
+            <td class="py-4 px-6">
+              <div>
+                <p class="text-sm text-white">Pedro Oliveira</p>
+                <p class="text-xs text-white/40">pedro.o@gmail.com</p>
+              </div>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">Artic 01 - Set 02</td>
+            <td class="py-4 px-6 text-sm text-white/60">Artic 01</td>
+            <td class="py-4 px-6 text-sm font-medium text-white">R$ 89.90</td>
+            <td class="py-4 px-6">
+              <span class="px-2 py-1 rounded bg-white/5 text-xs text-white/60">BRL</span>
+            </td>
+            <td class="py-4 px-6">
+              <span class="px-3 py-1 rounded-full bg-red-500/10 text-red-400 text-xs font-medium">Refunded</span>
+            </td>
+            <td class="py-4 px-6 text-sm text-white/60">28 Jun, 2026</td>
+            <td class="py-4 px-6">
+              <button class="text-white/40 hover:text-white">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="px-6 py-4 border-t border-white/5 flex items-center justify-between">
+        <p class="text-sm text-white/40">Showing 1 to 6 of 342 orders</p>
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-1.5 rounded-lg bg-white/5 text-white/60 text-sm hover:bg-white/10 transition-colors">Previous</button>
+          <button class="px-3 py-1.5 rounded-lg bg-white text-black text-sm font-medium">1</button>
+          <button class="px-3 py-1.5 rounded-lg bg-white/5 text-white/60 text-sm hover:bg-white/10 transition-colors">2</button>
+          <button class="px-3 py-1.5 rounded-lg bg-white/5 text-white/60 text-sm hover:bg-white/10 transition-colors">3</button>
+          <span class="text-white/40">...</span>
+          <button class="px-3 py-1.5 rounded-lg bg-white/5 text-white/60 text-sm hover:bg-white/10 transition-colors">57</button>
+          <button class="px-3 py-1.5 rounded-lg bg-white/5 text-white/60 text-sm hover:bg-white/10 transition-colors">Next</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Order Details Drawer -->
+  <div id="orderDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="document.getElementById('orderDrawer').classList.add('translate-x-full')"></div>
+    <div class="absolute right-0 top-0 h-full w-[600px] bg-[#111113] border-l border-white/5 overflow-y-auto">
+      
+      <!-- Drawer Header -->
+      <div class="sticky top-0 bg-[#111113] border-b border-white/5 px-6 py-4 flex items-center justify-between z-10">
+        <div>
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-semibold text-white">Order #10234</h2>
+            <span class="px-2 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-medium">Paid</span>
+          </div>
+          <p class="text-sm text-white/40 mt-1">Placed on 30 Jun, 2026 at 15:42</p>
+        </div>
+        <button onclick="document.getElementById('orderDrawer').classList.add('translate-x-full')" class="text-white/40 hover:text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Drawer Content -->
+      <div class="p-6 space-y-6">
+        
+        <!-- Customer Info -->
+        <div class="bg-white/5 rounded-xl p-6 border border-white/5">
+          <h3 class="text-sm font-medium text-white mb-4">Customer Information</h3>
+          <div class="space-y-3">
+            <div>
+              <p class="text-xs text-white/40 uppercase tracking-wider mb-1">Name</p>
+              <p class="text-sm text-white">João Silva</p>
+            </div>
+            <div>
+              <p class="text-xs text-white/40 uppercase tracking-wider mb-1">Email</p>
+              <p class="text-sm text-white">joao.silva@email.com</p>
+            </div>
+            <div>
+              <p class="text-xs text-white/40 uppercase tracking-wider mb-1">Payment Method</p>
+              <p class="text-sm text-white">Credit Card (Visa ending in 4242)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products -->
+        <div class="bg-white/5 rounded-xl p-6 border border-white/5">
+          <h3 class="text-sm font-medium text-white mb-4">Products</h3>
+          <div class="space-y-4">
+            <div class="flex items-center gap-4 pb-4 border-b border-white/5">
+              <div class="w-16 h-16 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+                <svg class="w-8 h-8 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-white">Artic 01 - Full Pack</p>
+                <p class="text-xs text-white/40">Artic 01 Collection</p>
+                <p class="text-xs text-white/60 mt-1">Qty: 1</p>
+              </div>
+              <p class="text-sm font-medium text-white">$69.00</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="bg-white/5 rounded-xl p-6 border border-white/5">
+          <h3 class="text-sm font-medium text-white mb-4">Order Summary</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-white/60">Subtotal</span>
+              <span class="text-sm text-white">$69.00</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-white/60">Discount</span>
+              <span class="text-sm text-green-400">-$0.00</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-white/60">Tax</span>
+              <span class="text-sm text-white">$0.00</span>
+            </div>
+            <div class="border-t border-white/5 pt-3 mt-3">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-white">Total</span>
+                <span class="text-lg font-semibold text-white">$69.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Downloads -->
+        <div class="bg-white/5 rounded-xl p-6 border border-white/5">
+          <h3 class="text-sm font-medium text-white mb-4">Downloads</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+              <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <div>
+                  <p class="text-sm text-white">Artic_01_Full_Pack.zip</p>
+                  <p class="text-xs text-white/40">245 MB</p>
+                </div>
+              </div>
+              <button class="px-3 py-1.5 bg-white/10 rounded-lg text-xs text-white hover:bg-white/20 transition-colors">Download</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Drawer Footer -->
+      <div class="sticky bottom-0 bg-[#111113] border-t border-white/5 px-6 py-4 flex items-center justify-between">
+        <button class="text-sm text-red-400 hover:text-red-300 transition-colors">Refund Order</button>
+        <div class="flex items-center gap-3">
+          <button class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white hover:bg-white/10 transition-colors">Edit Status</button>
+          <button class="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">Send Invoice</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</AdminLayout>
