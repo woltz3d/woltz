@@ -2,7 +2,7 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 ---
 
-<Layout title="Media Library" activePage="media">
+<AdminLayout title="Media Library" activePage="media">
   
   <!-- Top Bar -->
   <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
@@ -69,7 +69,6 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         </div>
       </div>
 
-      <!-- More items... (repeating pattern) -->
       <div class="group relative aspect-square bg-[#111113] border border-white/5 rounded-xl overflow-hidden hover:border-white/20 transition-all cursor-pointer">
         <div class="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-rose-500/20"></div>
         <div class="absolute inset-0 flex items-center justify-center">
@@ -141,4 +140,4 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
   </div>
 
-</Layout>
+</AdminLayout>
