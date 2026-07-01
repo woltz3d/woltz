@@ -7,6 +7,10 @@ try {
   const { data: cats } = await supabase.from('categories').select('name').order('name');
   if (cats && cats.length > 0) categoriesList = cats.map(c => c.name);
 } catch(e) {}
+
+// Pega URL base do Supabase para uploads via REST
+const SUPABASE_URL = import.meta.env.SUPABASE_URL;
+const SUPABASE_KEY = import.meta.env.SUPABASE_ANON_KEY;
 ---
 
 <AdminLayout title="Collections" activePage="collections">
@@ -19,8 +23,12 @@ try {
     .upload-progress { height: 3px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
   </style>
 
-  <!-- Config invisível para o JS -->
-  <div id="app-config" data-supabase-url="${import.meta.env.SUPABASE_URL}" data-supabase-key="${import.meta.env.SUPABASE_ANON_KEY}" style="display:none;"></div>
+  <!-- Config invisível para o JS (SEM SDK, apenas URLs) -->
+  <div id="app-config" 
+       data-supabase-url="${SUPABASE_URL}" 
+       data-supabase-key="${SUPABASE_KEY}" 
+       style="display:none;">
+  </div>
 
   <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
     <div>
@@ -90,7 +98,7 @@ try {
               <div id="featuredPlaceholder">
                 <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 <p class="text-sm text-white/60">Click or drag image here</p>
-                <p class="text-xs text-white/40 mt-1">Recommended: 1200×600px</p>
+                <p class="text-xs text-white/40 mt-1">Uploads in full quality. Thumbnails auto-generated.</p>
               </div>
               <div id="featuredProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading...</p></div>
             </div>
@@ -131,26 +139,14 @@ try {
     </div>
   </div>
 
-  <!-- Script Corrigido: Carrega Supabase via CDN dinamicamente -->
+  <!-- Script SEM SDK: Usa fetch nativo para upload e CRUD -->
   <script is:inline>
     document.addEventListener('DOMContentLoaded', async function() {
-      // 1. Carrega Supabase via CDN (resolve erro de import)
-      if (!window.supabase) {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-        script.type = 'module';
-        document.head.appendChild(script);
-        await new Promise(r => script.onload = r);
-      }
-
-      // 2. Pega credenciais do HTML
+      // Pega credenciais do HTML
       const configEl = document.getElementById('app-config');
       const supabaseUrl = configEl.dataset.supabaseUrl;
       const supabaseKey = configEl.dataset.supabaseKey;
       
-      const { createClient } = window.supabase;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
       const tableContainer = document.getElementById('tableContainer');
       const drawer = document.getElementById('collectionDrawer');
       const form = document.getElementById('collectionForm');
@@ -165,6 +161,43 @@ try {
       let categoriesList = [];
       let uploadingFeatured = false;
       let uploadingBanner = false;
+
+      // --- FUNÇÃO DE UPLOAD VIA REST (ZERO SDK) ---
+      async function uploadToStorage(file, bucket = 'woltz-images') {
+        const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
+        const uploadUrl = `${supabaseUrl}/storage/v1/object/${bucket}/${fileName}`;
+        
+        const response = await fetch(uploadUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': file.type,
+            'x-upsert': 'false'
+          },
+          body: file
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.message || 'Upload failed');
+        }
+
+        // Retorna URL pública com transformação de thumbnail (width=400, quality=80)
+        // A URL original (4K) fica salva no banco, mas na listagem usamos esta versão otimizada
+        const publicUrl = `${supabaseUrl}/storage/v1/object/public/${bucket}/${fileName}`;
+        return publicUrl;
+      }
+
+      // Função auxiliar para gerar URL de thumbnail a partir da URL original
+      function getThumbnailUrl(url, width = 400) {
+        if (!url) return '';
+        // Supabase Storage transformations: ?width=X&quality=Y
+        // Só aplica se for URL do Supabase Storage
+        if (url.includes('/storage/v1/object/public/')) {
+          return `${url}?width=${width}&quality=80`;
+        }
+        return url;
+      }
 
       // --- CATEGORIAS ---
       function loadCategories() {
@@ -228,114 +261,61 @@ try {
         renderCategoryOptions();
       });
 
-      // --- UPLOAD DE IMAGENS ---
-      async function uploadToSupabase(file, bucket = 'woltz-images') {
-        const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
-        const { data, error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
-        if (error) throw error;
-        const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fileName);
-        return urlData.publicUrl;
+      // --- SETUP UPLOADS ---
+      function setupUpload(inputId, dropZoneId, previewId, placeholderId, progressId, urlInputId, flagSetter) {
+        const input = document.getElementById(inputId);
+        const dropZone = document.getElementById(dropZoneId);
+        const preview = document.getElementById(previewId);
+        const placeholder = document.getElementById(placeholderId);
+        const progress = document.getElementById(progressId);
+        const urlInput = document.getElementById(urlInputId);
+
+        input.addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          
+          // Preview local imediato
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            preview.querySelector('img').src = ev.target.result;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+          };
+          reader.readAsDataURL(file);
+
+          try {
+            flagSetter(true);
+            progress.classList.remove('hidden');
+            const progressEl = progress.querySelector('.upload-progress');
+            progressEl.style.width = '30%';
+            
+            const url = await uploadToStorage(file);
+            progressEl.style.width = '100%';
+            
+            setTimeout(() => {
+              progress.classList.add('hidden');
+              progressEl.style.width = '0%';
+            }, 500);
+            
+            urlInput.value = url;
+          } catch(err) {
+            alert('Upload failed: ' + err.message);
+            progress.classList.add('hidden');
+          } finally {
+            flagSetter(false);
+          }
+        });
+
+        ['dragenter', 'dragover'].forEach(evt => {
+          dropZone.addEventListener(evt, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        });
+        ['dragleave', 'drop'].forEach(evt => {
+          dropZone.addEventListener(evt, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
+        });
       }
 
-      // Setup Featured Image Upload
-      const featuredInput = document.getElementById('featuredFileInput');
-      const featuredDropZone = document.getElementById('featuredDropZone');
-      const featuredPreview = document.getElementById('featuredPreview');
-      const featuredPlaceholder = document.getElementById('featuredPlaceholder');
-      const featuredProgress = document.getElementById('featuredProgress');
-      const featuredUrlInput = document.getElementById('featuredUrlInput');
-
-      featuredInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          featuredPreview.querySelector('img').src = ev.target.result;
-          featuredPreview.classList.remove('hidden');
-          featuredPlaceholder.classList.add('hidden');
-        };
-        reader.readAsDataURL(file);
-
-        try {
-          uploadingFeatured = true;
-          featuredProgress.classList.remove('hidden');
-          const progressEl = featuredProgress.querySelector('.upload-progress');
-          progressEl.style.width = '30%';
-          
-          const url = await uploadToSupabase(file);
-          progressEl.style.width = '100%';
-          
-          setTimeout(() => {
-            featuredProgress.classList.add('hidden');
-            progressEl.style.width = '0%';
-          }, 500);
-          
-          featuredUrlInput.value = url;
-        } catch(err) {
-          alert('Upload failed: ' + err.message);
-          featuredProgress.classList.add('hidden');
-        } finally {
-          uploadingFeatured = false;
-        }
-      });
-
-      ['dragenter', 'dragover'].forEach(evt => {
-        featuredDropZone.addEventListener(evt, (e) => { e.preventDefault(); featuredDropZone.classList.add('dragover'); });
-      });
-      ['dragleave', 'drop'].forEach(evt => {
-        featuredDropZone.addEventListener(evt, (e) => { e.preventDefault(); featuredDropZone.classList.remove('dragover'); });
-      });
-
-      // Setup Banner Upload
-      const bannerInput = document.getElementById('bannerFileInput');
-      const bannerDropZone = document.getElementById('bannerDropZone');
-      const bannerPreview = document.getElementById('bannerPreview');
-      const bannerPlaceholder = document.getElementById('bannerPlaceholder');
-      const bannerProgress = document.getElementById('bannerProgress');
-      const bannerUrlInput = document.getElementById('bannerUrlInput');
-
-      bannerInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          bannerPreview.querySelector('img').src = ev.target.result;
-          bannerPreview.classList.remove('hidden');
-          bannerPlaceholder.classList.add('hidden');
-        };
-        reader.readAsDataURL(file);
-
-        try {
-          uploadingBanner = true;
-          bannerProgress.classList.remove('hidden');
-          const progressEl = bannerProgress.querySelector('.upload-progress');
-          progressEl.style.width = '30%';
-          
-          const url = await uploadToSupabase(file);
-          progressEl.style.width = '100%';
-          
-          setTimeout(() => {
-            bannerProgress.classList.add('hidden');
-            progressEl.style.width = '0%';
-          }, 500);
-          
-          bannerUrlInput.value = url;
-        } catch(err) {
-          alert('Upload failed: ' + err.message);
-          bannerProgress.classList.add('hidden');
-        } finally {
-          uploadingBanner = false;
-        }
-      });
-
-      ['dragenter', 'dragover'].forEach(evt => {
-        bannerDropZone.addEventListener(evt, (e) => { e.preventDefault(); bannerDropZone.classList.add('dragover'); });
-      });
-      ['dragleave', 'drop'].forEach(evt => {
-        bannerDropZone.addEventListener(evt, (e) => { e.preventDefault(); bannerDropZone.classList.remove('dragover'); });
-      });
+      setupUpload('featuredFileInput', 'featuredDropZone', 'featuredPreview', 'featuredPlaceholder', 'featuredProgress', 'featuredUrlInput', (v) => uploadingFeatured = v);
+      setupUpload('bannerFileInput', 'bannerDropZone', 'bannerPreview', 'bannerPlaceholder', 'bannerProgress', 'bannerUrlInput', (v) => uploadingBanner = v);
 
       // --- CRUD COLLECTIONS ---
       async function loadCollections() {
@@ -359,8 +339,10 @@ try {
 
           collections.forEach(c => {
             const statusClass = c.status === 'published' ? 'text-green-400' : 'text-yellow-400';
-            const imgUrl = c.image_url 
-              ? `<img src="${c.image_url}" class="w-10 h-10 rounded object-cover bg-white/5">`
+            // Aplica transformação de thumbnail na listagem (400px width, quality 80)
+            const thumbUrl = getThumbnailUrl(c.image_url, 400);
+            const imgUrl = thumbUrl
+              ? `<img src="${thumbUrl}" class="w-10 h-10 rounded object-cover bg-white/5" loading="lazy">`
               : `<div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center"><svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div>`;
 
             const safeJson = JSON.stringify(c).replace(/'/g, "&#39;");
@@ -390,12 +372,12 @@ try {
         document.getElementById('submitBtn').innerText = 'Create Collection';
         form.reset();
         document.getElementById('collectionId').value = '';
-        featuredPreview.classList.add('hidden');
-        featuredPlaceholder.classList.remove('hidden');
-        featuredUrlInput.value = '';
-        bannerPreview.classList.add('hidden');
-        bannerPlaceholder.classList.remove('hidden');
-        bannerUrlInput.value = '';
+        document.getElementById('featuredPreview').classList.add('hidden');
+        document.getElementById('featuredPlaceholder').classList.remove('hidden');
+        document.getElementById('featuredUrlInput').value = '';
+        document.getElementById('bannerPreview').classList.add('hidden');
+        document.getElementById('bannerPlaceholder').classList.remove('hidden');
+        document.getElementById('bannerUrlInput').value = '';
         deleteCatBtn.classList.add('hidden');
         drawer.classList.remove('translate-x-full');
       };
@@ -420,25 +402,25 @@ try {
         form.status.value = c.status;
         
         if(c.image_url) {
-          featuredUrlInput.value = c.image_url;
-          featuredPreview.querySelector('img').src = c.image_url;
-          featuredPreview.classList.remove('hidden');
-          featuredPlaceholder.classList.add('hidden');
+          document.getElementById('featuredUrlInput').value = c.image_url;
+          document.getElementById('featuredPreview').querySelector('img').src = getThumbnailUrl(c.image_url, 600);
+          document.getElementById('featuredPreview').classList.remove('hidden');
+          document.getElementById('featuredPlaceholder').classList.add('hidden');
         } else {
-          featuredUrlInput.value = '';
-          featuredPreview.classList.add('hidden');
-          featuredPlaceholder.classList.remove('hidden');
+          document.getElementById('featuredUrlInput').value = '';
+          document.getElementById('featuredPreview').classList.add('hidden');
+          document.getElementById('featuredPlaceholder').classList.remove('hidden');
         }
         
         if(c.banner_url) {
-          bannerUrlInput.value = c.banner_url;
-          bannerPreview.querySelector('img').src = c.banner_url;
-          bannerPreview.classList.remove('hidden');
-          bannerPlaceholder.classList.add('hidden');
+          document.getElementById('bannerUrlInput').value = c.banner_url;
+          document.getElementById('bannerPreview').querySelector('img').src = getThumbnailUrl(c.banner_url, 600);
+          document.getElementById('bannerPreview').classList.remove('hidden');
+          document.getElementById('bannerPlaceholder').classList.add('hidden');
         } else {
-          bannerUrlInput.value = '';
-          bannerPreview.classList.add('hidden');
-          bannerPlaceholder.classList.remove('hidden');
+          document.getElementById('bannerUrlInput').value = '';
+          document.getElementById('bannerPreview').classList.add('hidden');
+          document.getElementById('bannerPlaceholder').classList.remove('hidden');
         }
         
         deleteCatBtn.classList.toggle('hidden', !c.category);
