@@ -2,40 +2,25 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { supabase } from '../../../lib/supabase';
 
-// Carrega categorias do banco (se existir tabela categories) ou usa fallback
 let categoriesList = ['Winter', 'Summer', 'Limited'];
 try {
   const { data: cats } = await supabase.from('categories').select('name').order('name');
   if (cats && cats.length > 0) categoriesList = cats.map(c => c.name);
-} catch(e) { /* fallback */ }
+} catch(e) {}
 ---
 
 <AdminLayout title="Collections" activePage="collections">
   
   <style is:global>
-    select, option {
-      background-color: #111113 !important;
-      color: white !important;
-      border: 1px solid rgba(255,255,255,0.1) !important;
-    }
+    select, option { background-color: #111113 !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; }
     select:focus { border-color: rgba(255,255,255,0.3) !important; outline: none !important; }
-    select option { background-color: #111113 !important; }
-    
-    /* Estilo customizado para input file */
-    .file-upload-zone {
-      border: 2px dashed rgba(255,255,255,0.2);
-      transition: all 0.3s ease;
-    }
-    .file-upload-zone:hover, .file-upload-zone.dragover {
-      border-color: white;
-      background-color: rgba(255,255,255,0.05);
-    }
-    .upload-progress {
-      height: 3px;
-      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-      transition: width 0.3s ease;
-    }
+    .file-upload-zone { border: 2px dashed rgba(255,255,255,0.2); transition: all 0.3s ease; }
+    .file-upload-zone:hover, .file-upload-zone.dragover { border-color: white; background-color: rgba(255,255,255,0.05); }
+    .upload-progress { height: 3px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
   </style>
+
+  <!-- Config invisível para o JS -->
+  <div id="app-config" data-supabase-url="${import.meta.env.SUPABASE_URL}" data-supabase-key="${import.meta.env.SUPABASE_ANON_KEY}" style="display:none;"></div>
 
   <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
     <div>
@@ -52,7 +37,6 @@ try {
     <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6">
       <input type="text" id="searchInput" placeholder="Search collections..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 w-full text-sm text-white focus:outline-none focus:border-white/30">
     </div>
-
     <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden min-h-[200px]" id="tableContainer">
       <p class="py-12 text-center text-white/40 animate-pulse">Loading collections...</p>
     </div>
@@ -62,7 +46,6 @@ try {
   <div id="collectionDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeDrawer()"></div>
     <div class="absolute right-0 top-0 h-full w-[600px] bg-[#111113] border-l border-white/5 overflow-y-auto">
-      
       <div class="sticky top-0 bg-[#111113] border-b border-white/5 px-6 py-4 flex items-center justify-between z-10">
         <h2 class="text-xl font-semibold text-white" id="drawerTitle">New Collection</h2>
         <button onclick="closeDrawer()" class="text-white/40 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
@@ -70,33 +53,20 @@ try {
 
       <form id="collectionForm" class="p-6 space-y-8">
         <input type="hidden" name="id" id="collectionId">
-
+        
         <!-- Info -->
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Information</h3>
-          <div>
-            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Collection Name *</label>
-            <input type="text" name="name" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Slug *</label>
-            <input type="text" name="slug" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label>
-            <textarea name="description" rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none resize-none"></textarea>
-          </div>
+          <div><label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Collection Name *</label><input type="text" name="name" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none"></div>
+          <div><label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Slug *</label><input type="text" name="slug" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none"></div>
+          <div><label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label><textarea name="description" rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none resize-none"></textarea></div>
           
           <!-- Category -->
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Category</label>
             <div class="flex gap-2 items-center">
-              <select name="category" id="categorySelect" class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
-                <option value="">Select a category</option>
-              </select>
-              <button type="button" id="deleteCategoryBtn" class="hidden p-3 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20" title="Delete category">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
+              <select name="category" id="categorySelect" class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none"><option value="">Select a category</option></select>
+              <button type="button" id="deleteCategoryBtn" class="hidden p-3 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20" title="Delete category"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
               <button type="button" id="newCategoryToggle" class="px-3 py-3 bg-white/10 rounded-lg text-xs text-white hover:bg-white/20">+ New</button>
             </div>
             <div id="newCategoryWrapper" class="hidden mt-2 flex gap-2">
@@ -107,48 +77,38 @@ try {
           </div>
         </div>
 
-        <!-- Media com UPLOAD REAL -->
+        <!-- Media Upload -->
         <div class="space-y-6">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Media</h3>
           
-          <!-- Featured Image Upload -->
+          <!-- Featured Image -->
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Featured Image</label>
             <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="featuredDropZone">
               <input type="file" id="featuredFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <div id="featuredPreview" class="hidden mb-3">
-                <img src="" alt="Preview" class="max-h-32 mx-auto rounded-lg object-cover">
-              </div>
+              <div id="featuredPreview" class="hidden mb-3"><img src="" alt="Preview" class="max-h-32 mx-auto rounded-lg object-cover"></div>
               <div id="featuredPlaceholder">
                 <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 <p class="text-sm text-white/60">Click or drag image here</p>
                 <p class="text-xs text-white/40 mt-1">Recommended: 1200×600px</p>
               </div>
-              <div id="featuredProgress" class="hidden mt-3">
-                <div class="upload-progress rounded-full" style="width: 0%"></div>
-                <p class="text-xs text-white/40 mt-1">Uploading...</p>
-              </div>
+              <div id="featuredProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading...</p></div>
             </div>
             <input type="hidden" name="image_url" id="featuredUrlInput">
           </div>
 
-          <!-- Banner Upload -->
+          <!-- Banner -->
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Banner Image</label>
             <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="bannerDropZone">
               <input type="file" id="bannerFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <div id="bannerPreview" class="hidden mb-3">
-                <img src="" alt="Preview" class="max-h-32 mx-auto rounded-lg object-cover w-full">
-              </div>
+              <div id="bannerPreview" class="hidden mb-3"><img src="" alt="Preview" class="max-h-32 mx-auto rounded-lg object-cover w-full"></div>
               <div id="bannerPlaceholder">
                 <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 <p class="text-sm text-white/60">Click or drag banner here</p>
                 <p class="text-xs text-white/40 mt-1">Recommended: 1920×600px</p>
               </div>
-              <div id="bannerProgress" class="hidden mt-3">
-                <div class="upload-progress rounded-full" style="width: 0%"></div>
-                <p class="text-xs text-white/40 mt-1">Uploading...</p>
-              </div>
+              <div id="bannerProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading...</p></div>
             </div>
             <input type="hidden" name="banner_url" id="bannerUrlInput">
           </div>
@@ -162,7 +122,6 @@ try {
             <option value="published">Published</option>
           </select>
         </div>
-
       </form>
 
       <div class="sticky bottom-0 bg-[#111113] border-t border-white/5 px-6 py-4 flex items-center justify-between">
@@ -172,11 +131,26 @@ try {
     </div>
   </div>
 
+  <!-- Script Corrigido: Carrega Supabase via CDN dinamicamente -->
   <script is:inline>
-    // Importa Supabase client via CDN para upload
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
     document.addEventListener('DOMContentLoaded', async function() {
+      // 1. Carrega Supabase via CDN (resolve erro de import)
+      if (!window.supabase) {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        script.type = 'module';
+        document.head.appendChild(script);
+        await new Promise(r => script.onload = r);
+      }
+
+      // 2. Pega credenciais do HTML
+      const configEl = document.getElementById('app-config');
+      const supabaseUrl = configEl.dataset.supabaseUrl;
+      const supabaseKey = configEl.dataset.supabaseKey;
+      
+      const { createClient } = window.supabase;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
       const tableContainer = document.getElementById('tableContainer');
       const drawer = document.getElementById('collectionDrawer');
       const form = document.getElementById('collectionForm');
@@ -191,11 +165,6 @@ try {
       let categoriesList = [];
       let uploadingFeatured = false;
       let uploadingBanner = false;
-
-      // Inicializa Supabase client
-      const supabaseUrl = "${import.meta.env.SUPABASE_URL}";
-      const supabaseKey = "${import.meta.env.SUPABASE_ANON_KEY}";
-      const supabase = createClient(supabaseUrl, supabaseKey);
 
       // --- CATEGORIAS ---
       function loadCategories() {
@@ -262,13 +231,8 @@ try {
       // --- UPLOAD DE IMAGENS ---
       async function uploadToSupabase(file, bucket = 'woltz-images') {
         const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
-        
-        const { data, error } = await supabase.storage
-          .from(bucket)
-          .upload(fileName, file, { cacheControl: '3600', upsert: false });
-
+        const { data, error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
         if (error) throw error;
-
         const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fileName);
         return urlData.publicUrl;
       }
@@ -285,7 +249,6 @@ try {
         const file = e.target.files[0];
         if (!file) return;
         
-        // Preview local imediato
         const reader = new FileReader();
         reader.onload = (ev) => {
           featuredPreview.querySelector('img').src = ev.target.result;
@@ -294,8 +257,8 @@ try {
         };
         reader.readAsDataURL(file);
 
-        // Upload
         try {
+          uploadingFeatured = true;
           featuredProgress.classList.remove('hidden');
           const progressEl = featuredProgress.querySelector('.upload-progress');
           progressEl.style.width = '30%';
@@ -312,24 +275,19 @@ try {
         } catch(err) {
           alert('Upload failed: ' + err.message);
           featuredProgress.classList.add('hidden');
+        } finally {
+          uploadingFeatured = false;
         }
       });
 
-      // Drag and drop visual feedback
       ['dragenter', 'dragover'].forEach(evt => {
-        featuredDropZone.addEventListener(evt, (e) => {
-          e.preventDefault();
-          featuredDropZone.classList.add('dragover');
-        });
+        featuredDropZone.addEventListener(evt, (e) => { e.preventDefault(); featuredDropZone.classList.add('dragover'); });
       });
       ['dragleave', 'drop'].forEach(evt => {
-        featuredDropZone.addEventListener(evt, (e) => {
-          e.preventDefault();
-          featuredDropZone.classList.remove('dragover');
-        });
+        featuredDropZone.addEventListener(evt, (e) => { e.preventDefault(); featuredDropZone.classList.remove('dragover'); });
       });
 
-      // Setup Banner Upload (mesma lógica)
+      // Setup Banner Upload
       const bannerInput = document.getElementById('bannerFileInput');
       const bannerDropZone = document.getElementById('bannerDropZone');
       const bannerPreview = document.getElementById('bannerPreview');
@@ -350,6 +308,7 @@ try {
         reader.readAsDataURL(file);
 
         try {
+          uploadingBanner = true;
           bannerProgress.classList.remove('hidden');
           const progressEl = bannerProgress.querySelector('.upload-progress');
           progressEl.style.width = '30%';
@@ -366,20 +325,16 @@ try {
         } catch(err) {
           alert('Upload failed: ' + err.message);
           bannerProgress.classList.add('hidden');
+        } finally {
+          uploadingBanner = false;
         }
       });
 
       ['dragenter', 'dragover'].forEach(evt => {
-        bannerDropZone.addEventListener(evt, (e) => {
-          e.preventDefault();
-          bannerDropZone.classList.add('dragover');
-        });
+        bannerDropZone.addEventListener(evt, (e) => { e.preventDefault(); bannerDropZone.classList.add('dragover'); });
       });
       ['dragleave', 'drop'].forEach(evt => {
-        bannerDropZone.addEventListener(evt, (e) => {
-          e.preventDefault();
-          bannerDropZone.classList.remove('dragover');
-        });
+        bannerDropZone.addEventListener(evt, (e) => { e.preventDefault(); bannerDropZone.classList.remove('dragover'); });
       });
 
       // --- CRUD COLLECTIONS ---
@@ -424,7 +379,8 @@ try {
           tableContainer.innerHTML = html;
 
         } catch(err) {
-          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading collections.</div>`;
+          console.error(err);
+          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading collections. Check API.</div>`;
         }
       }
 
@@ -463,7 +419,6 @@ try {
         form.category.value = c.category || '';
         form.status.value = c.status;
         
-        // Carrega imagens existentes
         if(c.image_url) {
           featuredUrlInput.value = c.image_url;
           featuredPreview.querySelector('img').src = c.image_url;
