@@ -9,7 +9,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 <AdminLayout title="Products" activePage="products">
   
   <style is:global>
-    /* Estilos Globais para Inputs e Selects */
     select, option, input, textarea { 
       background-color: #111113 !important; 
       color: white !important; 
@@ -18,55 +17,33 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     select:focus, input:focus, textarea:focus { border-color: rgba(255,255,255,0.3) !important; outline: none !important; }
     select option { background-color: #111113 !important; }
     
-    /* Upload Zones */
     .file-upload-zone { border: 2px dashed rgba(255,255,255,0.2); transition: all 0.3s ease; cursor: pointer; }
     .file-upload-zone:hover { border-color: white; background-color: rgba(255,255,255,0.05); }
     .upload-progress { height: 3px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
     
-    /* Tags de Cores/Texturas */
     .variant-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 10px 4px 4px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 20px;
-      font-size: 12px;
-      margin-right: 6px;
-      margin-bottom: 6px;
-      border: 1px solid rgba(255,255,255,0.1);
-      user-select: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 4px 10px 4px 4px; background: rgba(255,255,255,0.08);
+      border-radius: 20px; font-size: 12px; margin-right: 6px; margin-bottom: 6px;
+      border: 1px solid rgba(255,255,255,0.1); user-select: none;
     }
     .variant-preview {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.3);
-      overflow: hidden;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.3); overflow: hidden;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
     }
     .variant-preview img { width: 100%; height: 100%; object-fit: cover; }
     .remove-variant { cursor: pointer; opacity: 0.5; margin-left: 4px; font-size: 14px; line-height: 1; }
     .remove-variant:hover { opacity: 1; color: #ef4444; }
     
-    /* Toggle Buttons */
     .toggle-btn { 
-      padding: 6px 12px; 
-      font-size: 11px; 
-      border-radius: 6px; 
-      background: rgba(255,255,255,0.05); 
-      color: rgba(255,255,255,0.5); 
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: all 0.2s;
+      padding: 6px 12px; font-size: 11px; border-radius: 6px; 
+      background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.5); 
+      border: 1px solid transparent; cursor: pointer; transition: all 0.2s;
     }
     .toggle-btn.active { background: white; color: black; font-weight: 600; }
   </style>
 
-  <!-- Configuração Invisível para o JS -->
   <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
 
   <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
@@ -81,7 +58,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
   </header>
 
   <div class="p-8">
-    <!-- Barra de Busca -->
     <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6 flex items-center gap-4">
       <div class="relative flex-1 max-w-md">
         <input type="text" id="searchInput" placeholder="Search products..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 pl-10 w-full text-sm text-white focus:outline-none focus:border-white/30">
@@ -89,13 +65,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       </div>
     </div>
 
-    <!-- Tabela de Produtos -->
     <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden min-h-[200px]" id="tableContainer">
       <p class="py-12 text-center text-white/40 animate-pulse">Loading products...</p>
     </div>
   </div>
 
-  <!-- DRAWER DE CRIAÇÃO/EDIÇÃO -->
+  <!-- DRAWER -->
   <div id="productDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="window.closeDrawer()"></div>
     <div class="absolute right-0 top-0 h-full w-[600px] bg-[#111113] border-l border-white/5 overflow-y-auto">
@@ -111,7 +86,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       <form id="productForm" class="p-6 space-y-8">
         <input type="hidden" name="id" id="productId">
 
-        <!-- Informações Básicas -->
+        <!-- Info Básica -->
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Basic Information</h3>
           <div><label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Product Name *</label><input type="text" name="name" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none"></div>
@@ -142,7 +117,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Colors & Patterns</h3>
           <div class="bg-white/5 p-4 rounded-lg border border-white/10">
             
-            <!-- Área onde as tags aparecem -->
+            <!-- Lista de Variantes -->
             <div id="variantsList" class="flex flex-wrap mb-4 min-h-[40px] p-2 bg-black/20 rounded-lg border border-white/5"></div>
             
             <!-- Controles -->
@@ -159,7 +134,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
                 <button type="button" id="addColorBtn" class="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-white/90 whitespace-nowrap">Add Color</button>
               </div>
 
-              <!-- Input Textura (Oculto inicialmente) -->
+              <!-- Input Textura -->
               <div id="inputPattern" class="hidden flex-col gap-2">
                 <input type="text" id="patternNameInput" placeholder="Pattern name (e.g., Leopard)" class="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-white/30 focus:outline-none">
                 
@@ -177,11 +152,10 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             
             <p class="text-[10px] text-white/40 mt-3">First 4 variants show on homepage. Others appear as "+X".</p>
           </div>
-          <!-- Campo oculto que será enviado no form -->
           <input type="hidden" name="colors" id="colorsHidden" value="[]">
         </div>
 
-        <!-- Calculadora de Preço -->
+        <!-- Calculadora -->
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2 flex items-center justify-between">
             Pricing Calculator
@@ -215,7 +189,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
         </div>
 
-        <!-- Upload Thumbnail Principal -->
+        <!-- Thumbnail -->
         <div class="space-y-6">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Media</h3>
           <div>
@@ -271,7 +245,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     const netBrlHidden = document.getElementById('netBrlHidden');
     const exchangeRateInput = document.getElementById('exchangeRate');
 
-    // Variantes (Cores/Texturas)
+    // Variantes
     const btnSolid = document.getElementById('btnSolid');
     const btnPattern = document.getElementById('btnPattern');
     const inputSolid = document.getElementById('inputSolid');
@@ -288,16 +262,15 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     const variantsList = document.getElementById('variantsList');
     const colorsHidden = document.getElementById('colorsHidden');
 
-    // Estado Local
+    // Estado
     let currentMode = 'create';
     let uploadingThumb = false;
     let uploadingPattern = false;
-    let currentVariants = []; // Array de objetos {name, hex/url, type}
+    let currentVariants = []; 
     let tempPatternUrl = ''; 
 
     // --- LÓGICA DE VARIANTES ---
     
-    // Alternar entre Cor e Textura
     btnSolid.addEventListener('click', () => {
       btnSolid.classList.add('active'); btnPattern.classList.remove('active');
       inputSolid.classList.remove('hidden'); inputPattern.classList.add('hidden');
@@ -307,7 +280,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       inputPattern.classList.remove('hidden'); inputSolid.classList.add('hidden');
     });
 
-    // Renderiza as tags na tela
     function renderVariants() {
       variantsList.innerHTML = '';
       currentVariants.forEach((item, index) => {
@@ -316,7 +288,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         
         let previewHtml = '';
         if (item.type === 'pattern' && item.url) {
-          // Usa URL otimizada para thumbnail pequena
           previewHtml = `<div class="variant-preview"><img src="${item.url}?width=50&quality=50" alt="${item.name}"></div>`;
         } else {
           previewHtml = `<div class="variant-preview" style="background-color: ${item.hex || '#ccc'}"></div>`;
@@ -330,19 +301,17 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         variantsList.appendChild(tag);
       });
       
-      // Atualiza input hidden para envio
+      // ATUALIZA INPUT HIDDEN SEMPRE QUE RENDERIZAR
       colorsHidden.value = JSON.stringify(currentVariants);
 
-      // Adiciona eventos de remoção
       document.querySelectorAll('.remove-variant').forEach(btn => {
         btn.addEventListener('click', (e) => {
           currentVariants.splice(parseInt(e.target.dataset.index), 1);
-          renderVariants();
+          renderVariants(); // Re-renderiza e atualiza hidden input
         });
       });
     }
 
-    // Adicionar Cor Sólida
     addColorBtn.addEventListener('click', () => {
       const name = colorNameInput.value.trim();
       const hex = colorPickerInput.value;
@@ -353,12 +322,10 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       }
     });
 
-    // Upload de Textura (Swatch)
     patternFileInput.addEventListener('change', async (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
       
-      // Preview Imediato
       const reader = new FileReader();
       reader.onload = (ev) => {
         patternPreview.querySelector('img').src = ev.target.result;
@@ -367,7 +334,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       };
       reader.readAsDataURL(file);
 
-      // Upload para Supabase
       try {
         uploadingPattern = true;
         const fileName = `swatch-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
@@ -382,7 +348,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       } finally { uploadingPattern = false; }
     });
 
-    // Adicionar Textura à Lista
     addPatternBtn.addEventListener('click', () => {
       const name = patternNameInput.value.trim();
       if (name && tempPatternUrl) {
@@ -398,7 +363,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       }
     });
 
-    // --- CARREGAR COLEÇÕES NO DROPDOWN ---
+    // --- COLEÇÕES ---
     async function loadCollectionsForDropdown() {
       try {
         const res = await fetch('/api/products?type=collections');
@@ -413,7 +378,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       } catch(e) { console.error(e); }
     }
 
-    // --- CALCULADORA DE PREÇO ---
+    // --- CALCULADORA ---
     function calculatePrices() {
       const netBrl = parseFloat(netBrlInput.value) || 0;
       const rate = parseFloat(exchangeRateInput.value) || 5.50;
@@ -429,7 +394,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     netBrlInput.addEventListener('input', calculatePrices);
     exchangeRateInput.addEventListener('input', calculatePrices);
 
-    // --- UPLOAD THUMBNAIL PRINCIPAL ---
+    // --- UPLOAD THUMBNAIL ---
     async function uploadToSupabase(file, bucket = 'woltz-images') {
       const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
       const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
@@ -494,11 +459,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             ? `<img src="${p.thumbnail_url}?width=100&quality=80" class="w-10 h-10 rounded object-cover bg-white/5" loading="lazy">`
             : `<div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center"><svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>`;
 
-          // Renderiza Variantes na Tabela
           let variantsHtml = '';
-          // Verifica se é array e tem itens
           if (p.colors && Array.isArray(p.colors) && p.colors.length > 0) {
-            // Mostra até 5 variantes
             p.colors.slice(0, 5).forEach(c => {
               if (c.type === 'pattern' && c.url) {
                 variantsHtml += `<div class="w-4 h-4 rounded-full overflow-hidden border border-white/20 inline-block mr-1"><img src="${c.url}?width=20&quality=50" class="w-full h-full object-cover"></div>`;
@@ -506,7 +468,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
                 variantsHtml += `<div class="w-4 h-4 rounded-full border border-white/20 inline-block mr-1" style="background-color: ${c.hex}" title="${c.name}"></div>`;
               }
             });
-            // Adiciona contador se houver mais
             if (p.colors.length > 5) variantsHtml += `<span class="text-[10px] text-white/40 ml-1">+${p.colors.length - 5}</span>`;
           } else {
             variantsHtml = '<span class="text-white/30 text-xs">-</span>';
@@ -535,7 +496,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       }
     }
 
-    // Abrir Drawer (Novo Produto)
     window.openDrawer = () => {
       currentMode = 'create';
       currentVariants = [];
@@ -553,27 +513,23 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
     window.closeDrawer = () => drawer.classList.add('translate-x-full');
 
-    // Abrir Drawer (Editar Produto)
     window.editProduct = (p) => {
       currentMode = 'edit';
-      // Carrega variantes do banco
-      currentVariants = Array.isArray(p.colors) ? [...p.colors] : [];
-      renderVariants();
+      // CARREGA VARIANTES DO BANCO CORRETAMENTE
+      currentVariants = (p.colors && Array.isArray(p.colors)) ? [...p.colors] : [];
+      renderVariants(); // Isso já atualiza o input hidden
       
       document.getElementById('drawerTitle').innerText = 'Edit Product';
       document.getElementById('submitBtn').innerText = 'Save Changes';
       document.getElementById('productId').value = p.id;
       
-      // Preenche campos
       form.name.value = p.name; form.slug.value = p.slug; form.type.value = p.type;
       form.collection_id.value = p.collection_id || ''; form.description.value = p.description || ''; form.status.value = p.status;
       
-      // Recalcula preço baseado no líquido salvo ou estimado
       if (p.net_brl) netBrlInput.value = p.net_brl;
       else if (p.price_brl) netBrlInput.value = ((parseFloat(p.price_brl) * 0.9501) - 0.39).toFixed(2);
       calculatePrices();
 
-      // Carrega thumbnail
       if(p.thumbnail_url) {
         thumbUrlInput.value = p.thumbnail_url;
         thumbPreview.querySelector('img').src = p.thumbnail_url;
@@ -582,7 +538,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       drawer.classList.remove('translate-x-full');
     };
 
-    // Deletar Produto
     window.deleteProduct = async (id, name) => {
       if(!confirm(`Delete "${name}"?`)) return;
       try {
@@ -592,7 +547,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       } catch(e) { alert('Error: ' + e.message); }
     };
 
-    // Salvar Produto (Create/Update)
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if(uploadingThumb || uploadingPattern) { alert('Wait for uploads!'); return; }
@@ -604,15 +558,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       const data = {};
       fd.forEach((v,k) => data[k] = v);
       
-      // Limpeza de dados vazios
       Object.keys(data).forEach(key => { if(data[key] === "") data[key] = null; });
-      
-      // Conversão de tipos numéricos
       if(data.price_brl) data.price_brl = parseFloat(data.price_brl);
       if(data.price_usd) data.price_usd = parseFloat(data.price_usd);
       if(data.net_brl) data.net_brl = parseFloat(data.net_brl);
       
-      // Envia array de variantes diretamente
+      // ENVIA ARRAY DE VARIANTES DIRETAMENTE (NÃO USA O HIDDEN INPUT)
       data.colors = currentVariants; 
 
       const id = document.getElementById('productId').value;
@@ -632,11 +583,9 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       finally { submitBtn.innerText = originalText; submitBtn.disabled = false; }
     });
 
-    // Inicialização
     loadCollectionsForDropdown();
     loadProducts();
     
-    // Busca visual na tabela
     document.getElementById('searchInput')?.addEventListener('input', (e) => {
       const term = e.target.value.toLowerCase();
       document.querySelectorAll('tbody tr').forEach(row => row.style.display = row.textContent?.toLowerCase().includes(term) ? '' : 'none');
