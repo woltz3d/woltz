@@ -4,207 +4,305 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
 <AdminLayout title="Collections" activePage="collections">
   
-  <!-- Top Bar -->
   <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
     <div>
       <h1 class="text-2xl font-semibold text-white">Collections</h1>
       <p class="text-sm text-white/40 mt-1">Manage all your collections</p>
     </div>
-    <button onclick="document.getElementById('newCollectionDrawer').classList.remove('translate-x-full')" class="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors flex items-center gap-2">
+    <button onclick="openDrawer()" class="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors flex items-center gap-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       New Collection
     </button>
   </header>
 
-  <!-- Content -->
   <div class="p-8">
-    
-    <!-- Filters -->
-    <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <div class="relative">
-          <input type="text" placeholder="Search collections..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 pl-10 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 w-64">
-          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button class="px-4 py-2 text-sm text-white/60 hover:text-white transition-colors">Filter</button>
-        <button class="px-4 py-2 text-sm text-white/60 hover:text-white transition-colors">Sort</button>
-      </div>
+    <!-- Search -->
+    <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6">
+      <input type="text" id="searchInput" placeholder="Search collections..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 w-full text-sm text-white focus:outline-none focus:border-white/30">
     </div>
 
-    <!-- Collections Table -->
-    <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden">
-      <table class="w-full">
-        <thead class="bg-white/5">
-          <tr>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Collection</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Sets</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Products</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Price (BRL)</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Price (USD)</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Status</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Sales</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Revenue</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Date</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium"></th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-white/5">
-          <tr class="hover:bg-white/5 transition-colors">
-            <td class="py-4 px-6">
-              <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center">
-                  <svg class="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-white">Artic 01</p>
-                  <p class="text-xs text-white/40">Winter 2026 Collection</p>
-                </div>
-              </div>
-            </td>
-            <td class="py-4 px-6 text-sm text-white/60">3</td>
-            <td class="py-4 px-6 text-sm text-white/60">12</td>
-            <td class="py-4 px-6 text-sm text-white">R$ 249,90</td>
-            <td class="py-4 px-6 text-sm text-white">$ 49,90</td>
-            <td class="py-4 px-6"><span class="px-2 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Published</span></td>
-            <td class="py-4 px-6 text-sm text-white/60">1,256</td>
-            <td class="py-4 px-6 text-sm text-white">R$ 312,476.40</td>
-            <td class="py-4 px-6 text-sm text-white/60">28/05/2026</td>
-            <td class="py-4 px-6">
-              <button class="text-white/40 hover:text-white">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
-              </button>
-            </td>
-          </tr>
-          <tr class="hover:bg-white/5 transition-colors">
-            <td class="py-4 px-6">
-              <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center">
-                  <svg class="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-white">Noctis Vol. 1</p>
-                  <p class="text-xs text-white/40">Dark Collection</p>
-                </div>
-              </div>
-            </td>
-            <td class="py-4 px-6 text-sm text-white/60">3</td>
-            <td class="py-4 px-6 text-sm text-white/60">9</td>
-            <td class="py-4 px-6 text-sm text-white">R$ 229,90</td>
-            <td class="py-4 px-6 text-sm text-white">$ 45,90</td>
-            <td class="py-4 px-6"><span class="px-2 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Published</span></td>
-            <td class="py-4 px-6 text-sm text-white/60">982</td>
-            <td class="py-4 px-6 text-sm text-white">R$ 225,491.80</td>
-            <td class="py-4 px-6 text-sm text-white/60">20/05/2026</td>
-            <td class="py-4 px-6">
-              <button class="text-white/40 hover:text-white">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Table -->
+    <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden min-h-[200px]" id="tableContainer">
+      <p class="py-12 text-center text-white/40 animate-pulse">Loading collections...</p>
     </div>
-
   </div>
 
-  <!-- New Collection Drawer -->
-  <div id="newCollectionDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
-    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="document.getElementById('newCollectionDrawer').classList.add('translate-x-full')"></div>
+  <!-- DRAWER DE CRIAÇÃO/EDIÇÃO -->
+  <div id="collectionDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeDrawer()"></div>
     <div class="absolute right-0 top-0 h-full w-[600px] bg-[#111113] border-l border-white/5 overflow-y-auto">
       
-      <!-- Drawer Header -->
       <div class="sticky top-0 bg-[#111113] border-b border-white/5 px-6 py-4 flex items-center justify-between z-10">
-        <div>
-          <h2 class="text-xl font-semibold text-white">New Collection</h2>
-          <p class="text-sm text-white/40 mt-1">Create a new collection for your store</p>
-        </div>
-        <button onclick="document.getElementById('newCollectionDrawer').classList.add('translate-x-full')" class="text-white/40 hover:text-white">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
+        <h2 class="text-xl font-semibold text-white" id="drawerTitle">New Collection</h2>
+        <button onclick="closeDrawer()" class="text-white/40 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
 
-      <!-- Steps -->
-      <div class="px-6 py-4 border-b border-white/5">
-        <div class="flex items-center gap-2">
-          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-black text-sm font-medium">1</div>
-          <div class="w-12 h-px bg-white/20"></div>
-          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 text-white/40 text-sm font-medium">2</div>
-          <div class="w-12 h-px bg-white/20"></div>
-          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 text-white/40 text-sm font-medium">3</div>
-          <div class="w-12 h-px bg-white/20"></div>
-          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 text-white/40 text-sm font-medium">4</div>
-        </div>
-      </div>
+      <form id="collectionForm" class="p-6 space-y-8">
+        <input type="hidden" name="id" id="collectionId">
 
-      <!-- Form Content -->
-      <div class="p-6 space-y-6">
-        
-        <!-- Basic Info -->
-        <div class="bg-white/5 rounded-xl p-6 border border-white/5">
-          <h3 class="text-sm font-medium text-white mb-4">Information</h3>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Collection Name</label>
-              <input type="text" placeholder="Ex: Winter 2026 Collection" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30">
-            </div>
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Slug</label>
-              <input type="text" placeholder="Ex: winter-2026-collection" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30">
-            </div>
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label>
-              <textarea rows="3" placeholder="Collection description..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 resize-none"></textarea>
-            </div>
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Category</label>
-              <select class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none">
-                <option>Select a category</option>
-                <option>Winter Collection</option>
-                <option>Summer Collection</option>
-                <option>Limited Edition</option>
+        <!-- Step 1: Info -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Information</h3>
+          <div>
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Collection Name *</label>
+            <input type="text" name="name" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Slug *</label>
+            <input type="text" name="slug" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label>
+            <textarea name="description" rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none resize-none"></textarea>
+          </div>
+          
+          <!-- Categoria Dinâmica -->
+          <div>
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Category</label>
+            <div class="flex gap-2">
+              <select name="category" id="categorySelect" class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
+                <option value="">Select or type new...</option>
               </select>
+              <input type="text" id="newCategoryInput" placeholder="New category..." class="w-32 bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-sm text-white focus:border-white/30 focus:outline-none hidden">
+              <button type="button" id="toggleCategoryBtn" class="px-3 py-2 bg-white/10 rounded-lg text-xs text-white hover:bg-white/20">+ New</button>
             </div>
+            <p class="text-[10px] text-white/40 mt-1">Type a new name above to create a custom category.</p>
           </div>
         </div>
 
-        <!-- Media -->
-        <div class="bg-white/5 rounded-xl p-6 border border-white/5">
-          <h3 class="text-sm font-medium text-white mb-4">Media</h3>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Featured Image</label>
-              <div class="aspect-video rounded-lg bg-white/5 border border-white/10 border-dashed flex items-center justify-center">
-                <div class="text-center">
-                  <svg class="w-12 h-12 text-white/20 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                  <p class="text-xs text-white/40">Drag image or click to upload</p>
-                  <p class="text-xs text-white/20 mt-1">Recommended: 1200x600px</p>
-                </div>
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Collection Banner</label>
-              <div class="aspect-video rounded-lg bg-white/5 border border-white/10 border-dashed flex items-center justify-center">
-                <div class="text-center">
-                  <svg class="w-12 h-12 text-white/20 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                  <p class="text-xs text-white/40">Drag image or click to upload</p>
-                  <p class="text-xs text-white/20 mt-1">Recommended: 1920x600px</p>
-                </div>
-              </div>
-            </div>
+        <!-- Step 2: Media -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Media</h3>
+          <div>
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Featured Image URL</label>
+            <input type="url" name="image_url" placeholder="https://..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
+            <p class="text-[10px] text-white/40 mt-1">Paste image link (e.g., from R2 or Unsplash)</p>
+          </div>
+          <div>
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Banner URL</label>
+            <input type="url" name="banner_url" placeholder="https://..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
           </div>
         </div>
 
-      </div>
+        <!-- Step 3: Status -->
+        <div class="space-y-4">
+           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Status</h3>
+           <select name="status" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
+        </div>
 
-      <!-- Drawer Footer -->
+      </form>
+
       <div class="sticky bottom-0 bg-[#111113] border-t border-white/5 px-6 py-4 flex items-center justify-between">
-        <button class="text-sm text-white/60 hover:text-white">Save as Draft</button>
-        <button class="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">Next Step →</button>
+        <button type="button" onclick="closeDrawer()" class="text-sm text-white/60 hover:text-white">Cancel</button>
+        <button type="submit" form="collectionForm" id="submitBtn" class="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-white/90">Save Collection</button>
       </div>
-
     </div>
   </div>
 
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', async function() {
+      const tableContainer = document.getElementById('tableContainer');
+      const drawer = document.getElementById('collectionDrawer');
+      const form = document.getElementById('collectionForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const categorySelect = document.getElementById('categorySelect');
+      const newCatInput = document.getElementById('newCategoryInput');
+      const toggleCatBtn = document.getElementById('toggleCategoryBtn');
+      
+      let currentMode = 'create';
+      let categoriesList = [];
+
+      // --- CARREGAR CATEGORIAS ---
+      async function loadCategories() {
+        try {
+          // Busca categorias únicas do banco (ou usa lista fixa se preferir)
+          // Aqui vamos buscar da tabela 'categories' que criamos
+          const res = await fetch('/api/categories'); // Precisaria criar essa API também, ou hardcode inicial
+          // Para simplificar agora, vamos usar um array local que atualiza
+          // Em produção, crie functions/api/categories/index.ts similar ao de products
+          
+          // MOCK INICIAL + LOCAL STORAGE PARA TESTE RÁPIDO
+          const stored = localStorage.getItem('woltz_categories');
+          categoriesList = stored ? JSON.parse(stored) : ['Winter', 'Summer', 'Limited'];
+          
+          renderCategoryOptions();
+        } catch(e) { console.error(e); }
+      }
+
+      function renderCategoryOptions() {
+        categorySelect.innerHTML = '<option value="">Select a category</option>';
+        categoriesList.forEach(cat => {
+          const opt = document.createElement('option');
+          opt.value = cat;
+          opt.innerText = cat;
+          categorySelect.appendChild(opt);
+        });
+      }
+
+      // Toggle Input de Nova Categoria
+      toggleCatBtn.addEventListener('click', () => {
+        if(newCatInput.classList.contains('hidden')) {
+          newCatInput.classList.remove('hidden');
+          categorySelect.classList.add('hidden');
+          toggleCatBtn.innerText = 'Cancel';
+          newCatInput.focus();
+        } else {
+          newCatInput.classList.add('hidden');
+          categorySelect.classList.remove('hidden');
+          toggleCatBtn.innerText = '+ New';
+          newCatInput.value = '';
+        }
+      });
+
+      // Salvar nova categoria ao sair do input
+      newCatInput.addEventListener('change', (e) => {
+        const val = e.target.value.trim();
+        if(val && !categoriesList.includes(val)) {
+          categoriesList.push(val);
+          localStorage.setItem('woltz_categories', JSON.stringify(categoriesList)); // Salva localmente por enquanto
+          renderCategoryOptions();
+          categorySelect.value = val;
+          // Reset UI
+          newCatInput.classList.add('hidden');
+          categorySelect.classList.remove('hidden');
+          toggleCatBtn.innerText = '+ New';
+        }
+      });
+
+      // --- CRUD COLLECTIONS ---
+      async function loadCollections() {
+        try {
+          const res = await fetch('/api/collections');
+          if(!res.ok) throw new Error('Failed');
+          const result = await res.json();
+          const collections = result.data || [];
+
+          if(collections.length === 0) {
+            tableContainer.innerHTML = `<div class="py-12 text-center text-white/40">No collections found.</div>`;
+            return;
+          }
+
+          let html = `<table class="w-full"><thead class="bg-white/5"><tr>
+            <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Collection</th>
+            <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Category</th>
+            <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Status</th>
+            <th class="text-right text-xs text-white/40 uppercase py-4 px-6">Actions</th>
+          </tr></thead><tbody class="divide-y divide-white/5">`;
+
+          collections.forEach(c => {
+            const statusClass = c.status === 'published' ? 'text-green-400' : 'text-yellow-400';
+            const imgUrl = c.image_url 
+              ? `<img src="${c.image_url}" class="w-10 h-10 rounded object-cover bg-white/5">`
+              : `<div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center"><svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div>`;
+
+            const safeJson = JSON.stringify(c).replace(/'/g, "&#39;");
+
+            html += `<tr class="hover:bg-white/5 transition-colors">
+              <td class="py-4 px-6"><div class="flex items-center gap-3">${imgUrl}<div><p class="text-sm font-medium text-white">${c.name}</p><p class="text-xs text-white/40">${c.description ? c.description.substring(0,20)+'...' : ''}</p></div></div></td>
+              <td class="py-4 px-6 text-sm text-white/60">${c.category || '-'}</td>
+              <td class="py-4 px-6 text-sm capitalize ${statusClass}">${c.status}</td>
+              <td class="py-4 px-6 text-right">
+                <button onclick='window.editCollection(${safeJson})' class="p-2 text-white/40 hover:text-blue-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+                <button onclick="window.deleteCollection('${c.id}', '${c.name}')" class="p-2 text-white/40 hover:text-red-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+              </td>
+            </tr>`;
+          });
+          html += `</tbody></table>`;
+          tableContainer.innerHTML = html;
+
+        } catch(err) {
+          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading collections. Check API.</div>`;
+        }
+      }
+
+      // --- AÇÕES ---
+      window.openDrawer = () => {
+        currentMode = 'create';
+        document.getElementById('drawerTitle').innerText = 'New Collection';
+        document.getElementById('submitBtn').innerText = 'Create Collection';
+        form.reset();
+        document.getElementById('collectionId').value = '';
+        drawer.classList.remove('translate-x-full');
+      };
+
+      window.closeDrawer = () => drawer.classList.add('translate-x-full');
+
+      window.editCollection = (c) => {
+        currentMode = 'edit';
+        document.getElementById('drawerTitle').innerText = 'Edit Collection';
+        document.getElementById('submitBtn').innerText = 'Save Changes';
+        
+        document.getElementById('collectionId').value = c.id;
+        form.name.value = c.name;
+        form.slug.value = c.slug;
+        form.description.value = c.description || '';
+        form.category.value = c.category || '';
+        form.image_url.value = c.image_url || '';
+        form.banner_url.value = c.banner_url || '';
+        form.status.value = c.status;
+        
+        drawer.classList.remove('translate-x-full');
+      };
+
+      window.deleteCollection = async (id, name) => {
+        if(!confirm(`Delete "${name}"?`)) return;
+        try {
+          const res = await fetch(`/api/collections?id=${id}`, { method: 'DELETE' });
+          if(!res.ok) throw new Error('Fail');
+          alert('Deleted!');
+          loadCollections();
+        } catch(e) { alert('Error deleting'); }
+      };
+
+      // --- SUBMIT ---
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = 'Saving...';
+        submitBtn.disabled = true;
+
+        const fd = new FormData(form);
+        const data = {};
+        fd.forEach((v,k) => data[k] = v);
+        
+        // Se estiver usando o input de nova categoria
+        if(newCatInput.value && !data.category) data.category = newCatInput.value;
+
+        const id = document.getElementById('collectionId').value;
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `/api/collections?id=${id}` : '/api/collections';
+
+        try {
+          const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+          const result = await res.json();
+          if(res.ok) {
+            alert(id ? 'Updated!' : 'Created!');
+            closeDrawer();
+            loadCollections();
+          } else {
+            alert('Error: ' + (result.error || 'Unknown'));
+          }
+        } catch(err) { alert('Connection error'); }
+        finally {
+          submitBtn.innerText = originalText;
+          submitBtn.disabled = false;
+        }
+      });
+
+      // Init
+      loadCategories();
+      loadCollections();
+      
+      // Search
+      document.getElementById('searchInput')?.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('tbody tr').forEach(row => {
+          row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+        });
+      });
+    });
+  </script>
 </AdminLayout>
