@@ -2,26 +2,15 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { supabase } from '../../../lib/supabase';
 
-// Busca coleções no servidor (SSG)
+// Busca coleções no servidor (SSG) - isso muda pouco, então pode ser estático
 const { data: collections } = await supabase
   .from('collections')
   .select('id, name')
   .eq('status', 'published');
-
-// Prepara as credenciais para o frontend
-const SUPABASE_URL = import.meta.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 ---
 
 <AdminLayout title="Products" activePage="products">
   
-  <!-- Configuração invisível para o JS -->
-  <div id="app-config" 
-       data-supabase-url="${SUPABASE_URL}" 
-       data-supabase-key="${SUPABASE_ANON_KEY}" 
-       style="display:none;">
-  </div>
-
   <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
     <div>
       <h1 class="text-2xl font-semibold text-white">Products</h1>
@@ -146,39 +135,23 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     </div>
   </div>
 
-  <!-- Script Final: Usa CDN para Supabase e dados via data-attributes -->
+  <!-- Script Simplificado: Usa apenas fetch para nossa API -->
   <script is:inline>
     document.addEventListener('DOMContentLoaded', async function() {
-      // 1. Carrega Supabase via CDN (resolve o erro de módulo)
-      if (!window.supabase) {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-        script.type = 'module';
-        document.head.appendChild(script);
-        await new Promise(r => script.onload = r);
-      }
-
-      // 2. Pega credenciais do HTML
-      const configEl = document.getElementById('app-config');
-      const supabaseUrl = configEl.dataset.supabaseUrl;
-      const supabaseKey = configEl.dataset.supabaseKey;
-      
-      // Inicializa cliente
-      const { createClient } = window.supabase;
-      const supabase = createClient(supabaseUrl, supabaseKey);
       const tableContainer = document.getElementById('tableContainer');
 
-      // 3. Função de carregamento
+      // 1. Função para buscar produtos via NOSSA API (não precisa do Supabase no frontend!)
       async function loadProducts() {
         try {
-          const { data: products, error } = await supabase
-            .from('products')
-            .select('*, collections(name)')
-            .order('created_at', { ascending: false });
+          // Chama nossa própria API Route que já configuramos
+          const response = await fetch('/api/products?method=get');
+          
+          if (!response.ok) throw new Error('Failed to fetch products');
+          
+          const result = await response.json();
+          const products = result.data || [];
 
-          if (error) throw error;
-
-          if (!products || products.length === 0) {
+          if (products.length === 0) {
             tableContainer.innerHTML = `<div class="w-full py-12 text-center text-white/40"><p>No products found. Create your first!</p></div>`;
             return;
           }
@@ -220,14 +193,14 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
         } catch (err) {
           console.error(err);
-          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error: ${err.message}</div>`;
+          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading products. Check console.</div>`;
         }
       }
 
       // Carrega ao iniciar
       loadProducts();
 
-      // 4. Lógica do Formulário
+      // 2. Lógica do Formulário (Já funcionava, mantemos igual)
       var form = document.getElementById('newProductForm');
       var btn = document.getElementById('submitBtn');
 
@@ -258,7 +231,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
               alert('Product created successfully!');
               document.getElementById('newProductDrawer').classList.add('translate-x-full');
               form.reset();
-              loadProducts(); // Atualiza tabela sem refresh
+              loadProducts(); // Atualiza tabela instantaneamente
             } else {
               alert('Error: ' + (result.error || 'Unknown error'));
             }
@@ -271,7 +244,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         });
       }
 
-      // 5. Busca Visual
+      // 3. Busca Visual
       var searchInput = document.getElementById('searchInput');
       if (searchInput) {
         searchInput.addEventListener('input', function(e) {
