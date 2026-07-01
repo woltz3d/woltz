@@ -2,29 +2,45 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { supabase } from '../../../lib/supabase';
 
-const { data: collections } = await supabase.from('collections').select('id, name').eq('status', 'published');
+const SUPABASE_URL = import.meta.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 ---
 
 <AdminLayout title="Products" activePage="products">
   
+  <style is:global>
+    /* Força selects escuros em todo o admin */
+    select, option { 
+      background-color: #111113 !important; 
+      color: white !important; 
+      border: 1px solid rgba(255,255,255,0.1) !important; 
+    }
+    select:focus { border-color: rgba(255,255,255,0.3) !important; outline: none !important; }
+    select option { background-color: #111113 !important; }
+    
+    .file-upload-zone { border: 2px dashed rgba(255,255,255,0.2); transition: all 0.3s ease; }
+    .file-upload-zone:hover, .file-upload-zone.dragover { border-color: white; background-color: rgba(255,255,255,0.05); }
+    .upload-progress { height: 3px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
+  </style>
+
+  <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
+
   <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
     <div>
       <h1 class="text-2xl font-semibold text-white">Products</h1>
       <p class="text-sm text-white/40 mt-1">Manage your products and sets</p>
     </div>
-    <button onclick="openCreateDrawer()" class="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors flex items-center gap-2">
+    <button onclick="window.openDrawer()" class="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors flex items-center gap-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       New Product
     </button>
   </header>
 
   <div class="p-8">
-    <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <div class="relative">
-          <input type="text" id="searchInput" placeholder="Search products..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 pl-10 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 w-64">
-          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        </div>
+    <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6 flex items-center gap-4">
+      <div class="relative flex-1 max-w-md">
+        <input type="text" id="searchInput" placeholder="Search products..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 pl-10 w-full text-sm text-white focus:outline-none focus:border-white/30">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       </div>
     </div>
 
@@ -33,9 +49,9 @@ const { data: collections } = await supabase.from('collections').select('id, nam
     </div>
   </div>
 
-  <!-- DRAWER UNIFICADO (Criação e Edição) -->
+  <!-- DRAWER UNIFICADO -->
   <div id="productDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
-    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeDrawer()"></div>
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="window.closeDrawer()"></div>
     <div class="absolute right-0 top-0 h-full w-[600px] bg-[#111113] border-l border-white/5 overflow-y-auto">
       
       <div class="sticky top-0 bg-[#111113] border-b border-white/5 px-6 py-4 flex items-center justify-between z-10">
@@ -43,29 +59,22 @@ const { data: collections } = await supabase.from('collections').select('id, nam
           <h2 class="text-xl font-semibold text-white" id="drawerTitle">New Product</h2>
           <p class="text-sm text-white/40 mt-1" id="drawerSubtitle">Create a new product or set</p>
         </div>
-        <button onclick="closeDrawer()" class="text-white/40 hover:text-white">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
+        <button onclick="window.closeDrawer()" class="text-white/40 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
 
-      <form id="productForm" class="p-6 space-y-6">
-        <!-- Campo oculto para ID (usado apenas na edição) -->
+      <form id="productForm" class="p-6 space-y-8">
         <input type="hidden" name="id" id="productId">
 
-        <div class="bg-white/5 rounded-xl p-6 border border-white/5">
-          <h3 class="text-sm font-medium text-white mb-4">Basic Information</h3>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Product Name *</label>
-              <input type="text" name="name" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
-            </div>
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Slug *</label>
-              <input type="text" name="slug" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
-            </div>
+        <!-- Info Básica -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Basic Information</h3>
+          <div><label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Product Name *</label><input type="text" name="name" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none"></div>
+          <div><label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Slug *</label><input type="text" name="slug" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none"></div>
+          
+          <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Type</label>
-              <select name="type" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none">
+              <select name="type" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
                 <option value="set">Set (Bundle)</option>
                 <option value="item">Individual Item</option>
                 <option value="pack">Full Pack</option>
@@ -73,43 +82,75 @@ const { data: collections } = await supabase.from('collections').select('id, nam
             </div>
             <div>
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Collection</label>
-              <select name="collection_id" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none">
-                <option value="">Select a collection</option>
-                {collections?.map(col => (<option value={col.id}>{col.name}</option>))}
+              <select name="collection_id" id="collectionSelect" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
+                <option value="">Loading collections...</option>
               </select>
             </div>
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label>
-              <textarea name="description" rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 resize-none"></textarea>
+          </div>
+          
+          <div><label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label><textarea name="description" rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none resize-none"></textarea></div>
+        </div>
+
+        <!-- Calculadora de Preço Inteligente -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2 flex items-center justify-between">
+            Pricing Calculator
+            <span class="text-[10px] text-white/40 font-normal normal-case">Stripe Fees Included</span>
+          </h3>
+          
+          <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+            <label class="block text-xs text-green-400 uppercase tracking-wider mb-2 font-bold">💰 Net Amount You Want (BRL)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/60">R$</span>
+              <input type="number" id="netBrlInput" step="0.01" placeholder="e.g., 100.00" class="w-full bg-black/30 border border-green-500/30 rounded-lg pl-10 pr-4 py-3 text-lg text-white font-mono focus:border-green-500 focus:outline-none">
             </div>
+            <p class="text-[10px] text-white/40 mt-2">Enter how much you want to receive after fees.</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 opacity-75">
+            <div>
+              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Sell Price (BRL)</label>
+              <input type="number" name="price_brl" id="sellPriceBrl" readonly class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white/80 cursor-not-allowed">
+            </div>
+            <div>
+              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Sell Price (USD)</label>
+              <input type="number" name="price_usd" id="sellPriceUsd" readonly class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white/80 cursor-not-allowed">
+            </div>
+          </div>
+          
+          <!-- Campo oculto para salvar o valor líquido no banco -->
+          <input type="hidden" name="net_brl" id="netBrlHidden">
+          
+          <div class="flex items-center gap-2 mt-2">
+             <label class="text-xs text-white/40">Exchange Rate (1 USD = R$):</label>
+             <input type="number" id="exchangeRate" value="5.50" step="0.01" class="w-20 bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white text-center">
           </div>
         </div>
 
-        <div class="bg-white/5 rounded-xl p-6 border border-white/5">
-          <h3 class="text-sm font-medium text-white mb-4">Pricing</h3>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Price (BRL)</label>
-              <input type="number" name="price_brl" step="0.01" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
-            </div>
-            <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Price (USD)</label>
-              <input type="number" name="price_usd" step="0.01" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white/5 rounded-xl p-6 border border-white/5">
-          <h3 class="text-sm font-medium text-white mb-4">Media</h3>
+        <!-- Media Upload -->
+        <div class="space-y-6">
+          <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Media</h3>
+          
           <div>
-            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Thumbnail URL</label>
-            <input type="url" name="thumbnail_url" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Thumbnail Image</label>
+            <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="thumbDropZone">
+              <input type="file" id="thumbFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <div id="thumbPreview" class="hidden mb-3"><img src="" alt="Preview" class="max-h-32 mx-auto rounded-lg object-cover"></div>
+              <div id="thumbPlaceholder">
+                <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <p class="text-sm text-white/60">Click or drag image here</p>
+                <p class="text-xs text-white/40 mt-1">Upload 4K - auto-optimized for display</p>
+              </div>
+              <div id="thumbProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading...</p></div>
+            </div>
+            <input type="hidden" name="thumbnail_url" id="thumbUrlInput">
           </div>
         </div>
 
-        <div class="bg-white/5 rounded-xl p-6 border border-white/5">
-          <h3 class="text-sm font-medium text-white mb-4">Status</h3>
-          <select name="status" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none">
+        <!-- Status -->
+        <div class="space-y-4">
+           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Status</h3>
+           <select name="status" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
             <option value="draft">Draft</option>
             <option value="published">Published</option>
             <option value="archived">Archived</option>
@@ -118,164 +159,302 @@ const { data: collections } = await supabase.from('collections').select('id, nam
       </form>
 
       <div class="sticky bottom-0 bg-[#111113] border-t border-white/5 px-6 py-4 flex items-center justify-between">
-        <button type="button" onclick="closeDrawer()" class="text-sm text-white/60 hover:text-white">Cancel</button>
-        <button type="submit" form="productForm" id="submitBtn" class="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">Save Product</button>
+        <button type="button" onclick="window.closeDrawer()" class="text-sm text-white/60 hover:text-white">Cancel</button>
+        <button type="submit" form="productForm" id="submitBtn" class="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-white/90">Save Product</button>
       </div>
     </div>
   </div>
 
-  <script is:inline>
-    document.addEventListener('DOMContentLoaded', async function() {
-      const tableContainer = document.getElementById('tableContainer');
-      const drawer = document.getElementById('productDrawer');
-      const form = document.getElementById('productForm');
-      const submitBtn = document.getElementById('submitBtn');
-      let currentMode = 'create'; // 'create' ou 'edit'
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-      // --- FUNÇÕES AUXILIARES ---
-      function openDrawer(mode, productData = null) {
-        currentMode = mode;
-        document.getElementById('drawerTitle').innerText = mode === 'create' ? 'New Product' : 'Edit Product';
-        document.getElementById('drawerSubtitle').innerText = mode === 'create' ? 'Create a new product' : 'Update product details';
-        document.getElementById('submitBtn').innerText = mode === 'create' ? 'Create Product' : 'Save Changes';
+    const configEl = document.getElementById('app-config');
+    const supabase = createClient(configEl?.dataset.supabaseUrl, configEl?.dataset.supabaseKey);
+
+    const tableContainer = document.getElementById('tableContainer');
+    const drawer = document.getElementById('productDrawer');
+    const form = document.getElementById('productForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const collectionSelect = document.getElementById('collectionSelect');
+    
+    // Inputs da calculadora
+    const netBrlInput = document.getElementById('netBrlInput');
+    const sellPriceBrl = document.getElementById('sellPriceBrl');
+    const sellPriceUsd = document.getElementById('sellPriceUsd');
+    const netBrlHidden = document.getElementById('netBrlHidden');
+    const exchangeRateInput = document.getElementById('exchangeRate');
+
+    let currentMode = 'create';
+    let uploadingThumb = false;
+
+    // --- CARREGAR COLEÇÕES ---
+    async function loadCollectionsForDropdown() {
+      try {
+        const res = await fetch('/api/products?type=collections');
+        const result = await res.json();
+        const collections = result.data || [];
         
-        if (mode === 'edit' && productData) {
-          // Preenche o formulário
-          document.getElementById('productId').value = productData.id;
-          form.name.value = productData.name;
-          form.slug.value = productData.slug;
-          form.type.value = productData.type;
-          form.collection_id.value = productData.collection_id || '';
-          form.description.value = productData.description || '';
-          form.price_brl.value = productData.price_brl || '';
-          form.price_usd.value = productData.price_usd || '';
-          form.thumbnail_url.value = productData.thumbnail_url || '';
-          form.status.value = productData.status;
-        } else {
-          form.reset();
-          document.getElementById('productId').value = '';
-        }
-        
-        drawer.classList.remove('translate-x-full');
-      }
-
-      window.openCreateDrawer = () => openDrawer('create');
-      window.closeDrawer = () => drawer.classList.add('translate-x-full');
-
-      async function loadProducts() {
-        try {
-          const res = await fetch('/api/products?method=get');
-          if (!res.ok) throw new Error('Fetch failed');
-          const result = await res.json();
-          const products = result.data || [];
-
-          if (products.length === 0) {
-            tableContainer.innerHTML = `<div class="py-12 text-center text-white/40">No products found.</div>`;
-            return;
-          }
-
-          let html = `<table class="w-full"><thead class="bg-white/5"><tr>
-            <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Product</th>
-            <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Price (BRL)</th>
-            <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Status</th>
-            <th class="text-right text-xs text-white/40 uppercase py-4 px-6">Actions</th>
-          </tr></thead><tbody class="divide-y divide-white/5">`;
-
-          products.forEach(p => {
-            const statusClass = p.status === 'published' ? 'text-green-400' : p.status === 'draft' ? 'text-yellow-400' : 'text-red-400';
-            const imgUrl = p.thumbnail_url 
-              ? `<img src="${p.thumbnail_url}" class="w-10 h-10 rounded object-cover bg-white/5">`
-              : `<div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center"><svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
-
-            // Escapa aspas simples para evitar erro no onclick
-            const safeProductJson = JSON.stringify(p).replace(/'/g, "&#39;");
-
-            html += `<tr class="hover:bg-white/5 transition-colors group">
-              <td class="py-4 px-6"><div class="flex items-center gap-3">${imgUrl}<span class="text-sm font-medium text-white">${p.name}</span></div></td>
-              <td class="py-4 px-6 text-sm text-white">R$ ${Number(p.price_brl || 0).toFixed(2).replace('.', ',')}</td>
-              <td class="py-4 px-6 text-sm capitalize ${statusClass}">${p.status}</td>
-              <td class="py-4 px-6 text-right">
-                <button onclick='window.editProduct(${safeProductJson})' class="p-2 text-white/40 hover:text-blue-400 transition-colors" title="Edit">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                </button>
-                <button onclick="window.deleteProduct('${p.id}', '${p.name}')" class="p-2 text-white/40 hover:text-red-400 transition-colors" title="Delete">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
-              </td>
-            </tr>`;
-          });
-          html += `</tbody></table>`;
-          tableContainer.innerHTML = html;
-        } catch (err) {
-          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading products.</div>`;
-        }
-      }
-
-      // --- AÇÕES GLOBAIS ---
-      window.editProduct = (product) => openDrawer('edit', product);
-      
-      window.deleteProduct = async (id, name) => {
-        if (!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) return;
-        
-        try {
-          const res = await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
-          if (!res.ok) throw new Error('Delete failed');
-          alert('Product deleted!');
-          loadProducts();
-        } catch (err) {
-          alert('Error deleting product.');
-        }
-      };
-
-      // --- SUBMIT DO FORMULÁRIO ---
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const originalText = submitBtn.innerText;
-        submitBtn.innerText = 'Saving...';
-        submitBtn.disabled = true;
-
-        const formData = new FormData(form);
-        const data = {};
-        formData.forEach((v, k) => data[k] = v);
-        
-        if(data.price_brl) data.price_brl = parseFloat(data.price_brl);
-        if(data.price_usd) data.price_usd = parseFloat(data.price_usd);
-        if(data.collection_id === "") data.collection_id = null;
-
-        const id = document.getElementById('productId').value;
-        const method = id ? 'PUT' : 'POST';
-        const url = id ? `/api/products?id=${id}` : '/api/products';
-
-        try {
-          const res = await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
-          const result = await res.json();
-          
-          if (res.ok) {
-            alert(id ? 'Product updated!' : 'Product created!');
-            closeDrawer();
-            loadProducts();
-          } else {
-            // Trata tanto string quanto objeto de erro
-            const errorMsg = typeof result.error === 'object' ? JSON.stringify(result.error) : result.error;
-            alert('Error: ' + errorMsg);
-          }
-        } catch (err) {
-          alert('Connection error.');
-        } finally {
-          submitBtn.innerText = originalText;
-          submitBtn.disabled = false;
-        }
-      });
-
-      // Inicializa
-      loadProducts();
-
-      // Busca visual simples
-      document.getElementById('searchInput')?.addEventListener('input', function(e) {
-        const term = e.target.value.toLowerCase();
-        document.querySelectorAll('tbody tr').forEach(row => {
-          row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+        collectionSelect.innerHTML = '<option value="">Select a collection</option>';
+        collections.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.innerText = c.name;
+          collectionSelect.appendChild(opt);
         });
+      } catch(e) { console.error('Error loading collections', e); }
+    }
+
+    // --- CALCULADORA DE PREÇO INTELIGENTE ---
+    function calculatePrices() {
+      const netBrl = parseFloat(netBrlInput.value) || 0;
+      const rate = parseFloat(exchangeRateInput.value) || 5.50;
+      
+      if (netBrl <= 0) {
+        sellPriceBrl.value = '';
+        sellPriceUsd.value = '';
+        netBrlHidden.value = '';
+        return;
+      }
+
+      // Taxas Stripe
+      const FEE_BRL_RATE = 0.0499; // 4.99%
+      const FEE_BRL_FIXED = 0.39;  // R$ 0,39
+      const FEE_USD_RATE = 0.0799; // 7.99%
+      const FEE_USD_FIXED = 0.39;  // $ 0,39 (aproximado para cálculo reverso)
+
+      // 1. Calcular Preço de Venda BRL
+      // Fórmula: (Líquido + Fixo) / (1 - Taxa%)
+      const priceBrl = (netBrl + FEE_BRL_FIXED) / (1 - FEE_BRL_RATE);
+      
+      // 2. Calcular Preço de Venda USD
+      // Primeiro descobre quanto é o líquido em USD
+      const netUsd = netBrl / rate;
+      // Aplica taxa internacional
+      const priceUsd = (netUsd + FEE_USD_FIXED) / (1 - FEE_USD_RATE);
+
+      // Atualiza inputs (readonly)
+      sellPriceBrl.value = priceBrl.toFixed(2);
+      sellPriceUsd.value = priceUsd.toFixed(2);
+      netBrlHidden.value = netBrl.toFixed(2); // Salva o valor líquido no banco para referência
+    }
+
+    netBrlInput.addEventListener('input', calculatePrices);
+    exchangeRateInput.addEventListener('input', calculatePrices);
+
+    // --- UPLOAD DE IMAGEM ---
+    async function uploadToSupabase(file, bucket = 'woltz-images') {
+      const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
+      const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fileName);
+      return urlData.publicUrl;
+    }
+
+    function getOptimizedUrl(url, width = 400) {
+      if (!url) return '';
+      return `${url}?width=${width}&quality=80`;
+    }
+
+    // Setup Thumbnail Upload
+    const thumbInput = document.getElementById('thumbFileInput');
+    const thumbDropZone = document.getElementById('thumbDropZone');
+    const thumbPreview = document.getElementById('thumbPreview');
+    const thumbPlaceholder = document.getElementById('thumbPlaceholder');
+    const thumbProgress = document.getElementById('thumbProgress');
+    const thumbUrlInput = document.getElementById('thumbUrlInput');
+
+    thumbInput?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        thumbPreview.querySelector('img').src = ev.target.result;
+        thumbPreview.classList.remove('hidden');
+        thumbPlaceholder.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+
+      try {
+        uploadingThumb = true;
+        thumbProgress.classList.remove('hidden');
+        thumbProgress.querySelector('.upload-progress').style.width = '30%';
+        
+        const url = await uploadToSupabase(file);
+        thumbProgress.querySelector('.upload-progress').style.width = '100%';
+        setTimeout(() => { thumbProgress.classList.add('hidden'); thumbProgress.querySelector('.upload-progress').style.width = '0%'; }, 500);
+        
+        thumbUrlInput.value = url;
+      } catch(err) {
+        alert('Upload failed: ' + err.message);
+        thumbProgress.classList.add('hidden');
+      } finally { uploadingThumb = false; }
+    });
+
+    ['dragenter', 'dragover'].forEach(evt => thumbDropZone?.addEventListener(evt, (e) => { e.preventDefault(); thumbDropZone.classList.add('dragover'); }));
+    ['dragleave', 'drop'].forEach(evt => thumbDropZone?.addEventListener(evt, (e) => { e.preventDefault(); thumbDropZone.classList.remove('dragover'); }));
+
+    // --- CRUD PRODUTOS ---
+    async function loadProducts() {
+      try {
+        const res = await fetch('/api/products');
+        if(!res.ok) throw new Error('Failed');
+        const result = await res.json();
+        const products = result.data || [];
+
+        if(products.length === 0) {
+          tableContainer.innerHTML = `<div class="py-12 text-center text-white/40">No products found.</div>`;
+          return;
+        }
+
+        let html = `<table class="w-full"><thead class="bg-white/5"><tr>
+          <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Product</th>
+          <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Collection</th>
+          <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Price (USD)</th>
+          <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Status</th>
+          <th class="text-right text-xs text-white/40 uppercase py-4 px-6">Actions</th>
+        </tr></thead><tbody class="divide-y divide-white/5">`;
+
+        products.forEach(p => {
+          const statusClass = p.status === 'published' ? 'text-green-400' : p.status === 'draft' ? 'text-yellow-400' : 'text-red-400';
+          const imgUrl = p.thumbnail_url 
+            ? `<img src="${getOptimizedUrl(p.thumbnail_url, 100)}" class="w-10 h-10 rounded object-cover bg-white/5" loading="lazy">`
+            : `<div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center"><svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>`;
+
+          const safeJson = JSON.stringify(p).replace(/'/g, "&#39;");
+
+          html += `<tr class="hover:bg-white/5 transition-colors">
+            <td class="py-4 px-6"><div class="flex items-center gap-3">${imgUrl}<div><p class="text-sm font-medium text-white">${p.name}</p><p class="text-xs text-white/40">${p.type}</p></div></div></td>
+            <td class="py-4 px-6 text-sm text-white/60">${p.collections?.name || '-'}</td>
+            <td class="py-4 px-6 text-sm text-white font-mono">$ ${Number(p.price_usd || 0).toFixed(2)}</td>
+            <td class="py-4 px-6 text-sm capitalize ${statusClass}">${p.status}</td>
+            <td class="py-4 px-6 text-right">
+              <button onclick='window.editProduct(${safeJson})' class="p-2 text-white/40 hover:text-blue-400 inline-block" title="Edit"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+              <button onclick="window.deleteProduct('${p.id}', '${p.name}')" class="p-2 text-white/40 hover:text-red-400 inline-block" title="Delete"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </td>
+          </tr>`;
+        });
+        html += `</tbody></table>`;
+        tableContainer.innerHTML = html;
+
+      } catch(err) {
+        console.error(err);
+        tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading products.</div>`;
+      }
+    }
+
+    window.openDrawer = () => {
+      currentMode = 'create';
+      document.getElementById('drawerTitle').innerText = 'New Product';
+      document.getElementById('drawerSubtitle').innerText = 'Create a new product';
+      document.getElementById('submitBtn').innerText = 'Create Product';
+      form.reset();
+      document.getElementById('productId').value = '';
+      netBrlInput.value = '';
+      sellPriceBrl.value = '';
+      sellPriceUsd.value = '';
+      thumbPreview.classList.add('hidden');
+      thumbPlaceholder.classList.remove('hidden');
+      thumbUrlInput.value = '';
+      drawer.classList.remove('translate-x-full');
+    };
+
+    window.closeDrawer = () => drawer.classList.add('translate-x-full');
+
+    window.editProduct = (p) => {
+      currentMode = 'edit';
+      document.getElementById('drawerTitle').innerText = 'Edit Product';
+      document.getElementById('drawerSubtitle').innerText = 'Update product details';
+      document.getElementById('submitBtn').innerText = 'Save Changes';
+      
+      document.getElementById('productId').value = p.id;
+      form.name.value = p.name;
+      form.slug.value = p.slug;
+      form.type.value = p.type;
+      form.collection_id.value = p.collection_id || '';
+      form.description.value = p.description || '';
+      form.status.value = p.status;
+      
+      // Preenche calculadora se tiver valor líquido salvo, senão tenta estimar
+      if (p.net_brl) {
+        netBrlInput.value = p.net_brl;
+      } else if (p.price_brl) {
+         // Estimativa reversa simples caso não tenha net_brl salvo
+         const estimatedNet = (parseFloat(p.price_brl) * (1 - 0.0499)) - 0.39;
+         netBrlInput.value = estimatedNet > 0 ? estimatedNet.toFixed(2) : '';
+      }
+      calculatePrices(); // Recalcula visualmente
+
+      if(p.thumbnail_url) {
+        thumbUrlInput.value = p.thumbnail_url;
+        thumbPreview.querySelector('img').src = getOptimizedUrl(p.thumbnail_url, 400);
+        thumbPreview.classList.remove('hidden');
+        thumbPlaceholder.classList.add('hidden');
+      } else {
+        thumbUrlInput.value = '';
+        thumbPreview.classList.add('hidden');
+        thumbPlaceholder.classList.remove('hidden');
+      }
+      
+      drawer.classList.remove('translate-x-full');
+    };
+
+    window.deleteProduct = async (id, name) => {
+      if(!confirm(`Delete "${name}"?`)) return;
+      try {
+        const res = await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
+        if(!res.ok) throw new Error('Delete failed');
+        alert('Deleted!');
+        loadProducts();
+      } catch(e) { alert('Error: ' + e.message); }
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if(uploadingThumb) { alert('Wait for upload!'); return; }
+      
+      const originalText = submitBtn.innerText;
+      submitBtn.innerText = 'Saving...';
+      submitBtn.disabled = true;
+
+      const fd = new FormData(form);
+      const data = {};
+      fd.forEach((v,k) => data[k] = v);
+      
+      Object.keys(data).forEach(key => { if(data[key] === "") data[key] = null; });
+      if(data.price_brl) data.price_brl = parseFloat(data.price_brl);
+      if(data.price_usd) data.price_usd = parseFloat(data.price_usd);
+      if(data.net_brl) data.net_brl = parseFloat(data.net_brl);
+
+      const id = document.getElementById('productId').value;
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `/api/products?id=${id}` : '/api/products';
+
+      try {
+        const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+        const result = await res.json();
+        if(res.ok) {
+          alert(id ? 'Updated!' : 'Created!');
+          closeDrawer();
+          loadProducts();
+        } else {
+          alert('Error: ' + (result.error || 'Unknown'));
+        }
+      } catch(err) { alert('Connection error'); }
+      finally {
+        submitBtn.innerText = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Init
+    loadCollectionsForDropdown();
+    loadProducts();
+    
+    document.getElementById('searchInput')?.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      document.querySelectorAll('tbody tr').forEach(row => {
+        row.style.display = row.textContent?.toLowerCase().includes(term) ? '' : 'none';
       });
     });
   </script>
