@@ -1,24 +1,39 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { supabase } from '../../../lib/supabase';
+
+// Carrega categorias do banco (se existir tabela categories) ou usa fallback
+let categoriesList = ['Winter', 'Summer', 'Limited'];
+try {
+  const { data: cats } = await supabase.from('categories').select('name').order('name');
+  if (cats && cats.length > 0) categoriesList = cats.map(c => c.name);
+} catch(e) { /* fallback */ }
 ---
 
 <AdminLayout title="Collections" activePage="collections">
   
-  <!-- CSS Global para Selects Escuros -->
   <style is:global>
     select, option {
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      color: white !important;
-      border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    }
-    select:focus, option:focus {
-      border-color: rgba(255, 255, 255, 0.3) !important;
-      outline: none !important;
-    }
-    /* Força options a terem fundo escuro no dropdown */
-    select option {
       background-color: #111113 !important;
       color: white !important;
+      border: 1px solid rgba(255,255,255,0.1) !important;
+    }
+    select:focus { border-color: rgba(255,255,255,0.3) !important; outline: none !important; }
+    select option { background-color: #111113 !important; }
+    
+    /* Estilo customizado para input file */
+    .file-upload-zone {
+      border: 2px dashed rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
+    }
+    .file-upload-zone:hover, .file-upload-zone.dragover {
+      border-color: white;
+      background-color: rgba(255,255,255,0.05);
+    }
+    .upload-progress {
+      height: 3px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      transition: width 0.3s ease;
     }
   </style>
 
@@ -34,12 +49,10 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   </header>
 
   <div class="p-8">
-    <!-- Search -->
     <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6">
       <input type="text" id="searchInput" placeholder="Search collections..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 w-full text-sm text-white focus:outline-none focus:border-white/30">
     </div>
 
-    <!-- Table -->
     <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden min-h-[200px]" id="tableContainer">
       <p class="py-12 text-center text-white/40 animate-pulse">Loading collections...</p>
     </div>
@@ -74,39 +87,70 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             <textarea name="description" rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none resize-none"></textarea>
           </div>
           
-          <!-- Category with Delete Button -->
+          <!-- Category -->
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Category</label>
             <div class="flex gap-2 items-center">
-              <select name="category" id="categorySelect" class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none appearance-none">
+              <select name="category" id="categorySelect" class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
                 <option value="">Select a category</option>
               </select>
-              <button type="button" id="deleteCategoryBtn" class="hidden p-3 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors" title="Delete this category">
+              <button type="button" id="deleteCategoryBtn" class="hidden p-3 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20" title="Delete category">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
               </button>
-              <button type="button" id="newCategoryToggle" class="px-3 py-3 bg-white/10 rounded-lg text-xs text-white hover:bg-white/20 whitespace-nowrap">+ New</button>
+              <button type="button" id="newCategoryToggle" class="px-3 py-3 bg-white/10 rounded-lg text-xs text-white hover:bg-white/20">+ New</button>
             </div>
-            
-            <!-- Input para nova categoria (oculto inicialmente) -->
             <div id="newCategoryWrapper" class="hidden mt-2 flex gap-2">
-              <input type="text" id="newCategoryInput" placeholder="Type new category name..." class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:border-white/30 focus:outline-none">
-              <button type="button" id="saveNewCategoryBtn" class="px-3 py-2 bg-green-500/20 text-green-400 rounded-lg text-xs hover:bg-green-500/30">Save</button>
-              <button type="button" id="cancelNewCategoryBtn" class="px-3 py-2 bg-white/10 text-white/60 rounded-lg text-xs hover:bg-white/20">Cancel</button>
+              <input type="text" id="newCategoryInput" placeholder="New category name..." class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:border-white/30 focus:outline-none">
+              <button type="button" id="saveNewCategoryBtn" class="px-3 py-2 bg-green-500/20 text-green-400 rounded-lg text-xs">Save</button>
+              <button type="button" id="cancelNewCategoryBtn" class="px-3 py-2 bg-white/10 text-white/60 rounded-lg text-xs">Cancel</button>
             </div>
-            <p class="text-[10px] text-white/40 mt-1">Categories are saved locally for this browser.</p>
           </div>
         </div>
 
-        <!-- Media -->
-        <div class="space-y-4">
+        <!-- Media com UPLOAD REAL -->
+        <div class="space-y-6">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Media</h3>
+          
+          <!-- Featured Image Upload -->
           <div>
-            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Featured Image URL</label>
-            <input type="url" name="image_url" placeholder="https://..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Featured Image</label>
+            <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="featuredDropZone">
+              <input type="file" id="featuredFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <div id="featuredPreview" class="hidden mb-3">
+                <img src="" alt="Preview" class="max-h-32 mx-auto rounded-lg object-cover">
+              </div>
+              <div id="featuredPlaceholder">
+                <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <p class="text-sm text-white/60">Click or drag image here</p>
+                <p class="text-xs text-white/40 mt-1">Recommended: 1200×600px</p>
+              </div>
+              <div id="featuredProgress" class="hidden mt-3">
+                <div class="upload-progress rounded-full" style="width: 0%"></div>
+                <p class="text-xs text-white/40 mt-1">Uploading...</p>
+              </div>
+            </div>
+            <input type="hidden" name="image_url" id="featuredUrlInput">
           </div>
+
+          <!-- Banner Upload -->
           <div>
-            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Banner URL</label>
-            <input type="url" name="banner_url" placeholder="https://..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Banner Image</label>
+            <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="bannerDropZone">
+              <input type="file" id="bannerFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <div id="bannerPreview" class="hidden mb-3">
+                <img src="" alt="Preview" class="max-h-32 mx-auto rounded-lg object-cover w-full">
+              </div>
+              <div id="bannerPlaceholder">
+                <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <p class="text-sm text-white/60">Click or drag banner here</p>
+                <p class="text-xs text-white/40 mt-1">Recommended: 1920×600px</p>
+              </div>
+              <div id="bannerProgress" class="hidden mt-3">
+                <div class="upload-progress rounded-full" style="width: 0%"></div>
+                <p class="text-xs text-white/40 mt-1">Uploading...</p>
+              </div>
+            </div>
+            <input type="hidden" name="banner_url" id="bannerUrlInput">
           </div>
         </div>
 
@@ -129,6 +173,9 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   </div>
 
   <script is:inline>
+    // Importa Supabase client via CDN para upload
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
     document.addEventListener('DOMContentLoaded', async function() {
       const tableContainer = document.getElementById('tableContainer');
       const drawer = document.getElementById('collectionDrawer');
@@ -139,13 +186,18 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       const newCatToggle = document.getElementById('newCategoryToggle');
       const newCatWrapper = document.getElementById('newCategoryWrapper');
       const newCatInput = document.getElementById('newCategoryInput');
-      const saveNewCatBtn = document.getElementById('saveNewCategoryBtn');
-      const cancelNewCatBtn = document.getElementById('cancelNewCategoryBtn');
       
       let currentMode = 'create';
       let categoriesList = [];
+      let uploadingFeatured = false;
+      let uploadingBanner = false;
 
-      // --- GERENCIAMENTO DE CATEGORIAS ---
+      // Inicializa Supabase client
+      const supabaseUrl = "${import.meta.env.SUPABASE_URL}";
+      const supabaseKey = "${import.meta.env.SUPABASE_ANON_KEY}";
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      // --- CATEGORIAS ---
       function loadCategories() {
         const stored = localStorage.getItem('woltz_categories');
         categoriesList = stored ? JSON.parse(stored) : ['Winter', 'Summer', 'Limited'];
@@ -161,18 +213,10 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
           opt.innerText = cat;
           categorySelect.appendChild(opt);
         });
-        // Restaura seleção se ainda existir
         if(categoriesList.includes(currentVal)) categorySelect.value = currentVal;
-        
-        // Mostra/esconde botão de deletar
-        if(categorySelect.value) {
-          deleteCatBtn.classList.remove('hidden');
-        } else {
-          deleteCatBtn.classList.add('hidden');
-        }
+        deleteCatBtn.classList.toggle('hidden', !categorySelect.value);
       }
 
-      // Toggle input de nova categoria
       newCatToggle.addEventListener('click', () => {
         newCatWrapper.classList.remove('hidden');
         newCatToggle.classList.add('hidden');
@@ -181,15 +225,15 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         newCatInput.focus();
       });
 
-      cancelNewCatBtn.addEventListener('click', () => {
+      document.getElementById('cancelNewCategoryBtn').addEventListener('click', () => {
         newCatWrapper.classList.add('hidden');
         newCatToggle.classList.remove('hidden');
         categorySelect.classList.remove('hidden');
         newCatInput.value = '';
-        renderCategoryOptions(); // restaura visibilidade do delete btn
+        renderCategoryOptions();
       });
 
-      saveNewCatBtn.addEventListener('click', () => {
+      document.getElementById('saveNewCategoryBtn').addEventListener('click', () => {
         const val = newCatInput.value.trim();
         if(val && !categoriesList.includes(val)) {
           categoriesList.push(val);
@@ -198,44 +242,156 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
           categorySelect.value = val;
           deleteCatBtn.classList.remove('hidden');
         }
-        // Reset UI
         newCatWrapper.classList.add('hidden');
         newCatToggle.classList.remove('hidden');
         categorySelect.classList.remove('hidden');
         newCatInput.value = '';
       });
 
-      // Ao mudar seleção, mostra/esconde botão de deletar
-      categorySelect.addEventListener('change', () => {
-        if(categorySelect.value) {
-          deleteCatBtn.classList.remove('hidden');
-        } else {
-          deleteCatBtn.classList.add('hidden');
+      categorySelect.addEventListener('change', () => deleteCatBtn.classList.toggle('hidden', !categorySelect.value));
+      
+      deleteCatBtn.addEventListener('click', () => {
+        const val = categorySelect.value;
+        if(!val || !confirm(`Delete "${val}"?`)) return;
+        categoriesList = categoriesList.filter(c => c !== val);
+        localStorage.setItem('woltz_categories', JSON.stringify(categoriesList));
+        categorySelect.value = "";
+        renderCategoryOptions();
+      });
+
+      // --- UPLOAD DE IMAGENS ---
+      async function uploadToSupabase(file, bucket = 'woltz-images') {
+        const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
+        
+        const { data, error } = await supabase.storage
+          .from(bucket)
+          .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+        if (error) throw error;
+
+        const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fileName);
+        return urlData.publicUrl;
+      }
+
+      // Setup Featured Image Upload
+      const featuredInput = document.getElementById('featuredFileInput');
+      const featuredDropZone = document.getElementById('featuredDropZone');
+      const featuredPreview = document.getElementById('featuredPreview');
+      const featuredPlaceholder = document.getElementById('featuredPlaceholder');
+      const featuredProgress = document.getElementById('featuredProgress');
+      const featuredUrlInput = document.getElementById('featuredUrlInput');
+
+      featuredInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Preview local imediato
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          featuredPreview.querySelector('img').src = ev.target.result;
+          featuredPreview.classList.remove('hidden');
+          featuredPlaceholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+
+        // Upload
+        try {
+          featuredProgress.classList.remove('hidden');
+          const progressEl = featuredProgress.querySelector('.upload-progress');
+          progressEl.style.width = '30%';
+          
+          const url = await uploadToSupabase(file);
+          progressEl.style.width = '100%';
+          
+          setTimeout(() => {
+            featuredProgress.classList.add('hidden');
+            progressEl.style.width = '0%';
+          }, 500);
+          
+          featuredUrlInput.value = url;
+        } catch(err) {
+          alert('Upload failed: ' + err.message);
+          featuredProgress.classList.add('hidden');
         }
       });
 
-      // Deletar categoria selecionada
-      deleteCatBtn.addEventListener('click', () => {
-        const val = categorySelect.value;
-        if(!val) return;
-        if(confirm(`Delete category "${val}"? This will remove it from future selections.`)) {
-          categoriesList = categoriesList.filter(c => c !== val);
-          localStorage.setItem('woltz_categories', JSON.stringify(categoriesList));
-          categorySelect.value = "";
-          renderCategoryOptions();
+      // Drag and drop visual feedback
+      ['dragenter', 'dragover'].forEach(evt => {
+        featuredDropZone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          featuredDropZone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(evt => {
+        featuredDropZone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          featuredDropZone.classList.remove('dragover');
+        });
+      });
+
+      // Setup Banner Upload (mesma lógica)
+      const bannerInput = document.getElementById('bannerFileInput');
+      const bannerDropZone = document.getElementById('bannerDropZone');
+      const bannerPreview = document.getElementById('bannerPreview');
+      const bannerPlaceholder = document.getElementById('bannerPlaceholder');
+      const bannerProgress = document.getElementById('bannerProgress');
+      const bannerUrlInput = document.getElementById('bannerUrlInput');
+
+      bannerInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          bannerPreview.querySelector('img').src = ev.target.result;
+          bannerPreview.classList.remove('hidden');
+          bannerPlaceholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+
+        try {
+          bannerProgress.classList.remove('hidden');
+          const progressEl = bannerProgress.querySelector('.upload-progress');
+          progressEl.style.width = '30%';
+          
+          const url = await uploadToSupabase(file);
+          progressEl.style.width = '100%';
+          
+          setTimeout(() => {
+            bannerProgress.classList.add('hidden');
+            progressEl.style.width = '0%';
+          }, 500);
+          
+          bannerUrlInput.value = url;
+        } catch(err) {
+          alert('Upload failed: ' + err.message);
+          bannerProgress.classList.add('hidden');
         }
+      });
+
+      ['dragenter', 'dragover'].forEach(evt => {
+        bannerDropZone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          bannerDropZone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(evt => {
+        bannerDropZone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          bannerDropZone.classList.remove('dragover');
+        });
       });
 
       // --- CRUD COLLECTIONS ---
       async function loadCollections() {
         try {
           const res = await fetch('/api/collections');
-          if(!res.ok) throw new Error('Failed to load');
+          if(!res.ok) throw new Error('Failed');
           const result = await res.json();
           const collections = result.data || [];
 
           if(collections.length === 0) {
-            tableContainer.innerHTML = `<div class="py-12 text-center text-white/40">No collections found. Create your first!</div>`;
+            tableContainer.innerHTML = `<div class="py-12 text-center text-white/40">No collections found.</div>`;
             return;
           }
 
@@ -259,8 +415,8 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
               <td class="py-4 px-6 text-sm text-white/60">${c.category || '-'}</td>
               <td class="py-4 px-6 text-sm capitalize ${statusClass}">${c.status}</td>
               <td class="py-4 px-6 text-right">
-                <button onclick='window.editCollection(${safeJson})' class="p-2 text-white/40 hover:text-blue-400 inline-block" title="Edit"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-                <button onclick="window.deleteCollection('${c.id}', '${c.name}')" class="p-2 text-white/40 hover:text-red-400 inline-block" title="Delete"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                <button onclick='window.editCollection(${safeJson})' class="p-2 text-white/40 hover:text-blue-400 inline-block"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+                <button onclick="window.deleteCollection('${c.id}', '${c.name}')" class="p-2 text-white/40 hover:text-red-400 inline-block"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
               </td>
             </tr>`;
           });
@@ -268,18 +424,22 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
           tableContainer.innerHTML = html;
 
         } catch(err) {
-          console.error(err);
-          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading collections. Check API and Console.</div>`;
+          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading collections.</div>`;
         }
       }
 
-      // --- AÇÕES GLOBAIS ---
       window.openDrawer = () => {
         currentMode = 'create';
         document.getElementById('drawerTitle').innerText = 'New Collection';
         document.getElementById('submitBtn').innerText = 'Create Collection';
         form.reset();
         document.getElementById('collectionId').value = '';
+        featuredPreview.classList.add('hidden');
+        featuredPlaceholder.classList.remove('hidden');
+        featuredUrlInput.value = '';
+        bannerPreview.classList.add('hidden');
+        bannerPlaceholder.classList.remove('hidden');
+        bannerUrlInput.value = '';
         deleteCatBtn.classList.add('hidden');
         drawer.classList.remove('translate-x-full');
       };
@@ -301,36 +461,52 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         form.slug.value = c.slug;
         form.description.value = c.description || '';
         form.category.value = c.category || '';
-        form.image_url.value = c.image_url || '';
-        form.banner_url.value = c.banner_url || '';
         form.status.value = c.status;
         
-        // Atualiza visibilidade do botão de deletar categoria
-        if(c.category) deleteCatBtn.classList.remove('hidden');
-        else deleteCatBtn.classList.add('hidden');
+        // Carrega imagens existentes
+        if(c.image_url) {
+          featuredUrlInput.value = c.image_url;
+          featuredPreview.querySelector('img').src = c.image_url;
+          featuredPreview.classList.remove('hidden');
+          featuredPlaceholder.classList.add('hidden');
+        } else {
+          featuredUrlInput.value = '';
+          featuredPreview.classList.add('hidden');
+          featuredPlaceholder.classList.remove('hidden');
+        }
         
+        if(c.banner_url) {
+          bannerUrlInput.value = c.banner_url;
+          bannerPreview.querySelector('img').src = c.banner_url;
+          bannerPreview.classList.remove('hidden');
+          bannerPlaceholder.classList.add('hidden');
+        } else {
+          bannerUrlInput.value = '';
+          bannerPreview.classList.add('hidden');
+          bannerPlaceholder.classList.remove('hidden');
+        }
+        
+        deleteCatBtn.classList.toggle('hidden', !c.category);
         drawer.classList.remove('translate-x-full');
       };
 
       window.deleteCollection = async (id, name) => {
-        if(!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) return;
+        if(!confirm(`Delete "${name}"?`)) return;
         try {
           const res = await fetch(`/api/collections?id=${id}`, { method: 'DELETE' });
-          if(!res.ok) {
-             const errData = await res.json();
-             throw new Error(errData.error || 'Delete failed');
-          }
-          alert('Collection deleted!');
+          if(!res.ok) throw new Error('Delete failed');
+          alert('Deleted!');
           loadCollections();
-        } catch(e) { 
-          console.error(e);
-          alert('Error deleting: ' + e.message); 
-        }
+        } catch(e) { alert('Error: ' + e.message); }
       };
 
-      // --- SUBMIT FORM ---
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        if(uploadingFeatured || uploadingBanner) {
+          alert('Please wait for uploads to finish!');
+          return;
+        }
+        
         const originalText = submitBtn.innerText;
         submitBtn.innerText = 'Saving...';
         submitBtn.disabled = true;
@@ -339,48 +515,35 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         const data = {};
         fd.forEach((v,k) => data[k] = v);
         
-        // Se houver valor no input de nova categoria (caso usuário tenha digitado e clicado em Save mas não selecionou no dropdown)
-        // Na verdade, nosso fluxo salva no array e seleciona no dropdown, então data.category já estará correto.
-        // Mas vamos garantir:
-        if (!data.category && newCatInput.value.trim()) {
-             data.category = newCatInput.value.trim();
-        }
+        // Garante que valores vazios sejam null (corrige erro UUID)
+        Object.keys(data).forEach(key => {
+          if(data[key] === "") data[key] = null;
+        });
 
         const id = document.getElementById('collectionId').value;
         const method = id ? 'PUT' : 'POST';
         const url = id ? `/api/collections?id=${id}` : '/api/collections';
 
         try {
-          const res = await fetch(url, { 
-            method, 
-            headers: {'Content-Type':'application/json'}, 
-            body: JSON.stringify(data) 
-          });
-          
+          const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
           const result = await res.json();
-          
           if(res.ok) {
-            alert(id ? 'Collection updated!' : 'Collection created!');
+            alert(id ? 'Updated!' : 'Created!');
             closeDrawer();
             loadCollections();
           } else {
-            alert('Error: ' + (result.error || 'Unknown error'));
+            alert('Error: ' + (result.error || 'Unknown'));
           }
-        } catch(err) { 
-          console.error(err);
-          alert('Connection error. Check console.'); 
-        }
+        } catch(err) { alert('Connection error'); }
         finally {
           submitBtn.innerText = originalText;
           submitBtn.disabled = false;
         }
       });
 
-      // Inicialização
       loadCategories();
       loadCollections();
       
-      // Busca visual
       document.getElementById('searchInput')?.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
         document.querySelectorAll('tbody tr').forEach(row => {
