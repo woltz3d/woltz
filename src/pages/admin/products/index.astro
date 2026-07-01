@@ -10,8 +10,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
   
   <style is:global>
     select, option, input, textarea { 
-      background-color: #111113 !important; 
-      color: white !important; 
+      background-color: #111113 !important; color: white !important; 
       border: 1px solid rgba(255,255,255,0.1) !important; 
     }
     select:focus, input:focus, textarea:focus { border-color: rgba(255,255,255,0.3) !important; outline: none !important; }
@@ -152,7 +151,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             
             <p class="text-[10px] text-white/40 mt-3">First 4 variants show on homepage. Others appear as "+X".</p>
           </div>
-          <input type="hidden" name="colors" id="colorsHidden" value="[]">
         </div>
 
         <!-- Calculadora -->
@@ -260,9 +258,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     const patternPlaceholder = document.getElementById('patternPlaceholder');
     const addPatternBtn = document.getElementById('addPatternBtn');
     const variantsList = document.getElementById('variantsList');
-    const colorsHidden = document.getElementById('colorsHidden');
 
-    // Estado
+    // Estado Global
     let currentMode = 'create';
     let uploadingThumb = false;
     let uploadingPattern = false;
@@ -301,13 +298,10 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         variantsList.appendChild(tag);
       });
       
-      // ATUALIZA INPUT HIDDEN SEMPRE QUE RENDERIZAR
-      colorsHidden.value = JSON.stringify(currentVariants);
-
       document.querySelectorAll('.remove-variant').forEach(btn => {
         btn.addEventListener('click', (e) => {
           currentVariants.splice(parseInt(e.target.dataset.index), 1);
-          renderVariants(); // Re-renderiza e atualiza hidden input
+          renderVariants();
         });
       });
     }
@@ -517,7 +511,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       currentMode = 'edit';
       // CARREGA VARIANTES DO BANCO CORRETAMENTE
       currentVariants = (p.colors && Array.isArray(p.colors)) ? [...p.colors] : [];
-      renderVariants(); // Isso já atualiza o input hidden
+      renderVariants();
       
       document.getElementById('drawerTitle').innerText = 'Edit Product';
       document.getElementById('submitBtn').innerText = 'Save Changes';
