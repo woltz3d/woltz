@@ -2,7 +2,7 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { supabase, type Product, type Collection } from '../../../lib/supabase';
 
-// Busca produtos e coleções do Supabase
+// Busca produtos e coleções do Supabase (Isso roda no servidor antes de enviar pro navegador)
 const { data: products } = await supabase
   .from('products')
   .select('*, collections(name)')
@@ -91,7 +91,11 @@ const { data: collections } = await supabase
               <td class="py-4 px-6 text-sm text-white">{product.price_usd ? `$ ${product.price_usd.toFixed(2)}` : '-'}</td>
               <td class="py-4 px-6 text-sm text-white/60">{product.sales_count || 0}</td>
               <td class="py-4 px-6">
-                <span class="px-2 py-1 rounded-full {product.status === 'published' ? 'bg-green-500/10 text-green-400' : product.status === 'draft' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-red-500/10 text-red-400'} text-xs capitalize">{product.status}</span>
+                <span class={`px-2 py-1 rounded-full text-xs capitalize ${
+                  product.status === 'published' ? 'bg-green-500/10 text-green-400' : 
+                  product.status === 'draft' ? 'bg-yellow-500/10 text-yellow-400' : 
+                  'bg-red-500/10 text-red-400'
+                }`}>{product.status}</span>
               </td>
               <td class="py-4 px-6 text-sm text-white/60">{new Date(product.created_at).toLocaleDateString('pt-BR')}</td>
               <td class="py-4 px-6">
@@ -105,7 +109,7 @@ const { data: collections } = await supabase
           {(!products || products.length === 0) && (
             <tr>
               <td colspan="9" class="py-12 text-center text-white/40">
-                <p>No products found. Create your first product!</p>
+                <p>No products found in database. Create your first product!</p>
               </td>
             </tr>
           )}
@@ -188,7 +192,7 @@ const { data: collections } = await supabase
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Thumbnail URL</label>
             <input type="url" name="thumbnail_url" placeholder="https://..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30">
-            <p class="text-xs text-white/40 mt-1">Or upload image via Media Library</p>
+            <p class="text-xs text-white/40 mt-1">For now, paste an image link (e.g., from Unsplash)</p>
           </div>
         </div>
 
@@ -206,64 +210,61 @@ const { data: collections } = await supabase
       <!-- Drawer Footer -->
       <div class="sticky bottom-0 bg-[#111113] border-t border-white/5 px-6 py-4 flex items-center justify-between">
         <button type="button" onclick="document.getElementById('newProductDrawer').classList.add('translate-x-full')" class="text-sm text-white/60 hover:text-white">Cancel</button>
-        <button type="submit" form="newProductForm" class="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">Create Product</button>
+        <button type="submit" form="newProductForm" id="submitBtn" class="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">Create Product</button>
       </div>
 
     </div>
   </div>
 
   <script is:inline>
-    import { supabase } from '../../../lib/supabase';
-
-    // Handle form submission
+    // Lógica de envio do formulário via API Route
     document.getElementById('newProductForm')?.addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      const formData = new FormData(this);
-      const productData = {
-        name: formData.get('name'),
-        slug: formData.get('slug'),
-        type: formData.get('type'),
-        collection_id: formData.get('collection_id') || null,
-        description: formData.get('description'),
-        price_brl: parseFloat(formData.get('price_brl') as string) || null,
-        price_usd: parseFloat(formData.get('price_usd') as string) || null,
-        thumbnail_url: formData.get('thumbnail_url'),
-        status: formData.get('status'),
-      };
+      const btn = document.getElementById('submitBtn');
+      const originalText = btn.innerText;
+      btn.innerText = 'Saving...';
+      btn.disabled = true;
 
-      const { error } = await supabase.from('products').insert([productData]);
+      const formData = new FormData(this);
+      const productData: any = Object.fromEntries(formData.entries());
       
-      if (error) {
-        alert('Error creating product: ' + error.message);
-      } else {
-        alert('Product created successfully!');
-        window.location.reload();
+      // Converte strings de preço para números
+      if(productData.price_brl) productData.price_brl = parseFloat(productData.price_brl);
+      if(productData.price_usd) productData.price_usd = parseFloat(productData.price_usd);
+      if(!productData.collection_id) productData.collection_id = null;
+
+      try {
+        const response = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(productData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('Product created successfully!');
+          window.location.reload(); // Recarrega a página para mostrar o novo produto na tabela
+        } else {
+          alert('Error: ' + (result.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Connection error. Check console for details.');
+      } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
       }
     });
 
-    // Search functionality
+    // Funcionalidade de busca na tabela (filtro visual)
     document.getElementById('searchInput')?.addEventListener('input', function(e) {
-      const term = e.target.value.toLowerCase();
+      const term = (e.target as HTMLInputElement).value.toLowerCase();
       const rows = document.querySelectorAll('#productsTableBody tr');
       rows.forEach(row => {
         const text = row.textContent?.toLowerCase() || '';
-        row.style.display = text.includes(term) ? '' : 'none';
-      });
-    });
-
-    // Collection filter
-    document.getElementById('collectionFilter')?.addEventListener('change', function(e) {
-      const collectionId = e.target.value;
-      const rows = document.querySelectorAll('#productsTableBody tr');
-      rows.forEach(row => {
-        if (!collectionId) {
-          row.style.display = '';
-          return;
-        }
-        // Simple filter by checking if row contains collection name
-        // In production, you'd refetch from API
-        row.style.display = '';
+        (row as HTMLElement).style.display = text.includes(term) ? '' : 'none';
       });
     });
   </script>
