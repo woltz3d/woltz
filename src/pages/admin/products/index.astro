@@ -1,8 +1,8 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
-import { supabase, type Product, type Collection } from '../../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
-// Busca produtos e coleções do Supabase (Isso roda no servidor antes de enviar pro navegador)
+// Busca dados no servidor (Astro Server-Side)
 const { data: products } = await supabase
   .from('products')
   .select('*, collections(name)')
@@ -16,7 +16,6 @@ const { data: collections } = await supabase
 
 <AdminLayout title="Products" activePage="products">
   
-  <!-- Top Bar -->
   <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
     <div>
       <h1 class="text-2xl font-semibold text-white">Products</h1>
@@ -28,9 +27,7 @@ const { data: collections } = await supabase
     </button>
   </header>
 
-  <!-- Content -->
   <div class="p-8">
-    
     <!-- Filters -->
     <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6 flex items-center justify-between">
       <div class="flex items-center gap-4">
@@ -45,13 +42,9 @@ const { data: collections } = await supabase
           ))}
         </select>
       </div>
-      <div class="flex items-center gap-2">
-        <button class="px-4 py-2 text-sm text-white/60 hover:text-white transition-colors">Filter</button>
-        <button class="px-4 py-2 text-sm text-white/60 hover:text-white transition-colors">Sort</button>
-      </div>
     </div>
 
-    <!-- Products Table -->
+    <!-- Table -->
     <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden">
       <table class="w-full">
         <thead class="bg-white/5">
@@ -61,14 +54,12 @@ const { data: collections } = await supabase
             <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Type</th>
             <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Price (BRL)</th>
             <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Price (USD)</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Sales</th>
             <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Status</th>
             <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Date</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium"></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-white/5" id="productsTableBody">
-          {products?.map((product: any) => (
+          {products?.map((product) => (
             <tr class="hover:bg-white/5 transition-colors">
               <td class="py-4 px-6">
                 <div class="flex items-center gap-4">
@@ -81,15 +72,13 @@ const { data: collections } = await supabase
                   </div>
                   <div>
                     <p class="text-sm font-medium text-white">{product.name}</p>
-                    <p class="text-xs text-white/40">{product.description?.substring(0, 30)}...</p>
                   </div>
                 </div>
               </td>
               <td class="py-4 px-6 text-sm text-white/60">{product.collections?.name || '-'}</td>
               <td class="py-4 px-6"><span class="px-2 py-1 rounded-full bg-white/5 text-white/60 text-xs capitalize">{product.type}</span></td>
-              <td class="py-4 px-6 text-sm text-white">{product.price_brl ? `R$ ${product.price_brl.toFixed(2).replace('.', ',')}` : '-'}</td>
-              <td class="py-4 px-6 text-sm text-white">{product.price_usd ? `$ ${product.price_usd.toFixed(2)}` : '-'}</td>
-              <td class="py-4 px-6 text-sm text-white/60">{product.sales_count || 0}</td>
+              <td class="py-4 px-6 text-sm text-white">{product.price_brl ? `R$ ${Number(product.price_brl).toFixed(2).replace('.', ',')}` : '-'}</td>
+              <td class="py-4 px-6 text-sm text-white">{product.price_usd ? `$ ${Number(product.price_usd).toFixed(2)}` : '-'}</td>
               <td class="py-4 px-6">
                 <span class={`px-2 py-1 rounded-full text-xs capitalize ${
                   product.status === 'published' ? 'bg-green-500/10 text-green-400' : 
@@ -98,17 +87,12 @@ const { data: collections } = await supabase
                 }`}>{product.status}</span>
               </td>
               <td class="py-4 px-6 text-sm text-white/60">{new Date(product.created_at).toLocaleDateString('pt-BR')}</td>
-              <td class="py-4 px-6">
-                <button class="text-white/40 hover:text-white">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
-                </button>
-              </td>
             </tr>
           ))}
           
           {(!products || products.length === 0) && (
             <tr>
-              <td colspan="9" class="py-12 text-center text-white/40">
+              <td colspan="7" class="py-12 text-center text-white/40">
                 <p>No products found in database. Create your first product!</p>
               </td>
             </tr>
@@ -116,15 +100,13 @@ const { data: collections } = await supabase
         </tbody>
       </table>
     </div>
-
   </div>
 
-  <!-- New Product Drawer -->
+  <!-- Drawer -->
   <div id="newProductDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="document.getElementById('newProductDrawer').classList.add('translate-x-full')"></div>
     <div class="absolute right-0 top-0 h-full w-[600px] bg-[#111113] border-l border-white/5 overflow-y-auto">
       
-      <!-- Drawer Header -->
       <div class="sticky top-0 bg-[#111113] border-b border-white/5 px-6 py-4 flex items-center justify-between z-10">
         <div>
           <h2 class="text-xl font-semibold text-white">New Product</h2>
@@ -135,9 +117,7 @@ const { data: collections } = await supabase
         </button>
       </div>
 
-      <!-- Form -->
       <form id="newProductForm" class="p-6 space-y-6">
-        
         <div class="bg-white/5 rounded-xl p-6 border border-white/5">
           <h3 class="text-sm font-medium text-white mb-4">Basic Information</h3>
           <div class="space-y-4">
@@ -168,7 +148,7 @@ const { data: collections } = await supabase
             </div>
             <div>
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label>
-              <textarea name="description" rows="3" placeholder="Brief product description..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 resize-none"></textarea>
+              <textarea name="description" rows="3" placeholder="Brief description..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 resize-none"></textarea>
             </div>
           </div>
         </div>
@@ -192,7 +172,6 @@ const { data: collections } = await supabase
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Thumbnail URL</label>
             <input type="url" name="thumbnail_url" placeholder="https://..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30">
-            <p class="text-xs text-white/40 mt-1">For now, paste an image link (e.g., from Unsplash)</p>
           </div>
         </div>
 
@@ -204,68 +183,79 @@ const { data: collections } = await supabase
             <option value="archived">Archived</option>
           </select>
         </div>
-
       </form>
 
-      <!-- Drawer Footer -->
       <div class="sticky bottom-0 bg-[#111113] border-t border-white/5 px-6 py-4 flex items-center justify-between">
         <button type="button" onclick="document.getElementById('newProductDrawer').classList.add('translate-x-full')" class="text-sm text-white/60 hover:text-white">Cancel</button>
         <button type="submit" form="newProductForm" id="submitBtn" class="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">Create Product</button>
       </div>
-
     </div>
   </div>
 
+  <!-- Script Corrigido (Sem TypeScript) -->
   <script is:inline>
-    // Lógica de envio do formulário via API Route
-    document.getElementById('newProductForm')?.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const btn = document.getElementById('submitBtn');
-      const originalText = btn.innerText;
-      btn.innerText = 'Saving...';
-      btn.disabled = true;
+    document.addEventListener('DOMContentLoaded', function() {
+      var form = document.getElementById('newProductForm');
+      var btn = document.getElementById('submitBtn');
 
-      const formData = new FormData(this);
-      const productData: any = Object.fromEntries(formData.entries());
-      
-      // Converte strings de preço para números
-      if(productData.price_brl) productData.price_brl = parseFloat(productData.price_brl);
-      if(productData.price_usd) productData.price_usd = parseFloat(productData.price_usd);
-      if(!productData.collection_id) productData.collection_id = null;
+      if (form && btn) {
+        form.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          var originalText = btn.innerText;
+          btn.innerText = 'Saving...';
+          btn.disabled = true;
 
-      try {
-        const response = await fetch('/api/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(productData)
+          var formData = new FormData(form);
+          var productData = {};
+          
+          // Converte FormData para objeto simples
+          formData.forEach(function(value, key) {
+            productData[key] = value;
+          });
+
+          // Converte preços para número
+          if(productData.price_brl) productData.price_brl = parseFloat(productData.price_brl);
+          if(productData.price_usd) productData.price_usd = parseFloat(productData.price_usd);
+          if(productData.collection_id === "") productData.collection_id = null;
+
+          try {
+            var response = await fetch('/api/products', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(productData)
+            });
+
+            var result = await response.json();
+
+            if (response.ok) {
+              alert('Product created successfully!');
+              window.location.reload();
+            } else {
+              alert('Error: ' + (result.error || 'Unknown error'));
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Connection error. Please check your internet or try again.');
+          } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+          }
         });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          alert('Product created successfully!');
-          window.location.reload(); // Recarrega a página para mostrar o novo produto na tabela
-        } else {
-          alert('Error: ' + (result.error || 'Unknown error'));
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Connection error. Check console for details.');
-      } finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
       }
-    });
 
-    // Funcionalidade de busca na tabela (filtro visual)
-    document.getElementById('searchInput')?.addEventListener('input', function(e) {
-      const term = (e.target as HTMLInputElement).value.toLowerCase();
-      const rows = document.querySelectorAll('#productsTableBody tr');
-      rows.forEach(row => {
-        const text = row.textContent?.toLowerCase() || '';
-        (row as HTMLElement).style.display = text.includes(term) ? '' : 'none';
-      });
+      // Busca visual
+      var searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          var term = e.target.value.toLowerCase();
+          var rows = document.querySelectorAll('#productsTableBody tr');
+          rows.forEach(function(row) {
+            var text = row.textContent ? row.textContent.toLowerCase() : '';
+            row.style.display = text.includes(term) ? '' : 'none';
+          });
+        });
+      }
     });
   </script>
 
