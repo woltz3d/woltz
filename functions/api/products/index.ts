@@ -9,22 +9,19 @@ const getCorsHeaders = () => ({
 
 export const onRequestOptions = async () => new Response(null, { status: 204, headers: getCorsHeaders() });
 
-// GET: Lista produtos E coleções (para o dropdown funcionar)
+// GET: Lista produtos OU coleções (para dropdown)
 export const onRequestGet = async (context: any) => {
   try {
     const url = new URL(context.request.url);
     const type = url.searchParams.get('type');
-    
     const supabase = createClient(context.env.SUPABASE_URL, context.env.SUPABASE_ANON_KEY);
 
-    // Se pedir collections, retorna apenas coleções publicadas
     if (type === 'collections') {
       const { data, error } = await supabase.from('collections').select('id, name').eq('status', 'published').order('name');
       if (error) throw error;
       return new Response(JSON.stringify({ success: true, data }), { status: 200, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } });
     }
 
-    // Senão, retorna produtos
     const { data: products, error } = await supabase.from('products').select('*, collections(name)').order('created_at', { ascending: false });
     if (error) throw error;
     return new Response(JSON.stringify({ success: true, data: products }), { status: 200, headers: { ...getCorsHeaders(), 'Content-Type': 'application/json' } });
@@ -43,13 +40,11 @@ export const onRequestPost = async (context: any) => {
     if (!data.id) data.id = crypto.randomUUID();
     if (!data.slug && data.name) data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     
-    // Limpeza de dados
+    // Limpeza e conversão de tipos
     Object.keys(data).forEach(k => { if (data[k] === "" || data[k] === "null") data[k] = null; });
-    
-    // Garante que preços são números
     if(data.price_brl) data.price_brl = parseFloat(data.price_brl);
     if(data.price_usd) data.price_usd = parseFloat(data.price_usd);
-    if(data.net_brl) data.net_brl = parseFloat(data.net_brl); // Salva o valor líquido desejado
+    if(data.net_brl) data.net_brl = parseFloat(data.net_brl);
 
     const { data: product, error } = await supabase.from('products').insert([data]).select().single();
     if (error) throw error;
@@ -70,7 +65,7 @@ export const onRequestPut = async (context: any) => {
     const supabase = createClient(context.env.SUPABASE_URL, context.env.SUPABASE_ANON_KEY);
     let data = await context.request.json();
     
-    const allowed = ['name', 'slug', 'type', 'collection_id', 'description', 'thumbnail_url', 'gallery_urls', 'price_brl', 'price_usd', 'net_brl', 'status'];
+    const allowed = ['name', 'slug', 'type', 'collection_id', 'description', 'thumbnail_url', 'price_brl', 'price_usd', 'net_brl', 'status'];
     const cleanData: any = {};
     allowed.forEach(k => { if (data[k] !== undefined) cleanData[k] = data[k]; });
     
