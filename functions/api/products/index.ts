@@ -18,8 +18,8 @@ export const onRequestGet = async (context: any) => {
     return new Response(JSON.stringify({ success: true, data: products }), {
       status: 200, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err.message || String(err) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 };
 
@@ -44,16 +44,16 @@ export const onRequestPost = async (context: any) => {
     return new Response(JSON.stringify({ success: true, product }), {
       status: 201, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err.message || String(err) }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 };
 
-// --- PUT: Editar Produto ---
+// --- PUT: Editar Produto (CORRIGIDO) ---
 export const onRequestPut = async (context: any) => {
   try {
     const url = new URL(context.request.url);
-    const id = url.searchParams.get('id'); // Pega o ID da URL: /api/products?id=xyz
+    const id = url.searchParams.get('id');
     
     if (!id) return new Response(JSON.stringify({ error: 'ID required' }), { status: 400 });
 
@@ -62,16 +62,23 @@ export const onRequestPut = async (context: any) => {
     if (!supabaseUrl || !supabaseKey) throw new Error('Config missing');
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const data = await context.request.json();
+    let data = await context.request.json();
 
-    // Converte tipos
-    if (data.price_brl) data.price_brl = parseFloat(data.price_brl);
-    if (data.price_usd) data.price_usd = parseFloat(data.price_usd);
-    if (data.collection_id === "") data.collection_id = null;
+    // ⚠️ FILTRO DE SEGURANÇA: Envia APENAS campos editáveis para o Supabase
+    const allowedFields = ['name', 'slug', 'type', 'collection_id', 'description', 'thumbnail_url', 'price_brl', 'price_usd', 'status'];
+    const cleanData: any = {};
+    allowedFields.forEach(field => {
+      if (data[field] !== undefined) cleanData[field] = data[field];
+    });
+
+    // Converte tipos numéricos
+    if (cleanData.price_brl) cleanData.price_brl = parseFloat(cleanData.price_brl);
+    if (cleanData.price_usd) cleanData.price_usd = parseFloat(cleanData.price_usd);
+    if (cleanData.collection_id === "") cleanData.collection_id = null;
 
     const { data: product, error } = await supabase
       .from('products')
-      .update(data)
+      .update(cleanData)
       .eq('id', id)
       .select()
       .single();
@@ -80,8 +87,8 @@ export const onRequestPut = async (context: any) => {
     return new Response(JSON.stringify({ success: true, product }), {
       status: 200, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err.message || String(err) }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 };
 
@@ -104,8 +111,8 @@ export const onRequestDelete = async (context: any) => {
     return new Response(JSON.stringify({ success: true }), {
       status: 200, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err.message || String(err) }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 };
 
