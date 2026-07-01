@@ -9,17 +9,18 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 <AdminLayout title="Products" activePage="products">
   
   <style is:global>
-    select, option { 
-      background-color: #111113 !important; 
-      color: white !important; 
-      border: 1px solid rgba(255,255,255,0.1) !important; 
-    }
+    select, option { background-color: #111113 !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; }
     select:focus { border-color: rgba(255,255,255,0.3) !important; outline: none !important; }
-    select option { background-color: #111113 !important; }
-    
     .file-upload-zone { border: 2px dashed rgba(255,255,255,0.2); transition: all 0.3s ease; }
     .file-upload-zone:hover, .file-upload-zone.dragover { border-color: white; background-color: rgba(255,255,255,0.05); }
     .upload-progress { height: 3px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
+    
+    /* Estilo para o seletor de cores */
+    .color-swatch { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
+    .color-swatch:hover { transform: scale(1.1); }
+    .color-swatch.selected { border-color: white; box-shadow: 0 0 0 2px #3b82f6; }
+    .color-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-size: 12px; }
+    .color-tag button { opacity: 0.7; hover: opacity: 1; }
   </style>
 
   <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
@@ -63,6 +64,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
       <form id="productForm" class="p-6 space-y-8">
         <input type="hidden" name="id" id="productId">
+        <input type="hidden" name="colors" id="colorsHidden"> <!-- Campo oculto para salvar cores -->
 
         <!-- Info Básica -->
         <div class="space-y-4">
@@ -81,7 +83,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             </div>
             <div>
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Collection</label>
-              <!-- DROPDOWN SIMPLES DE COLEÇÕES -->
               <select name="collection_id" id="collectionSelect" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
                 <option value="">No Collection</option>
               </select>
@@ -89,6 +90,25 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
           
           <div><label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label><textarea name="description" rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none resize-none"></textarea></div>
+        </div>
+
+        <!-- SELETOR DE CORES INTELIGENTE -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Colors & Variants</h3>
+          
+          <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+            <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Add Color Variant</label>
+            <div class="flex gap-2 mb-3">
+              <input type="text" id="colorNameInput" placeholder="e.g., Pink" class="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-white/30 focus:outline-none">
+              <input type="color" id="colorPickerInput" value="#ff0000" class="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0">
+              <button type="button" id="addColorBtn" class="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-white/90">Add</button>
+            </div>
+            
+            <!-- Lista de cores selecionadas -->
+            <div id="selectedColorsList" class="flex flex-wrap gap-2 min-h-[30px]">
+              <!-- Cores serão inseridas aqui via JS -->
+            </div>
+          </div>
         </div>
 
         <!-- Calculadora de Preço -->
@@ -182,11 +202,52 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     const sellPriceUsd = document.getElementById('sellPriceUsd');
     const netBrlHidden = document.getElementById('netBrlHidden');
     const exchangeRateInput = document.getElementById('exchangeRate');
+    
+    // Inputs de Cores
+    const colorNameInput = document.getElementById('colorNameInput');
+    const colorPickerInput = document.getElementById('colorPickerInput');
+    const addColorBtn = document.getElementById('addColorBtn');
+    const selectedColorsList = document.getElementById('selectedColorsList');
+    const colorsHidden = document.getElementById('colorsHidden');
 
     let currentMode = 'create';
     let uploadingThumb = false;
+    let selectedColors = []; // Array local para gerenciar cores
 
-    // --- CARREGAR COLEÇÕES (Apenas Dropdown) ---
+    // --- GERENCIAMENTO DE CORES ---
+    function renderColors() {
+      selectedColorsList.innerHTML = '';
+      selectedColors.forEach((color, index) => {
+        const tag = document.createElement('div');
+        tag.className = 'color-tag';
+        tag.innerHTML = `
+          <span class="w-3 h-3 rounded-full" style="background-color: ${color.hex}"></span>
+          <span>${color.name}</span>
+          <button type="button" onclick="removeColor(${index})" class="ml-1 text-white/60 hover:text-white">&times;</button>
+        `;
+        selectedColorsList.appendChild(tag);
+      });
+      // Atualiza campo oculto com JSON stringificado
+      colorsHidden.value = JSON.stringify(selectedColors);
+    }
+
+    window.removeColor = (index) => {
+      selectedColors.splice(index, 1);
+      renderColors();
+    };
+
+    addColorBtn.addEventListener('click', () => {
+      const name = colorNameInput.value.trim();
+      const hex = colorPickerInput.value;
+      
+      if (name && hex) {
+        selectedColors.push({ name, hex });
+        colorNameInput.value = '';
+        renderColors();
+      }
+    });
+
+    // --- CARREGAR COLEÇÕES ---
     async function loadCollectionsForDropdown() {
       try {
         const res = await fetch('/api/products?type=collections');
@@ -346,6 +407,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       thumbPreview.classList.add('hidden');
       thumbPlaceholder.classList.remove('hidden');
       thumbUrlInput.value = '';
+      selectedColors = [];
+      renderColors();
       drawer.classList.remove('translate-x-full');
     };
 
@@ -364,6 +427,10 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       form.collection_id.value = p.collection_id || '';
       form.description.value = p.description || '';
       form.status.value = p.status;
+      
+      // Carrega cores
+      selectedColors = p.colors || [];
+      renderColors();
       
       if (p.net_brl) {
         netBrlInput.value = p.net_brl;
@@ -408,6 +475,9 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       const fd = new FormData(form);
       const data = {};
       fd.forEach((v,k) => data[k] = v);
+      
+      // Adiciona cores manualmente pois é JSON
+      data.colors = selectedColors;
       
       Object.keys(data).forEach(key => { if(data[key] === "") data[key] = null; });
       if(data.price_brl) data.price_brl = parseFloat(data.price_brl);
