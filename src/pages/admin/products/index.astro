@@ -7,6 +7,10 @@ const { data: collections } = await supabase
   .from('collections')
   .select('id, name')
   .eq('status', 'published');
+
+// Prepara as URLs para o frontend (garante que estejam disponíveis no HTML)
+const SUPABASE_URL = import.meta.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 ---
 
 <AdminLayout title="Products" activePage="products">
@@ -39,7 +43,7 @@ const { data: collections } = await supabase
       </div>
     </div>
 
-    <!-- Table Container (Vazio inicialmente, preenchido via JS) -->
+    <!-- Table Container -->
     <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden min-h-[200px] flex items-center justify-center" id="tableContainer">
       <p class="text-white/40 animate-pulse">Loading products...</p>
     </div>
@@ -135,155 +139,153 @@ const { data: collections } = await supabase
     </div>
   </div>
 
-  <!-- Script Completo para Carregar Dados e Criar Produto -->
-  <script is:inline>
-    // Importa o cliente Supabase (funciona no browser porque configuramos no vite/astro)
+  <!-- Script Corrigido: type="module" e variáveis injetadas -->
+  <script is:inline type="module">
+    // Importa o cliente Supabase (agora funciona porque é module)
     import { createClient } from '@supabase/supabase-js';
 
-    document.addEventListener('DOMContentLoaded', async function() {
-      // Configuração do Supabase no Frontend
-      const supabaseUrl = import.meta.env.SUPABASE_URL;
-      const supabaseKey = import.meta.env.SUPABASE_ANON_KEY;
-      const supabase = createClient(supabaseUrl, supabaseKey);
+    // Pega as variáveis que o Astro injetou no HTML
+    const supabaseUrl = "${SUPABASE_URL}";
+    const supabaseKey = "${SUPABASE_ANON_KEY}";
+    
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const tableContainer = document.getElementById('tableContainer');
 
-      const tableContainer = document.getElementById('tableContainer');
+    // 1. Função para buscar e renderizar produtos
+    async function loadProducts() {
+      try {
+        const { data: products, error } = await supabase
+          .from('products')
+          .select('*, collections(name)')
+          .order('created_at', { ascending: false });
 
-      // 1. Função para buscar e renderizar produtos
-      async function loadProducts() {
-        try {
-          const { data: products, error } = await supabase
-            .from('products')
-            .select('*, collections(name)')
-            .order('created_at', { ascending: false });
+        if (error) throw error;
 
-          if (error) throw error;
+        if (!products || products.length === 0) {
+          tableContainer.innerHTML = `
+            <div class="w-full py-12 text-center text-white/40">
+              <p>No products found in database. Create your first product!</p>
+            </div>`;
+          return;
+        }
 
-          if (!products || products.length === 0) {
-            tableContainer.innerHTML = `
-              <div class="w-full py-12 text-center text-white/40">
-                <p>No products found in database. Create your first product!</p>
-              </div>`;
-            return;
-          }
+        // Gera o HTML da tabela dinamicamente
+        let html = `<table class="w-full">
+          <thead class="bg-white/5">
+            <tr>
+              <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Product</th>
+              <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Collection</th>
+              <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Type</th>
+              <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Price (BRL)</th>
+              <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Price (USD)</th>
+              <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Status</th>
+              <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5" id="productsTableBody">`;
 
-          // Gera o HTML da tabela dinamicamente
-          let html = `<table class="w-full">
-            <thead class="bg-white/5">
-              <tr>
-                <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Product</th>
-                <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Collection</th>
-                <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Type</th>
-                <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Price (BRL)</th>
-                <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Price (USD)</th>
-                <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Status</th>
-                <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Date</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5" id="productsTableBody">`;
+        products.forEach(p => {
+          const statusClass = p.status === 'published' ? 'bg-green-500/10 text-green-400' : 
+                             p.status === 'draft' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-red-500/10 text-red-400';
+          
+          const imgUrl = p.thumbnail_url 
+            ? `<img src="${p.thumbnail_url}" alt="${p.name}" class="w-full h-full object-cover" />`
+            : `<svg class="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`;
 
-          products.forEach(p => {
-            const statusClass = p.status === 'published' ? 'bg-green-500/10 text-green-400' : 
-                               p.status === 'draft' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-red-500/10 text-red-400';
-            
-            const imgUrl = p.thumbnail_url 
-              ? `<img src="${p.thumbnail_url}" alt="${p.name}" class="w-full h-full object-cover" />`
-              : `<svg class="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`;
-
-            html += `
-              <tr class="hover:bg-white/5 transition-colors">
-                <td class="py-4 px-6">
-                  <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden">${imgUrl}</div>
-                    <div>
-                      <p class="text-sm font-medium text-white">${p.name}</p>
-                      <p class="text-xs text-white/40">${p.description ? p.description.substring(0, 30) + '...' : ''}</p>
-                    </div>
+          html += `
+            <tr class="hover:bg-white/5 transition-colors">
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden">${imgUrl}</div>
+                  <div>
+                    <p class="text-sm font-medium text-white">${p.name}</p>
+                    <p class="text-xs text-white/40">${p.description ? p.description.substring(0, 30) + '...' : ''}</p>
                   </div>
-                </td>
-                <td class="py-4 px-6 text-sm text-white/60">${p.collections?.name || '-'}</td>
-                <td class="py-4 px-6"><span class="px-2 py-1 rounded-full bg-white/5 text-white/60 text-xs capitalize">${p.type}</span></td>
-                <td class="py-4 px-6 text-sm text-white">${p.price_brl ? 'R$ ' + Number(p.price_brl).toFixed(2).replace('.', ',') : '-'}</td>
-                <td class="py-4 px-6 text-sm text-white">${p.price_usd ? '$ ' + Number(p.price_usd).toFixed(2) : '-'}</td>
-                <td class="py-4 px-6"><span class="px-2 py-1 rounded-full ${statusClass} text-xs capitalize">${p.status}</span></td>
-                <td class="py-4 px-6 text-sm text-white/60">${new Date(p.created_at).toLocaleDateString('pt-BR')}</td>
-              </tr>`;
+                </div>
+              </td>
+              <td class="py-4 px-6 text-sm text-white/60">${p.collections?.name || '-'}</td>
+              <td class="py-4 px-6"><span class="px-2 py-1 rounded-full bg-white/5 text-white/60 text-xs capitalize">${p.type}</span></td>
+              <td class="py-4 px-6 text-sm text-white">${p.price_brl ? 'R$ ' + Number(p.price_brl).toFixed(2).replace('.', ',') : '-'}</td>
+              <td class="py-4 px-6 text-sm text-white">${p.price_usd ? '$ ' + Number(p.price_usd).toFixed(2) : '-'}</td>
+              <td class="py-4 px-6"><span class="px-2 py-1 rounded-full ${statusClass} text-xs capitalize">${p.status}</span></td>
+              <td class="py-4 px-6 text-sm text-white/60">${new Date(p.created_at).toLocaleDateString('pt-BR')}</td>
+            </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        tableContainer.innerHTML = html;
+
+      } catch (err) {
+        console.error(err);
+        tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading products: ${err.message}</div>`;
+      }
+    }
+
+    // Carrega os produtos ao abrir a página
+    loadProducts();
+
+    // 2. Lógica do Formulário de Criação
+    var form = document.getElementById('newProductForm');
+    var btn = document.getElementById('submitBtn');
+
+    if (form && btn) {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        var originalText = btn.innerText;
+        btn.innerText = 'Saving...';
+        btn.disabled = true;
+
+        var formData = new FormData(form);
+        var productData = {};
+        
+        formData.forEach(function(value, key) {
+          productData[key] = value;
+        });
+
+        if(productData.price_brl) productData.price_brl = parseFloat(productData.price_brl);
+        if(productData.price_usd) productData.price_usd = parseFloat(productData.price_usd);
+        if(productData.collection_id === "") productData.collection_id = null;
+
+        try {
+          var response = await fetch('/api/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(productData)
           });
 
-          html += `</tbody></table>`;
-          tableContainer.innerHTML = html;
+          var result = await response.json();
 
+          if (response.ok) {
+            alert('Product created successfully!');
+            document.getElementById('newProductDrawer').classList.add('translate-x-full'); // Fecha drawer
+            form.reset();
+            loadProducts(); // Recarrega a tabela instantaneamente sem refresh!
+          } else {
+            alert('Error: ' + (result.error || 'Unknown error'));
+          }
         } catch (err) {
           console.error(err);
-          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading products. Check console.</div>`;
+          alert('Connection error. Please check your internet or try again.');
+        } finally {
+          btn.innerText = originalText;
+          btn.disabled = false;
         }
-      }
+      });
+    }
 
-      // Carrega os produtos ao abrir a página
-      loadProducts();
-
-      // 2. Lógica do Formulário de Criação
-      var form = document.getElementById('newProductForm');
-      var btn = document.getElementById('submitBtn');
-
-      if (form && btn) {
-        form.addEventListener('submit', async function(e) {
-          e.preventDefault();
-          
-          var originalText = btn.innerText;
-          btn.innerText = 'Saving...';
-          btn.disabled = true;
-
-          var formData = new FormData(form);
-          var productData = {};
-          
-          formData.forEach(function(value, key) {
-            productData[key] = value;
-          });
-
-          if(productData.price_brl) productData.price_brl = parseFloat(productData.price_brl);
-          if(productData.price_usd) productData.price_usd = parseFloat(productData.price_usd);
-          if(productData.collection_id === "") productData.collection_id = null;
-
-          try {
-            var response = await fetch('/api/products', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(productData)
-            });
-
-            var result = await response.json();
-
-            if (response.ok) {
-              alert('Product created successfully!');
-              document.getElementById('newProductDrawer').classList.add('translate-x-full'); // Fecha drawer
-              form.reset();
-              loadProducts(); // Recarrega a tabela instantaneamente sem refresh!
-            } else {
-              alert('Error: ' + (result.error || 'Unknown error'));
-            }
-          } catch (err) {
-            console.error(err);
-            alert('Connection error. Please check your internet or try again.');
-          } finally {
-            btn.innerText = originalText;
-            btn.disabled = false;
-          }
+    // 3. Busca Visual (Filtro na tabela já carregada)
+    var searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', function(e) {
+        var term = e.target.value.toLowerCase();
+        var rows = document.querySelectorAll('#productsTableBody tr');
+        rows.forEach(function(row) {
+          var text = row.textContent ? row.textContent.toLowerCase() : '';
+          row.style.display = text.includes(term) ? '' : 'none';
         });
-      }
-
-      // 3. Busca Visual (Filtro na tabela já carregada)
-      var searchInput = document.getElementById('searchInput');
-      if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-          var term = e.target.value.toLowerCase();
-          var rows = document.querySelectorAll('#productsTableBody tr');
-          rows.forEach(function(row) {
-            var text = row.textContent ? row.textContent.toLowerCase() : '';
-            row.style.display = text.includes(term) ? '' : 'none';
-          });
-        });
-      }
-    });
+      });
+    }
   </script>
 
 </AdminLayout>
