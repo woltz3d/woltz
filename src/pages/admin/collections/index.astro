@@ -2,13 +2,6 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { supabase } from '../../../lib/supabase';
 
-let categoriesList = ['Winter', 'Summer', 'Limited'];
-try {
-  const { data: cats } = await supabase.from('categories').select('name').order('name');
-  if (cats && cats.length > 0) categoriesList = cats.map(c => c.name);
-} catch(e) {}
-
-// Passa credenciais para o frontend de forma segura
 const SUPABASE_URL = import.meta.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 ---
@@ -23,17 +16,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     .upload-progress { height: 3px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
   </style>
 
-  <!-- Credenciais seguras para o JS -->
-  <div id="app-config" 
-       data-supabase-url={SUPABASE_URL} 
-       data-supabase-key={SUPABASE_ANON_KEY} 
-       style="display:none;">
-  </div>
+  <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
 
   <header class="bg-[#111113] border-b border-white/5 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
     <div>
       <h1 class="text-2xl font-semibold text-white">Collections</h1>
-      <p class="text-sm text-white/40 mt-1">Manage all your collections</p>
+      <p class="text-sm text-white/40 mt-1">Manage collections and view pack pricing</p>
     </div>
     <button onclick="window.openDrawer()" class="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors flex items-center gap-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -45,12 +33,13 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6">
       <input type="text" id="searchInput" placeholder="Search collections..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 w-full text-sm text-white focus:outline-none focus:border-white/30">
     </div>
+
     <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden min-h-[200px]" id="tableContainer">
       <p class="py-12 text-center text-white/40 animate-pulse">Loading collections...</p>
     </div>
   </div>
 
-  <!-- DRAWER -->
+  <!-- DRAWER (Mesmo código anterior de criação/edição) -->
   <div id="collectionDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="window.closeDrawer()"></div>
     <div class="absolute right-0 top-0 h-full w-[600px] bg-[#111113] border-l border-white/5 overflow-y-auto">
@@ -85,7 +74,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
         <div class="space-y-6">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Media</h3>
-          
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Featured Image</label>
             <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="featuredDropZone">
@@ -94,13 +82,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
               <div id="featuredPlaceholder">
                 <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 <p class="text-sm text-white/60">Click or drag image here</p>
-                <p class="text-xs text-white/40 mt-1">Upload 4K - auto-optimized for display</p>
               </div>
               <div id="featuredProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading...</p></div>
             </div>
             <input type="hidden" name="image_url" id="featuredUrlInput">
           </div>
-
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Banner Image</label>
             <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="bannerDropZone">
@@ -109,7 +95,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
               <div id="bannerPlaceholder">
                 <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 <p class="text-sm text-white/60">Click or drag banner here</p>
-                <p class="text-xs text-white/40 mt-1">Upload 4K - auto-optimized for display</p>
               </div>
               <div id="bannerProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading...</p></div>
             </div>
@@ -133,16 +118,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     </div>
   </div>
 
-  <!-- SCRIPT CORRIGIDO: type="module" + import map via CDN -->
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-    // Pega credenciais do HTML
     const configEl = document.getElementById('app-config');
-    const supabaseUrl = configEl?.dataset.supabaseUrl || '';
-    const supabaseKey = configEl?.dataset.supabaseKey || '';
-    
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(configEl?.dataset.supabaseUrl, configEl?.dataset.supabaseKey);
 
     const tableContainer = document.getElementById('tableContainer');
     const drawer = document.getElementById('collectionDrawer');
@@ -159,7 +139,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     let uploadingFeatured = false;
     let uploadingBanner = false;
 
-    // --- CATEGORIAS ---
+    // --- CATEGORIAS (LocalStorage) ---
     function loadCategories() {
       const stored = localStorage.getItem('woltz_categories');
       categoriesList = stored ? JSON.parse(stored) : ['Winter', 'Summer', 'Limited'];
@@ -221,154 +201,101 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       renderCategoryOptions();
     });
 
-    // --- UPLOAD COM TRANSFORMAÇÃO DE URL ---
+    // --- UPLOAD DE IMAGENS ---
     async function uploadToSupabase(file, bucket = 'woltz-images') {
       const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
-      const { data, error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
+      const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
       if (error) throw error;
       const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fileName);
       return urlData.publicUrl;
     }
 
-    // Helper: gera URL otimizada para exibição (thumbnail/grid)
-    function getOptimizedUrl(url, width = 400) {
-      if (!url) return '';
-      // Supabase Image Transformations via query params
-      return `${url}?width=${width}&quality=80`;
+    function setupUpload(inputId, dropZoneId, previewId, placeholderId, progressId, urlInputId, setUploadingFlag) {
+      const input = document.getElementById(inputId);
+      const dropZone = document.getElementById(dropZoneId);
+      const preview = document.getElementById(previewId);
+      const placeholder = document.getElementById(placeholderId);
+      const progress = document.getElementById(progressId);
+      const urlInput = document.getElementById(urlInputId);
+
+      input?.addEventListener('change', async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          preview.querySelector('img').src = ev.target.result;
+          preview.classList.remove('hidden');
+          placeholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+
+        try {
+          setUploadingFlag(true);
+          progress.classList.remove('hidden');
+          progress.querySelector('.upload-progress').style.width = '30%';
+          
+          const url = await uploadToSupabase(file);
+          progress.querySelector('.upload-progress').style.width = '100%';
+          setTimeout(() => { progress.classList.add('hidden'); progress.querySelector('.upload-progress').style.width = '0%'; }, 500);
+          
+          urlInput.value = url;
+        } catch(err) {
+          alert('Upload failed: ' + err.message);
+          progress.classList.add('hidden');
+        } finally { setUploadingFlag(false); }
+      });
+
+      ['dragenter', 'dragover'].forEach(evt => dropZone?.addEventListener(evt, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }));
+      ['dragleave', 'drop'].forEach(evt => dropZone?.addEventListener(evt, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); }));
     }
 
-    // Setup Featured Image Upload
-    const featuredInput = document.getElementById('featuredFileInput');
-    const featuredDropZone = document.getElementById('featuredDropZone');
-    const featuredPreview = document.getElementById('featuredPreview');
-    const featuredPlaceholder = document.getElementById('featuredPlaceholder');
-    const featuredProgress = document.getElementById('featuredProgress');
-    const featuredUrlInput = document.getElementById('featuredUrlInput');
+    setupUpload('featuredFileInput', 'featuredDropZone', 'featuredPreview', 'featuredPlaceholder', 'featuredProgress', 'featuredUrlInput', (v) => uploadingFeatured = v);
+    setupUpload('bannerFileInput', 'bannerDropZone', 'bannerPreview', 'bannerPlaceholder', 'bannerProgress', 'bannerUrlInput', (v) => uploadingBanner = v);
 
-    featuredInput?.addEventListener('change', async (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        featuredPreview.querySelector('img').src = ev.target.result;
-        featuredPreview.classList.remove('hidden');
-        featuredPlaceholder.classList.add('hidden');
-      };
-      reader.readAsDataURL(file);
-
-      try {
-        uploadingFeatured = true;
-        featuredProgress.classList.remove('hidden');
-        featuredProgress.querySelector('.upload-progress').style.width = '30%';
-        
-        const url = await uploadToSupabase(file);
-        featuredProgress.querySelector('.upload-progress').style.width = '100%';
-        
-        setTimeout(() => {
-          featuredProgress.classList.add('hidden');
-          featuredProgress.querySelector('.upload-progress').style.width = '0%';
-        }, 500);
-        
-        featuredUrlInput.value = url; // Salva URL ORIGINAL (4K)
-      } catch(err) {
-        alert('Upload failed: ' + err.message);
-        featuredProgress.classList.add('hidden');
-      } finally {
-        uploadingFeatured = false;
-      }
-    });
-
-    ['dragenter', 'dragover'].forEach(evt => {
-      featuredDropZone?.addEventListener(evt, (e) => { e.preventDefault(); featuredDropZone.classList.add('dragover'); });
-    });
-    ['dragleave', 'drop'].forEach(evt => {
-      featuredDropZone?.addEventListener(evt, (e) => { e.preventDefault(); featuredDropZone.classList.remove('dragover'); });
-    });
-
-    // Setup Banner Upload
-    const bannerInput = document.getElementById('bannerFileInput');
-    const bannerDropZone = document.getElementById('bannerDropZone');
-    const bannerPreview = document.getElementById('bannerPreview');
-    const bannerPlaceholder = document.getElementById('bannerPlaceholder');
-    const bannerProgress = document.getElementById('bannerProgress');
-    const bannerUrlInput = document.getElementById('bannerUrlInput');
-
-    bannerInput?.addEventListener('change', async (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        bannerPreview.querySelector('img').src = ev.target.result;
-        bannerPreview.classList.remove('hidden');
-        bannerPlaceholder.classList.add('hidden');
-      };
-      reader.readAsDataURL(file);
-
-      try {
-        uploadingBanner = true;
-        bannerProgress.classList.remove('hidden');
-        bannerProgress.querySelector('.upload-progress').style.width = '30%';
-        
-        const url = await uploadToSupabase(file);
-        bannerProgress.querySelector('.upload-progress').style.width = '100%';
-        
-        setTimeout(() => {
-          bannerProgress.classList.add('hidden');
-          bannerProgress.querySelector('.upload-progress').style.width = '0%';
-        }, 500);
-        
-        bannerUrlInput.value = url;
-      } catch(err) {
-        alert('Upload failed: ' + err.message);
-        bannerProgress.classList.add('hidden');
-      } finally {
-        uploadingBanner = false;
-      }
-    });
-
-    ['dragenter', 'dragover'].forEach(evt => {
-      bannerDropZone?.addEventListener(evt, (e) => { e.preventDefault(); bannerDropZone.classList.add('dragover'); });
-    });
-    ['dragleave', 'drop'].forEach(evt => {
-      bannerDropZone?.addEventListener(evt, (e) => { e.preventDefault(); bannerDropZone.classList.remove('dragover'); });
-    });
-
-    // --- CRUD COLLECTIONS ---
+    // --- CRUD COLLECTIONS COM CÁLCULOS ---
     async function loadCollections() {
       try {
         const res = await fetch('/api/collections');
-        if(!res.ok) throw new Error('Failed to fetch');
+        if(!res.ok) throw new Error('Failed');
         const result = await res.json();
         const collections = result.data || [];
 
         if(collections.length === 0) {
-          tableContainer.innerHTML = `<div class="py-12 text-center text-white/40">No collections found. Create your first!</div>`;
+          tableContainer.innerHTML = `<div class="py-12 text-center text-white/40">No collections found.</div>`;
           return;
         }
 
         let html = `<table class="w-full"><thead class="bg-white/5"><tr>
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Collection</th>
-          <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Category</th>
+          <th class="text-center text-xs text-white/40 uppercase py-4 px-6">Products</th>
+          <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Pack Price</th>
+          <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Est. Net (BRL)</th>
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Status</th>
           <th class="text-right text-xs text-white/40 uppercase py-4 px-6">Actions</th>
         </tr></thead><tbody class="divide-y divide-white/5">`;
 
         collections.forEach(c => {
           const statusClass = c.status === 'published' ? 'text-green-400' : 'text-yellow-400';
-          // ⚡ USA URL OTIMIZADA PARA THUMBNAIL (400px) - Original 4K fica salva no banco
           const imgUrl = c.image_url 
-            ? `<img src="${getOptimizedUrl(c.image_url, 400)}" class="w-10 h-10 rounded object-cover bg-white/5" loading="lazy">`
+            ? `<img src="${c.image_url}?width=100&quality=80" class="w-10 h-10 rounded object-cover bg-white/5">`
             : `<div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center"><svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div>`;
 
           const safeJson = JSON.stringify(c).replace(/'/g, "&#39;");
 
           html += `<tr class="hover:bg-white/5 transition-colors">
-            <td class="py-4 px-6"><div class="flex items-center gap-3">${imgUrl}<div><p class="text-sm font-medium text-white">${c.name}</p><p class="text-xs text-white/40">${c.description ? c.description.substring(0,30)+'...' : ''}</p></div></div></td>
-            <td class="py-4 px-6 text-sm text-white/60">${c.category || '-'}</td>
+            <td class="py-4 px-6"><div class="flex items-center gap-3">${imgUrl}<div><p class="text-sm font-medium text-white">${c.name}</p><p class="text-xs text-white/40">${c.category || 'No category'}</p></div></div></td>
+            <td class="py-4 px-6 text-center"><span class="px-2 py-1 rounded-full bg-white/10 text-xs text-white">${c.product_count || 0}</span></td>
+            <td class="py-4 px-6">
+              <div class="text-sm text-white font-mono">R$ ${Number(c.pack_price_brl || 0).toFixed(2).replace('.', ',')}</div>
+              <div class="text-xs text-white/40 font-mono">$ ${Number(c.pack_price_usd || 0).toFixed(2)}</div>
+            </td>
+            <td class="py-4 px-6 text-sm text-green-400 font-mono">R$ ${Number(c.estimated_net_brl || 0).toFixed(2).replace('.', ',')}</td>
             <td class="py-4 px-6 text-sm capitalize ${statusClass}">${c.status}</td>
-            <td class="py-4 px-6 text-right">
+            <td class="py-4 px-6 text-right space-x-1">
+              <button onclick="window.viewProducts('${c.id}', '${c.name}')" class="p-2 text-blue-400 hover:text-blue-300 inline-block" title="View Products in this Collection">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              </button>
               <button onclick='window.editCollection(${safeJson})' class="p-2 text-white/40 hover:text-blue-400 inline-block" title="Edit"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
               <button onclick="window.deleteCollection('${c.id}', '${c.name}')" class="p-2 text-white/40 hover:text-red-400 inline-block" title="Delete"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
             </td>
@@ -378,12 +305,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         tableContainer.innerHTML = html;
 
       } catch(err) {
-        console.error('Load collections error:', err);
-        tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading collections. Check console & API.</div>`;
+        console.error(err);
+        tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading collections.</div>`;
       }
     }
 
-    // --- FUNÇÕES GLOBAIS (expostas via window para onclick no HTML) ---
     window.openDrawer = () => {
       currentMode = 'create';
       document.getElementById('drawerTitle').innerText = 'New Collection';
@@ -421,8 +347,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       
       if(c.image_url) {
         featuredUrlInput.value = c.image_url;
-        // Preview usa URL otimizada, mas input hidden guarda original 4K
-        featuredPreview.querySelector('img').src = getOptimizedUrl(c.image_url, 600);
+        featuredPreview.querySelector('img').src = c.image_url;
         featuredPreview.classList.remove('hidden');
         featuredPlaceholder.classList.add('hidden');
       } else {
@@ -433,7 +358,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       
       if(c.banner_url) {
         bannerUrlInput.value = c.banner_url;
-        bannerPreview.querySelector('img').src = getOptimizedUrl(c.banner_url, 600);
+        bannerPreview.querySelector('img').src = c.banner_url;
         bannerPreview.classList.remove('hidden');
         bannerPlaceholder.classList.add('hidden');
       } else {
@@ -447,16 +372,21 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     };
 
     window.deleteCollection = async (id, name) => {
-      if(!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+      if(!confirm(`Delete "${name}"?`)) return;
       try {
         const res = await fetch(`/api/collections?id=${id}`, { method: 'DELETE' });
         if(!res.ok) throw new Error('Delete failed');
-        alert('Collection deleted!');
+        alert('Deleted!');
         loadCollections();
-      } catch(e) { alert('Error deleting: ' + e.message); }
+      } catch(e) { alert('Error: ' + e.message); }
     };
 
-    // --- SUBMIT ---
+    // ATALHO: Ver produtos da coleção
+    window.viewProducts = (collectionId, collectionName) => {
+      // Redireciona para página de produtos com filtro
+      window.location.href = `/admin/products/?collection=${collectionId}&name=${encodeURIComponent(collectionName)}`;
+    };
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if(uploadingFeatured || uploadingBanner) {
@@ -472,10 +402,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       const data = {};
       fd.forEach((v,k) => data[k] = v);
       
-      // Valores vazios viram null (corrige erro UUID)
-      Object.keys(data).forEach(key => {
-        if(data[key] === "") data[key] = null;
-      });
+      Object.keys(data).forEach(key => { if(data[key] === "") data[key] = null; });
 
       const id = document.getElementById('collectionId').value;
       const method = id ? 'PUT' : 'POST';
@@ -485,29 +412,26 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
         const result = await res.json();
         if(res.ok) {
-          alert(id ? 'Collection updated!' : 'Collection created!');
+          alert(id ? 'Updated!' : 'Created!');
           closeDrawer();
           loadCollections();
         } else {
-          alert('Error: ' + (result.error || 'Unknown error'));
+          alert('Error: ' + (result.error || 'Unknown'));
         }
-      } catch(err) { 
-        console.error(err);
-        alert('Connection error. Check console.'); 
-      } finally {
+      } catch(err) { alert('Connection error'); }
+      finally {
         submitBtn.innerText = originalText;
         submitBtn.disabled = false;
       }
     });
 
-    // Init
     loadCategories();
     loadCollections();
     
     document.getElementById('searchInput')?.addEventListener('input', (e) => {
       const term = e.target.value.toLowerCase();
       document.querySelectorAll('tbody tr').forEach(row => {
-        row.style.display = row.textContent?.toLowerCase().includes(term) ? '' : 'none';
+        row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
       });
     });
   </script>
