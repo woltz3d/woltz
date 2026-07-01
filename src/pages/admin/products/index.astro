@@ -17,34 +17,47 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     select:focus { border-color: rgba(255,255,255,0.3) !important; outline: none !important; }
     select option { background-color: #111113 !important; }
     
-    .file-upload-zone { border: 2px dashed rgba(255,255,255,0.2); transition: all 0.3s ease; }
-    .file-upload-zone:hover, .file-upload-zone.dragover { border-color: white; background-color: rgba(255,255,255,0.05); }
+    .file-upload-zone { border: 2px dashed rgba(255,255,255,0.2); transition: all 0.3s ease; cursor: pointer; }
+    .file-upload-zone:hover { border-color: white; background-color: rgba(255,255,255,0.05); }
     .upload-progress { height: 3px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
     
-    /* Estilos para o seletor de cores */
+    /* Estilos para Tags de Cores/Texturas */
     .color-tag {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      background: rgba(255,255,255,0.1);
+      gap: 8px;
+      padding: 4px 10px 4px 4px;
+      background: rgba(255,255,255,0.08);
       border-radius: 20px;
       font-size: 12px;
       margin-right: 6px;
       margin-bottom: 6px;
+      border: 1px solid rgba(255,255,255,0.1);
     }
-    .color-dot {
-      width: 12px;
-      height: 12px;
+    .color-preview {
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       border: 1px solid rgba(255,255,255,0.3);
+      overflow: hidden;
+      flex-shrink: 0;
     }
-    .remove-color {
+    .color-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .remove-color { cursor: pointer; opacity: 0.5; margin-left: 4px; font-size: 14px; }
+    .remove-color:hover { opacity: 1; color: #ef4444; }
+    
+    /* Toggle Switch Simples */
+    .toggle-btn { 
+      padding: 6px 12px; 
+      font-size: 11px; 
+      border-radius: 6px; 
+      background: rgba(255,255,255,0.05); 
+      color: rgba(255,255,255,0.5); 
+      border: 1px solid transparent;
       cursor: pointer;
-      opacity: 0.6;
-      margin-left: 4px;
+      transition: all 0.2s;
     }
-    .remove-color:hover { opacity: 1; }
+    .toggle-btn.active { background: white; color: black; font-weight: 600; }
   </style>
 
   <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
@@ -115,24 +128,46 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           <div><label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label><textarea name="description" rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none resize-none"></textarea></div>
         </div>
 
-        <!-- SELETOR DE CORES INTELIGENTE -->
+        <!-- SELETOR DE CORES / TEXTURAS -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Colors & Variants</h3>
+          <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Colors & Patterns</h3>
           <div class="bg-white/5 p-4 rounded-lg border border-white/10">
-            <label class="block text-xs text-white/60 uppercase tracking-wider mb-3">Available Colors</label>
             
-            <!-- Lista de cores adicionadas -->
-            <div id="colorsList" class="flex flex-wrap mb-4 min-h-[30px]"></div>
+            <!-- Lista de Cores Adicionadas -->
+            <div id="colorsList" class="flex flex-wrap mb-4 min-h-[40px] p-2 bg-black/20 rounded-lg border border-white/5"></div>
             
-            <!-- Input para nova cor -->
-            <div class="flex gap-2 items-center">
-              <input type="text" id="colorNameInput" placeholder="Color name (e.g., Pink)" class="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-white/30 focus:outline-none">
-              <input type="color" id="colorPickerInput" value="#ff0055" class="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0">
-              <button type="button" id="addColorBtn" class="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-white/90">Add</button>
+            <!-- Controles de Adição -->
+            <div class="space-y-3">
+              <div class="flex gap-2 mb-2">
+                <button type="button" id="btnSolid" class="toggle-btn active">Solid Color</button>
+                <button type="button" id="btnPattern" class="toggle-btn">Pattern / Texture</button>
+              </div>
+
+              <!-- Input Cor Sólida -->
+              <div id="inputSolid" class="flex gap-2 items-center">
+                <input type="text" id="colorNameInput" placeholder="Color name (e.g., Pink)" class="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-white/30 focus:outline-none">
+                <input type="color" id="colorPickerInput" value="#ff0055" class="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0">
+                <button type="button" id="addColorBtn" class="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-white/90 whitespace-nowrap">Add Color</button>
+              </div>
+
+              <!-- Input Textura (Oculto inicialmente) -->
+              <div id="inputPattern" class="hidden flex-col gap-2">
+                <input type="text" id="patternNameInput" placeholder="Pattern name (e.g., Leopard)" class="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-white/30 focus:outline-none">
+                
+                <div class="file-upload-zone rounded-lg p-4 text-center relative h-24 flex flex-col items-center justify-center" id="patternDropZone">
+                  <input type="file" id="patternFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                  <div id="patternPreview" class="hidden absolute inset-0 p-1"><img src="" class="w-full h-full object-cover rounded"></div>
+                  <div id="patternPlaceholder" class="text-center">
+                    <svg class="w-6 h-6 text-white/40 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <p class="text-xs text-white/50">Click to upload texture swatch</p>
+                  </div>
+                </div>
+                <button type="button" id="addPatternBtn" class="w-full py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-white/90">Add Pattern</button>
+              </div>
             </div>
-            <p class="text-[10px] text-white/40 mt-2">First 4 colors will show on homepage. Others appear as "+X colours".</p>
+            
+            <p class="text-[10px] text-white/40 mt-3">First 4 variants show on homepage. Others appear as "+X".</p>
           </div>
-          <!-- Campo oculto para salvar JSON -->
           <input type="hidden" name="colors" id="colorsHidden" value="[]">
         </div>
 
@@ -164,7 +199,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
           
           <input type="hidden" name="net_brl" id="netBrlHidden">
-          
           <div class="flex items-center gap-2 mt-2">
              <label class="text-xs text-white/40">Exchange Rate (1 USD = R$):</label>
              <input type="number" id="exchangeRate" value="5.50" step="0.01" class="w-20 bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white text-center">
@@ -174,7 +208,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         <!-- Media Upload -->
         <div class="space-y-6">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Media</h3>
-          
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Thumbnail Image</label>
             <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="thumbDropZone">
@@ -183,7 +216,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
               <div id="thumbPlaceholder">
                 <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 <p class="text-sm text-white/60">Click or drag image here</p>
-                <p class="text-xs text-white/40 mt-1">Upload 4K - auto-optimized for display</p>
               </div>
               <div id="thumbProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading...</p></div>
             </div>
@@ -221,67 +253,131 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     const submitBtn = document.getElementById('submitBtn');
     const collectionSelect = document.getElementById('collectionSelect');
     
-    // Inputs da calculadora
+    // Inputs Calculadora
     const netBrlInput = document.getElementById('netBrlInput');
     const sellPriceBrl = document.getElementById('sellPriceBrl');
     const sellPriceUsd = document.getElementById('sellPriceUsd');
     const netBrlHidden = document.getElementById('netBrlHidden');
     const exchangeRateInput = document.getElementById('exchangeRate');
 
-    // Inputs de cores
+    // Inputs Cores/Texturas
+    const btnSolid = document.getElementById('btnSolid');
+    const btnPattern = document.getElementById('btnPattern');
+    const inputSolid = document.getElementById('inputSolid');
+    const inputPattern = document.getElementById('inputPattern');
     const colorNameInput = document.getElementById('colorNameInput');
     const colorPickerInput = document.getElementById('colorPickerInput');
     const addColorBtn = document.getElementById('addColorBtn');
+    const patternNameInput = document.getElementById('patternNameInput');
+    const patternFileInput = document.getElementById('patternFileInput');
+    const patternDropZone = document.getElementById('patternDropZone');
+    const patternPreview = document.getElementById('patternPreview');
+    const patternPlaceholder = document.getElementById('patternPlaceholder');
+    const addPatternBtn = document.getElementById('addPatternBtn');
     const colorsList = document.getElementById('colorsList');
     const colorsHidden = document.getElementById('colorsHidden');
 
     let currentMode = 'create';
     let uploadingThumb = false;
-    let currentColors = []; // Array local de cores {name, hex}
+    let uploadingPattern = false;
+    let currentColors = []; 
+    let tempPatternUrl = ''; // Armazena URL da textura durante criação
 
-    // --- GERENCIAMENTO DE CORES ---
+    // --- UI TOGGLE CORES vs TEXTURA ---
+    btnSolid.addEventListener('click', () => {
+      btnSolid.classList.add('active'); btnPattern.classList.remove('active');
+      inputSolid.classList.remove('hidden'); inputPattern.classList.add('hidden');
+    });
+    btnPattern.addEventListener('click', () => {
+      btnPattern.classList.add('active'); btnSolid.classList.remove('active');
+      inputPattern.classList.remove('hidden'); inputSolid.classList.add('hidden');
+    });
+
+    // --- RENDERIZAÇÃO DAS TAGS ---
     function renderColors() {
       colorsList.innerHTML = '';
-      currentColors.forEach((color, index) => {
+      currentColors.forEach((item, index) => {
         const tag = document.createElement('div');
         tag.className = 'color-tag';
+        
+        let previewHtml = '';
+        if (item.type === 'pattern' && item.url) {
+          previewHtml = `<div class="color-preview"><img src="${item.url}?width=50&quality=50" alt="${item.name}"></div>`;
+        } else {
+          previewHtml = `<div class="color-preview" style="background-color: ${item.hex || '#ccc'}"></div>`;
+        }
+
         tag.innerHTML = `
-          <span class="color-dot" style="background-color: ${color.hex}"></span>
-          <span>${color.name}</span>
+          ${previewHtml}
+          <span>${item.name}</span>
           <span class="remove-color" data-index="${index}">×</span>
         `;
         colorsList.appendChild(tag);
       });
       
-      // Atualiza input hidden
       colorsHidden.value = JSON.stringify(currentColors);
 
-      // Adiciona listeners de remoção
       document.querySelectorAll('.remove-color').forEach(btn => {
         btn.addEventListener('click', (e) => {
-          const idx = parseInt(e.target.dataset.index);
-          currentColors.splice(idx, 1);
+          currentColors.splice(parseInt(e.target.dataset.index), 1);
           renderColors();
         });
       });
     }
 
+    // Adicionar Cor Sólida
     addColorBtn.addEventListener('click', () => {
       const name = colorNameInput.value.trim();
       const hex = colorPickerInput.value;
-      
-      if (name && !currentColors.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-        currentColors.push({ name, hex });
+      if (name) {
+        currentColors.push({ name, hex, type: 'solid' });
         colorNameInput.value = '';
         renderColors();
       }
     });
 
-    // Permite adicionar cor com Enter
-    colorNameInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        addColorBtn.click();
+    // Upload de Textura
+    patternFileInput.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      
+      // Preview Local
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        patternPreview.querySelector('img').src = ev.target.result;
+        patternPreview.classList.remove('hidden');
+        patternPlaceholder.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+
+      // Upload Real
+      try {
+        uploadingPattern = true;
+        const fileName = `swatch-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
+        const { error } = await supabase.storage.from('woltz-images').upload(fileName, file, { cacheControl: '3600' });
+        if (error) throw error;
+        
+        const { data } = supabase.storage.from('woltz-images').getPublicUrl(fileName);
+        tempPatternUrl = data.publicUrl;
+      } catch(err) {
+        alert('Upload failed: ' + err.message);
+        tempPatternUrl = '';
+      } finally { uploadingPattern = false; }
+    });
+
+    // Adicionar Textura
+    addPatternBtn.addEventListener('click', () => {
+      const name = patternNameInput.value.trim();
+      if (name && tempPatternUrl) {
+        currentColors.push({ name, url: tempPatternUrl, type: 'pattern' });
+        patternNameInput.value = '';
+        tempPatternUrl = '';
+        patternPreview.classList.add('hidden');
+        patternPlaceholder.classList.remove('hidden');
+        patternFileInput.value = '';
+        renderColors();
+      } else if (!tempPatternUrl) {
+        alert('Please upload a texture image first.');
       }
     });
 
@@ -291,58 +387,38 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         const res = await fetch('/api/products?type=collections');
         const result = await res.json();
         const collections = result.data || [];
-        
         collectionSelect.innerHTML = '<option value="">No Collection</option>';
         collections.forEach(c => {
           const opt = document.createElement('option');
-          opt.value = c.id;
-          opt.innerText = c.name;
+          opt.value = c.id; opt.innerText = c.name;
           collectionSelect.appendChild(opt);
         });
-      } catch(e) { console.error('Error loading collections', e); }
+      } catch(e) { console.error(e); }
     }
 
-    // --- CALCULADORA DE PREÇO ---
+    // --- CALCULADORA ---
     function calculatePrices() {
       const netBrl = parseFloat(netBrlInput.value) || 0;
       const rate = parseFloat(exchangeRateInput.value) || 5.50;
-      
       if (netBrl <= 0) {
-        sellPriceBrl.value = '';
-        sellPriceUsd.value = '';
-        netBrlHidden.value = '';
-        return;
+        sellPriceBrl.value = ''; sellPriceUsd.value = ''; netBrlHidden.value = ''; return;
       }
-
-      const FEE_BRL_RATE = 0.0499;
-      const FEE_BRL_FIXED = 0.39;
-      const FEE_USD_RATE = 0.0999;
-      const FEE_USD_FIXED = 0.39;
-
-      const priceBrl = (netBrl + FEE_BRL_FIXED) / (1 - FEE_BRL_RATE);
-      const netUsd = netBrl / rate;
-      const priceUsd = (netUsd + FEE_USD_FIXED) / (1 - FEE_USD_RATE);
-
+      const priceBrl = (netBrl + 0.39) / (1 - 0.0499);
+      const priceUsd = ((netBrl / rate) + 0.39) / (1 - 0.0999);
       sellPriceBrl.value = priceBrl.toFixed(2);
       sellPriceUsd.value = priceUsd.toFixed(2);
       netBrlHidden.value = netBrl.toFixed(2);
     }
-
     netBrlInput.addEventListener('input', calculatePrices);
     exchangeRateInput.addEventListener('input', calculatePrices);
 
-    // --- UPLOAD DE IMAGEM ---
+    // --- UPLOAD THUMBNAIL PRINCIPAL ---
     async function uploadToSupabase(file, bucket = 'woltz-images') {
       const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
       const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
       if (error) throw error;
       const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fileName);
       return urlData.publicUrl;
-    }
-
-    function getOptimizedUrl(url, width = 400) {
-      if (!url) return '';
-      return `${url}?width=${width}&quality=80`;
     }
 
     const thumbInput = document.getElementById('thumbFileInput');
@@ -355,33 +431,23 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     thumbInput?.addEventListener('change', async (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
-      
       const reader = new FileReader();
       reader.onload = (ev) => {
         thumbPreview.querySelector('img').src = ev.target.result;
-        thumbPreview.classList.remove('hidden');
-        thumbPlaceholder.classList.add('hidden');
+        thumbPreview.classList.remove('hidden'); thumbPlaceholder.classList.add('hidden');
       };
       reader.readAsDataURL(file);
-
       try {
         uploadingThumb = true;
         thumbProgress.classList.remove('hidden');
         thumbProgress.querySelector('.upload-progress').style.width = '30%';
-        
         const url = await uploadToSupabase(file);
         thumbProgress.querySelector('.upload-progress').style.width = '100%';
-        setTimeout(() => { thumbProgress.classList.add('hidden'); thumbProgress.querySelector('.upload-progress').style.width = '0%'; }, 500);
-        
+        setTimeout(() => { thumbProgress.classList.add('hidden'); }, 500);
         thumbUrlInput.value = url;
-      } catch(err) {
-        alert('Upload failed: ' + err.message);
-        thumbProgress.classList.add('hidden');
-      } finally { uploadingThumb = false; }
+      } catch(err) { alert('Upload failed: ' + err.message); thumbProgress.classList.add('hidden'); }
+      finally { uploadingThumb = false; }
     });
-
-    ['dragenter', 'dragover'].forEach(evt => thumbDropZone?.addEventListener(evt, (e) => { e.preventDefault(); thumbDropZone.classList.add('dragover'); }));
-    ['dragleave', 'drop'].forEach(evt => thumbDropZone?.addEventListener(evt, (e) => { e.preventDefault(); thumbDropZone.classList.remove('dragover'); }));
 
     // --- CRUD PRODUTOS ---
     async function loadProducts() {
@@ -400,7 +466,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Product</th>
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Collection</th>
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Price (USD)</th>
-          <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Colors</th>
+          <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Variants</th>
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Status</th>
           <th class="text-right text-xs text-white/40 uppercase py-4 px-6">Actions</th>
         </tr></thead><tbody class="divide-y divide-white/5">`;
@@ -408,16 +474,22 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         products.forEach(p => {
           const statusClass = p.status === 'published' ? 'text-green-400' : p.status === 'draft' ? 'text-yellow-400' : 'text-red-400';
           const imgUrl = p.thumbnail_url 
-            ? `<img src="${getOptimizedUrl(p.thumbnail_url, 100)}" class="w-10 h-10 rounded object-cover bg-white/5" loading="lazy">`
+            ? `<img src="${p.thumbnail_url}?width=100&quality=80" class="w-10 h-10 rounded object-cover bg-white/5" loading="lazy">`
             : `<div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center"><svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>`;
 
-          // Renderiza bolinhas de cor na tabela
-          let colorDots = '';
-          if (p.colors && Array.isArray(p.colors)) {
-            p.colors.slice(0, 4).forEach(c => {
-              colorDots += `<span class="inline-block w-3 h-3 rounded-full mr-1 border border-white/20" style="background-color: ${c.hex}" title="${c.name}"></span>`;
+          // Renderiza Variantes (Cores ou Texturas)
+          let variantsHtml = '';
+          if (p.colors && Array.isArray(p.colors) && p.colors.length > 0) {
+            p.colors.slice(0, 5).forEach(c => {
+              if (c.type === 'pattern' && c.url) {
+                variantsHtml += `<div class="w-4 h-4 rounded-full overflow-hidden border border-white/20 inline-block mr-1"><img src="${c.url}?width=20&quality=50" class="w-full h-full object-cover"></div>`;
+              } else {
+                variantsHtml += `<div class="w-4 h-4 rounded-full border border-white/20 inline-block mr-1" style="background-color: ${c.hex}" title="${c.name}"></div>`;
+              }
             });
-            if (p.colors.length > 4) colorDots += `<span class="text-[10px] text-white/40">+${p.colors.length - 4}</span>`;
+            if (p.colors.length > 5) variantsHtml += `<span class="text-[10px] text-white/40 ml-1">+${p.colors.length - 5}</span>`;
+          } else {
+            variantsHtml = '<span class="text-white/30 text-xs">-</span>';
           }
 
           const safeJson = JSON.stringify(p).replace(/'/g, "&#39;");
@@ -426,11 +498,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             <td class="py-4 px-6"><div class="flex items-center gap-3">${imgUrl}<div><p class="text-sm font-medium text-white">${p.name}</p><p class="text-xs text-white/40">${p.type}</p></div></div></td>
             <td class="py-4 px-6 text-sm text-white/60">${p.collections?.name || '-'}</td>
             <td class="py-4 px-6 text-sm text-white font-mono">$ ${Number(p.price_usd || 0).toFixed(2)}</td>
-            <td class="py-4 px-6">${colorDots || '<span class="text-white/30 text-xs">-</span>'}</td>
+            <td class="py-4 px-6 flex items-center">${variantsHtml}</td>
             <td class="py-4 px-6 text-sm capitalize ${statusClass}">${p.status}</td>
             <td class="py-4 px-6 text-right">
-              <button onclick='window.editProduct(${safeJson})' class="p-2 text-white/40 hover:text-blue-400 inline-block" title="Edit"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-              <button onclick="window.deleteProduct('${p.id}', '${p.name}')" class="p-2 text-white/40 hover:text-red-400 inline-block" title="Delete"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+              <button onclick='window.editProduct(${safeJson})' class="p-2 text-white/40 hover:text-blue-400 inline-block"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+              <button onclick="window.deleteProduct('${p.id}', '${p.name}')" class="p-2 text-white/40 hover:text-red-400 inline-block"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
             </td>
           </tr>`;
         });
@@ -445,20 +517,16 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
     window.openDrawer = () => {
       currentMode = 'create';
-      currentColors = []; // Reseta cores
+      currentColors = [];
+      tempPatternUrl = '';
       renderColors();
-      
       document.getElementById('drawerTitle').innerText = 'New Product';
-      document.getElementById('drawerSubtitle').innerText = 'Create a new product';
       document.getElementById('submitBtn').innerText = 'Create Product';
       form.reset();
       document.getElementById('productId').value = '';
-      netBrlInput.value = '';
-      sellPriceBrl.value = '';
-      sellPriceUsd.value = '';
-      thumbPreview.classList.add('hidden');
-      thumbPlaceholder.classList.remove('hidden');
-      thumbUrlInput.value = '';
+      netBrlInput.value = ''; sellPriceBrl.value = ''; sellPriceUsd.value = '';
+      thumbPreview.classList.add('hidden'); thumbPlaceholder.classList.remove('hidden'); thumbUrlInput.value = '';
+      patternPreview.classList.add('hidden'); patternPlaceholder.classList.remove('hidden'); patternFileInput.value = '';
       drawer.classList.remove('translate-x-full');
     };
 
@@ -466,41 +534,23 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
     window.editProduct = (p) => {
       currentMode = 'edit';
-      // Carrega cores existentes
       currentColors = Array.isArray(p.colors) ? [...p.colors] : [];
       renderColors();
-
       document.getElementById('drawerTitle').innerText = 'Edit Product';
-      document.getElementById('drawerSubtitle').innerText = 'Update product details';
       document.getElementById('submitBtn').innerText = 'Save Changes';
-      
       document.getElementById('productId').value = p.id;
-      form.name.value = p.name;
-      form.slug.value = p.slug;
-      form.type.value = p.type;
-      form.collection_id.value = p.collection_id || '';
-      form.description.value = p.description || '';
-      form.status.value = p.status;
+      form.name.value = p.name; form.slug.value = p.slug; form.type.value = p.type;
+      form.collection_id.value = p.collection_id || ''; form.description.value = p.description || ''; form.status.value = p.status;
       
-      if (p.net_brl) {
-        netBrlInput.value = p.net_brl;
-      } else if (p.price_brl) {
-         const estimatedNet = (parseFloat(p.price_brl) * (1 - 0.0499)) - 0.39;
-         netBrlInput.value = estimatedNet > 0 ? estimatedNet.toFixed(2) : '';
-      }
+      if (p.net_brl) netBrlInput.value = p.net_brl;
+      else if (p.price_brl) netBrlInput.value = ((parseFloat(p.price_brl) * 0.9501) - 0.39).toFixed(2);
       calculatePrices();
 
       if(p.thumbnail_url) {
         thumbUrlInput.value = p.thumbnail_url;
-        thumbPreview.querySelector('img').src = getOptimizedUrl(p.thumbnail_url, 400);
-        thumbPreview.classList.remove('hidden');
-        thumbPlaceholder.classList.add('hidden');
-      } else {
-        thumbUrlInput.value = '';
-        thumbPreview.classList.add('hidden');
-        thumbPlaceholder.classList.remove('hidden');
+        thumbPreview.querySelector('img').src = p.thumbnail_url;
+        thumbPreview.classList.remove('hidden'); thumbPlaceholder.classList.add('hidden');
       }
-      
       drawer.classList.remove('translate-x-full');
     };
 
@@ -509,32 +559,25 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       try {
         const res = await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
         if(!res.ok) throw new Error('Delete failed');
-        alert('Deleted!');
-        loadProducts();
+        alert('Deleted!'); loadProducts();
       } catch(e) { alert('Error: ' + e.message); }
     };
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if(uploadingThumb) { alert('Wait for upload!'); return; }
+      if(uploadingThumb || uploadingPattern) { alert('Wait for uploads!'); return; }
       
       const originalText = submitBtn.innerText;
-      submitBtn.innerText = 'Saving...';
-      submitBtn.disabled = true;
+      submitBtn.innerText = 'Saving...'; submitBtn.disabled = true;
 
       const fd = new FormData(form);
       const data = {};
       fd.forEach((v,k) => data[k] = v);
-      
       Object.keys(data).forEach(key => { if(data[key] === "") data[key] = null; });
       if(data.price_brl) data.price_brl = parseFloat(data.price_brl);
       if(data.price_usd) data.price_usd = parseFloat(data.price_usd);
       if(data.net_brl) data.net_brl = parseFloat(data.net_brl);
-      
-      // Garante que colors seja enviado como array JSON
-      try {
-        data.colors = JSON.parse(colorsHidden.value || '[]');
-      } catch(e) { data.colors = []; }
+      data.colors = currentColors; // Envia array direto
 
       const id = document.getElementById('productId').value;
       const method = id ? 'PUT' : 'POST';
@@ -543,29 +586,17 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       try {
         const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
         const result = await res.json();
-        if(res.ok) {
-          alert(id ? 'Updated!' : 'Created!');
-          closeDrawer();
-          loadProducts();
-        } else {
-          alert('Error: ' + (result.error || 'Unknown'));
-        }
+        if(res.ok) { alert(id ? 'Updated!' : 'Created!'); closeDrawer(); loadProducts(); }
+        else { alert('Error: ' + (result.error || 'Unknown')); }
       } catch(err) { alert('Connection error'); }
-      finally {
-        submitBtn.innerText = originalText;
-        submitBtn.disabled = false;
-      }
+      finally { submitBtn.innerText = originalText; submitBtn.disabled = false; }
     });
 
-    // Init
     loadCollectionsForDropdown();
     loadProducts();
-    
     document.getElementById('searchInput')?.addEventListener('input', (e) => {
       const term = e.target.value.toLowerCase();
-      document.querySelectorAll('tbody tr').forEach(row => {
-        row.style.display = row.textContent?.toLowerCase().includes(term) ? '' : 'none';
-      });
+      document.querySelectorAll('tbody tr').forEach(row => row.style.display = row.textContent?.toLowerCase().includes(term) ? '' : 'none');
     });
   </script>
 </AdminLayout>
