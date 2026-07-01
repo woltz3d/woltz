@@ -9,7 +9,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 <AdminLayout title="Products" activePage="products">
   
   <style is:global>
-    /* Força selects escuros em todo o admin */
     select, option { 
       background-color: #111113 !important; 
       color: white !important; 
@@ -49,7 +48,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     </div>
   </div>
 
-  <!-- DRAWER UNIFICADO -->
+  <!-- DRAWER -->
   <div id="productDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="window.closeDrawer()"></div>
     <div class="absolute right-0 top-0 h-full w-[600px] bg-[#111113] border-l border-white/5 overflow-y-auto">
@@ -91,7 +90,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           <div><label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label><textarea name="description" rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none resize-none"></textarea></div>
         </div>
 
-        <!-- Calculadora de Preço Inteligente -->
+        <!-- Calculadora de Preço -->
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2 flex items-center justify-between">
             Pricing Calculator
@@ -118,7 +117,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             </div>
           </div>
           
-          <!-- Campo oculto para salvar o valor líquido no banco -->
           <input type="hidden" name="net_brl" id="netBrlHidden">
           
           <div class="flex items-center gap-2 mt-2">
@@ -204,7 +202,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       } catch(e) { console.error('Error loading collections', e); }
     }
 
-    // --- CALCULADORA DE PREÇO INTELIGENTE ---
+    // --- CALCULADORA DE PREÇO (TAXAS CORRIGIDAS) ---
     function calculatePrices() {
       const netBrl = parseFloat(netBrlInput.value) || 0;
       const rate = parseFloat(exchangeRateInput.value) || 5.50;
@@ -216,26 +214,22 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         return;
       }
 
-      // Taxas Stripe
+      // TAXAS STRIPE ATUALIZADAS
       const FEE_BRL_RATE = 0.0499; // 4.99%
       const FEE_BRL_FIXED = 0.39;  // R$ 0,39
-      const FEE_USD_RATE = 0.0799; // 7.99%
-      const FEE_USD_FIXED = 0.39;  // $ 0,39 (aproximado para cálculo reverso)
+      const FEE_USD_RATE = 0.0999; // 9.99% (CORRIGIDO)
+      const FEE_USD_FIXED = 0.39;  // $ 0,39
 
       // 1. Calcular Preço de Venda BRL
-      // Fórmula: (Líquido + Fixo) / (1 - Taxa%)
       const priceBrl = (netBrl + FEE_BRL_FIXED) / (1 - FEE_BRL_RATE);
       
       // 2. Calcular Preço de Venda USD
-      // Primeiro descobre quanto é o líquido em USD
       const netUsd = netBrl / rate;
-      // Aplica taxa internacional
       const priceUsd = (netUsd + FEE_USD_FIXED) / (1 - FEE_USD_RATE);
 
-      // Atualiza inputs (readonly)
       sellPriceBrl.value = priceBrl.toFixed(2);
       sellPriceUsd.value = priceUsd.toFixed(2);
-      netBrlHidden.value = netBrl.toFixed(2); // Salva o valor líquido no banco para referência
+      netBrlHidden.value = netBrl.toFixed(2);
     }
 
     netBrlInput.addEventListener('input', calculatePrices);
@@ -375,15 +369,13 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       form.description.value = p.description || '';
       form.status.value = p.status;
       
-      // Preenche calculadora se tiver valor líquido salvo, senão tenta estimar
       if (p.net_brl) {
         netBrlInput.value = p.net_brl;
       } else if (p.price_brl) {
-         // Estimativa reversa simples caso não tenha net_brl salvo
          const estimatedNet = (parseFloat(p.price_brl) * (1 - 0.0499)) - 0.39;
          netBrlInput.value = estimatedNet > 0 ? estimatedNet.toFixed(2) : '';
       }
-      calculatePrices(); // Recalcula visualmente
+      calculatePrices();
 
       if(p.thumbnail_url) {
         thumbUrlInput.value = p.thumbnail_url;
