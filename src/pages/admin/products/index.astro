@@ -81,8 +81,9 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             </div>
             <div>
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Collection</label>
+              <!-- DROPDOWN SIMPLES DE COLEÇÕES -->
               <select name="collection_id" id="collectionSelect" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-white/30 focus:outline-none">
-                <option value="">Loading collections...</option>
+                <option value="">No Collection</option>
               </select>
             </div>
           </div>
@@ -185,14 +186,14 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     let currentMode = 'create';
     let uploadingThumb = false;
 
-    // --- CARREGAR COLEÇÕES ---
+    // --- CARREGAR COLEÇÕES (Apenas Dropdown) ---
     async function loadCollectionsForDropdown() {
       try {
         const res = await fetch('/api/products?type=collections');
         const result = await res.json();
         const collections = result.data || [];
         
-        collectionSelect.innerHTML = '<option value="">Select a collection</option>';
+        collectionSelect.innerHTML = '<option value="">No Collection</option>';
         collections.forEach(c => {
           const opt = document.createElement('option');
           opt.value = c.id;
@@ -202,7 +203,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       } catch(e) { console.error('Error loading collections', e); }
     }
 
-    // --- CALCULADORA DE PREÇO (TAXAS CORRIGIDAS) ---
+    // --- CALCULADORA DE PREÇO ---
     function calculatePrices() {
       const netBrl = parseFloat(netBrlInput.value) || 0;
       const rate = parseFloat(exchangeRateInput.value) || 5.50;
@@ -214,16 +215,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         return;
       }
 
-      // TAXAS STRIPE ATUALIZADAS
-      const FEE_BRL_RATE = 0.0499; // 4.99%
-      const FEE_BRL_FIXED = 0.39;  // R$ 0,39
-      const FEE_USD_RATE = 0.0999; // 9.99% (CORRIGIDO)
-      const FEE_USD_FIXED = 0.39;  // $ 0,39
+      const FEE_BRL_RATE = 0.0499;
+      const FEE_BRL_FIXED = 0.39;
+      const FEE_USD_RATE = 0.0999;
+      const FEE_USD_FIXED = 0.39;
 
-      // 1. Calcular Preço de Venda BRL
       const priceBrl = (netBrl + FEE_BRL_FIXED) / (1 - FEE_BRL_RATE);
-      
-      // 2. Calcular Preço de Venda USD
       const netUsd = netBrl / rate;
       const priceUsd = (netUsd + FEE_USD_FIXED) / (1 - FEE_USD_RATE);
 
@@ -249,7 +246,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       return `${url}?width=${width}&quality=80`;
     }
 
-    // Setup Thumbnail Upload
     const thumbInput = document.getElementById('thumbFileInput');
     const thumbDropZone = document.getElementById('thumbDropZone');
     const thumbPreview = document.getElementById('thumbPreview');
