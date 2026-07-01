@@ -2,11 +2,7 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { supabase } from '../../../lib/supabase';
 
-// Busca coleções no servidor (SSG) - isso muda pouco, então pode ser estático
-const { data: collections } = await supabase
-  .from('collections')
-  .select('id, name')
-  .eq('status', 'published');
+const { data: collections } = await supabase.from('collections').select('id, name').eq('status', 'published');
 ---
 
 <AdminLayout title="Products" activePage="products">
@@ -16,64 +12,59 @@ const { data: collections } = await supabase
       <h1 class="text-2xl font-semibold text-white">Products</h1>
       <p class="text-sm text-white/40 mt-1">Manage your products and sets</p>
     </div>
-    <button onclick="document.getElementById('newProductDrawer').classList.remove('translate-x-full')" class="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors flex items-center gap-2">
+    <button onclick="openCreateDrawer()" class="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors flex items-center gap-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       New Product
     </button>
   </header>
 
   <div class="p-8">
-    <!-- Filters -->
     <div class="bg-[#111113] border border-white/5 rounded-xl p-4 mb-6 flex items-center justify-between">
       <div class="flex items-center gap-4">
         <div class="relative">
           <input type="text" id="searchInput" placeholder="Search products..." class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 pl-10 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 w-64">
           <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </div>
-        <select id="collectionFilter" class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none">
-          <option value="">All Collections</option>
-          {collections?.map(col => (
-            <option value={col.id}>{col.name}</option>
-          ))}
-        </select>
       </div>
     </div>
 
-    <!-- Table Container -->
-    <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden min-h-[200px] flex items-center justify-center" id="tableContainer">
-      <p class="text-white/40 animate-pulse">Loading products...</p>
+    <div class="bg-[#111113] border border-white/5 rounded-xl overflow-hidden min-h-[200px]" id="tableContainer">
+      <p class="py-12 text-center text-white/40 animate-pulse">Loading products...</p>
     </div>
   </div>
 
-  <!-- Drawer -->
-  <div id="newProductDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
-    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="document.getElementById('newProductDrawer').classList.add('translate-x-full')"></div>
+  <!-- DRAWER UNIFICADO (Criação e Edição) -->
+  <div id="productDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeDrawer()"></div>
     <div class="absolute right-0 top-0 h-full w-[600px] bg-[#111113] border-l border-white/5 overflow-y-auto">
       
       <div class="sticky top-0 bg-[#111113] border-b border-white/5 px-6 py-4 flex items-center justify-between z-10">
         <div>
-          <h2 class="text-xl font-semibold text-white">New Product</h2>
-          <p class="text-sm text-white/40 mt-1">Create a new product or set</p>
+          <h2 class="text-xl font-semibold text-white" id="drawerTitle">New Product</h2>
+          <p class="text-sm text-white/40 mt-1" id="drawerSubtitle">Create a new product or set</p>
         </div>
-        <button onclick="document.getElementById('newProductDrawer').classList.add('translate-x-full')" class="text-white/40 hover:text-white">
+        <button onclick="closeDrawer()" class="text-white/40 hover:text-white">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
-      <form id="newProductForm" class="p-6 space-y-6">
+      <form id="productForm" class="p-6 space-y-6">
+        <!-- Campo oculto para ID (usado apenas na edição) -->
+        <input type="hidden" name="id" id="productId">
+
         <div class="bg-white/5 rounded-xl p-6 border border-white/5">
           <h3 class="text-sm font-medium text-white mb-4">Basic Information</h3>
           <div class="space-y-4">
             <div>
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Product Name *</label>
-              <input type="text" name="name" required placeholder="Ex: Set 01 - Arctic" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30">
+              <input type="text" name="name" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
             </div>
             <div>
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Slug *</label>
-              <input type="text" name="slug" required placeholder="Ex: set-01-arctic" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30">
+              <input type="text" name="slug" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
             </div>
             <div>
-              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Product Type</label>
+              <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Type</label>
               <select name="type" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none">
                 <option value="set">Set (Bundle)</option>
                 <option value="item">Individual Item</option>
@@ -84,14 +75,12 @@ const { data: collections } = await supabase
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Collection</label>
               <select name="collection_id" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none">
                 <option value="">Select a collection</option>
-                {collections?.map(col => (
-                  <option value={col.id}>{col.name}</option>
-                ))}
+                {collections?.map(col => (<option value={col.id}>{col.name}</option>))}
               </select>
             </div>
             <div>
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Description</label>
-              <textarea name="description" rows="3" placeholder="Brief description..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 resize-none"></textarea>
+              <textarea name="description" rows="3" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 resize-none"></textarea>
             </div>
           </div>
         </div>
@@ -101,11 +90,11 @@ const { data: collections } = await supabase
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Price (BRL)</label>
-              <input type="number" name="price_brl" step="0.01" placeholder="0.00" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30">
+              <input type="number" name="price_brl" step="0.01" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
             </div>
             <div>
               <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Price (USD)</label>
-              <input type="number" name="price_usd" step="0.01" placeholder="0.00" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30">
+              <input type="number" name="price_usd" step="0.01" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
             </div>
           </div>
         </div>
@@ -114,7 +103,7 @@ const { data: collections } = await supabase
           <h3 class="text-sm font-medium text-white mb-4">Media</h3>
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Thumbnail URL</label>
-            <input type="url" name="thumbnail_url" placeholder="https://..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30">
+            <input type="url" name="thumbnail_url" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30">
           </div>
         </div>
 
@@ -129,134 +118,160 @@ const { data: collections } = await supabase
       </form>
 
       <div class="sticky bottom-0 bg-[#111113] border-t border-white/5 px-6 py-4 flex items-center justify-between">
-        <button type="button" onclick="document.getElementById('newProductDrawer').classList.add('translate-x-full')" class="text-sm text-white/60 hover:text-white">Cancel</button>
-        <button type="submit" form="newProductForm" id="submitBtn" class="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">Create Product</button>
+        <button type="button" onclick="closeDrawer()" class="text-sm text-white/60 hover:text-white">Cancel</button>
+        <button type="submit" form="productForm" id="submitBtn" class="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">Save Product</button>
       </div>
     </div>
   </div>
 
-  <!-- Script Simplificado: Usa apenas fetch para nossa API -->
   <script is:inline>
     document.addEventListener('DOMContentLoaded', async function() {
       const tableContainer = document.getElementById('tableContainer');
+      const drawer = document.getElementById('productDrawer');
+      const form = document.getElementById('productForm');
+      const submitBtn = document.getElementById('submitBtn');
+      let currentMode = 'create'; // 'create' ou 'edit'
 
-      // 1. Função para buscar produtos via NOSSA API (não precisa do Supabase no frontend!)
+      // --- FUNÇÕES AUXILIARES ---
+      function openDrawer(mode, productData = null) {
+        currentMode = mode;
+        document.getElementById('drawerTitle').innerText = mode === 'create' ? 'New Product' : 'Edit Product';
+        document.getElementById('drawerSubtitle').innerText = mode === 'create' ? 'Create a new product' : 'Update product details';
+        document.getElementById('submitBtn').innerText = mode === 'create' ? 'Create Product' : 'Save Changes';
+        
+        if (mode === 'edit' && productData) {
+          // Preenche o formulário
+          document.getElementById('productId').value = productData.id;
+          form.name.value = productData.name;
+          form.slug.value = productData.slug;
+          form.type.value = productData.type;
+          form.collection_id.value = productData.collection_id || '';
+          form.description.value = productData.description || '';
+          form.price_brl.value = productData.price_brl || '';
+          form.price_usd.value = productData.price_usd || '';
+          form.thumbnail_url.value = productData.thumbnail_url || '';
+          form.status.value = productData.status;
+        } else {
+          form.reset();
+          document.getElementById('productId').value = '';
+        }
+        
+        drawer.classList.remove('translate-x-full');
+      }
+
+      window.openCreateDrawer = () => openDrawer('create');
+      window.closeDrawer = () => drawer.classList.add('translate-x-full');
+
       async function loadProducts() {
         try {
-          // Chama nossa própria API Route que já configuramos
-          const response = await fetch('/api/products?method=get');
-          
-          if (!response.ok) throw new Error('Failed to fetch products');
-          
-          const result = await response.json();
+          const res = await fetch('/api/products?method=get');
+          if (!res.ok) throw new Error('Fetch failed');
+          const result = await res.json();
           const products = result.data || [];
 
           if (products.length === 0) {
-            tableContainer.innerHTML = `<div class="w-full py-12 text-center text-white/40"><p>No products found. Create your first!</p></div>`;
+            tableContainer.innerHTML = `<div class="py-12 text-center text-white/40">No products found.</div>`;
             return;
           }
 
           let html = `<table class="w-full"><thead class="bg-white/5"><tr>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Product</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Collection</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Type</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Price (BRL)</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Price (USD)</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Status</th>
-            <th class="text-left text-xs text-white/40 uppercase tracking-wider py-4 px-6 font-medium">Date</th>
-          </tr></thead><tbody class="divide-y divide-white/5" id="productsTableBody">`;
+            <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Product</th>
+            <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Price (BRL)</th>
+            <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Status</th>
+            <th class="text-right text-xs text-white/40 uppercase py-4 px-6">Actions</th>
+          </tr></thead><tbody class="divide-y divide-white/5">`;
 
           products.forEach(p => {
-            const statusClass = p.status === 'published' ? 'bg-green-500/10 text-green-400' : 
-                               p.status === 'draft' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-red-500/10 text-red-400';
-            
+            const statusClass = p.status === 'published' ? 'text-green-400' : p.status === 'draft' ? 'text-yellow-400' : 'text-red-400';
             const imgUrl = p.thumbnail_url 
-              ? `<img src="${p.thumbnail_url}" alt="${p.name}" class="w-full h-full object-cover" />`
-              : `<svg class="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`;
+              ? `<img src="${p.thumbnail_url}" class="w-10 h-10 rounded object-cover bg-white/5">`
+              : `<div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center"><svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
 
-            html += `<tr class="hover:bg-white/5 transition-colors">
-              <td class="py-4 px-6"><div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden">${imgUrl}</div>
-                <div><p class="text-sm font-medium text-white">${p.name}</p></div>
-              </div></td>
-              <td class="py-4 px-6 text-sm text-white/60">${p.collections?.name || '-'}</td>
-              <td class="py-4 px-6"><span class="px-2 py-1 rounded-full bg-white/5 text-white/60 text-xs capitalize">${p.type}</span></td>
-              <td class="py-4 px-6 text-sm text-white">${p.price_brl ? 'R$ ' + Number(p.price_brl).toFixed(2).replace('.', ',') : '-'}</td>
-              <td class="py-4 px-6 text-sm text-white">${p.price_usd ? '$ ' + Number(p.price_usd).toFixed(2) : '-'}</td>
-              <td class="py-4 px-6"><span class="px-2 py-1 rounded-full ${statusClass} text-xs capitalize">${p.status}</span></td>
-              <td class="py-4 px-6 text-sm text-white/60">${new Date(p.created_at).toLocaleDateString('pt-BR')}</td>
+            html += `<tr class="hover:bg-white/5 transition-colors group">
+              <td class="py-4 px-6"><div class="flex items-center gap-3">${imgUrl}<span class="text-sm font-medium text-white">${p.name}</span></div></td>
+              <td class="py-4 px-6 text-sm text-white">R$ ${Number(p.price_brl || 0).toFixed(2).replace('.', ',')}</td>
+              <td class="py-4 px-6 text-sm capitalize ${statusClass}">${p.status}</td>
+              <td class="py-4 px-6 text-right">
+                <button onclick='window.editProduct(${JSON.stringify(p).replace(/'/g, "&#39;")})' class="p-2 text-white/40 hover:text-blue-400 transition-colors" title="Edit">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button onclick="window.deleteProduct('${p.id}', '${p.name}')" class="p-2 text-white/40 hover:text-red-400 transition-colors" title="Delete">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </td>
             </tr>`;
           });
-
           html += `</tbody></table>`;
           tableContainer.innerHTML = html;
-
         } catch (err) {
-          console.error(err);
-          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading products. Check console.</div>`;
+          tableContainer.innerHTML = `<div class="p-8 text-red-400">Error loading products.</div>`;
         }
       }
 
-      // Carrega ao iniciar
+      // --- AÇÕES GLOBAIS ---
+      window.editProduct = (product) => openDrawer('edit', product);
+      
+      window.deleteProduct = async (id, name) => {
+        if (!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) return;
+        
+        try {
+          const res = await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
+          if (!res.ok) throw new Error('Delete failed');
+          alert('Product deleted!');
+          loadProducts();
+        } catch (err) {
+          alert('Error deleting product.');
+        }
+      };
+
+      // --- SUBMIT DO FORMULÁRIO ---
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = 'Saving...';
+        submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((v, k) => data[k] = v);
+        
+        if(data.price_brl) data.price_brl = parseFloat(data.price_brl);
+        if(data.price_usd) data.price_usd = parseFloat(data.price_usd);
+        if(data.collection_id === "") data.collection_id = null;
+
+        const id = document.getElementById('productId').value;
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `/api/products?id=${id}` : '/api/products';
+
+        try {
+          const res = await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+          const result = await res.json();
+          
+          if (res.ok) {
+            alert(id ? 'Product updated!' : 'Product created!');
+            closeDrawer();
+            loadProducts();
+          } else {
+            alert('Error: ' + (result.error || 'Unknown'));
+          }
+        } catch (err) {
+          alert('Connection error.');
+        } finally {
+          submitBtn.innerText = originalText;
+          submitBtn.disabled = false;
+        }
+      });
+
+      // Inicializa
       loadProducts();
 
-      // 2. Lógica do Formulário (Já funcionava, mantemos igual)
-      var form = document.getElementById('newProductForm');
-      var btn = document.getElementById('submitBtn');
-
-      if (form && btn) {
-        form.addEventListener('submit', async function(e) {
-          e.preventDefault();
-          var originalText = btn.innerText;
-          btn.innerText = 'Saving...';
-          btn.disabled = true;
-
-          var formData = new FormData(form);
-          var productData = {};
-          formData.forEach(function(value, key) { productData[key] = value; });
-
-          if(productData.price_brl) productData.price_brl = parseFloat(productData.price_brl);
-          if(productData.price_usd) productData.price_usd = parseFloat(productData.price_usd);
-          if(productData.collection_id === "") productData.collection_id = null;
-
-          try {
-            var response = await fetch('/api/products', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(productData)
-            });
-            var result = await response.json();
-
-            if (response.ok) {
-              alert('Product created successfully!');
-              document.getElementById('newProductDrawer').classList.add('translate-x-full');
-              form.reset();
-              loadProducts(); // Atualiza tabela instantaneamente
-            } else {
-              alert('Error: ' + (result.error || 'Unknown error'));
-            }
-          } catch (err) {
-            alert('Connection error.');
-          } finally {
-            btn.innerText = originalText;
-            btn.disabled = false;
-          }
+      // Busca visual simples
+      document.getElementById('searchInput')?.addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('tbody tr').forEach(row => {
+          row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
         });
-      }
-
-      // 3. Busca Visual
-      var searchInput = document.getElementById('searchInput');
-      if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-          var term = e.target.value.toLowerCase();
-          var rows = document.querySelectorAll('#productsTableBody tr');
-          rows.forEach(function(row) {
-            var text = row.textContent ? row.textContent.toLowerCase() : '';
-            row.style.display = text.includes(term) ? '' : 'none';
-          });
-        });
-      }
+      });
     });
   </script>
-
 </AdminLayout>
