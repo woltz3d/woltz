@@ -10,23 +10,19 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
   <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
   
   <style is:global>
-    /* Container principal - ocupa toda a altura disponível */
+    /* Container principal */
     .theme-editor-wrapper {
       display: grid;
-      grid-template-columns: 280px 1fr 380px;
+      grid-template-columns: 260px 1fr;
       height: calc(100vh - 73px);
       background: #0a0a0c;
       overflow: hidden;
       position: relative;
     }
     
-    /* Scrollbar global customizada */
-    .theme-editor-wrapper ::-webkit-scrollbar {
-      width: 6px;
-    }
-    .theme-editor-wrapper ::-webkit-scrollbar-track {
-      background: transparent;
-    }
+    /* Scrollbar global */
+    .theme-editor-wrapper ::-webkit-scrollbar { width: 6px; }
+    .theme-editor-wrapper ::-webkit-scrollbar-track { background: transparent; }
     .theme-editor-wrapper ::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.15);
       border-radius: 3px;
@@ -55,7 +51,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       font-weight: 600;
       color: #fff;
       margin-bottom: 0.25rem;
-      letter-spacing: -0.01em;
     }
     
     .te-sidebar-header p {
@@ -80,13 +75,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       margin-bottom: 2px;
     }
     
-    .te-section-item:hover {
-      background: rgba(255, 255, 255, 0.04);
-    }
-    
-    .te-section-item.active {
-      background: rgba(255, 255, 255, 0.08);
-    }
+    .te-section-item:hover { background: rgba(255, 255, 255, 0.04); }
+    .te-section-item.active { background: rgba(255, 255, 255, 0.08); }
     
     .te-section-icon {
       width: 32px;
@@ -109,9 +99,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       background: rgba(255, 255, 255, 0.12);
     }
     
-    .te-section-item.active .te-section-icon svg {
-      stroke: #fff;
-    }
+    .te-section-item.active .te-section-icon svg { stroke: #fff; }
     
     .te-section-info h3 {
       font-size: 0.875rem;
@@ -125,7 +113,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       color: rgba(255, 255, 255, 0.4);
     }
     
-    /* Centro - Preview (OCUPA TODO O ESPAÇO) */
+    /* Centro - Preview (OCUPA QUASE TUDO) */
     .te-preview {
       background: #1a1a1e;
       position: relative;
@@ -170,12 +158,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       border-color: rgba(255, 255, 255, 0.2);
     }
     
-    .te-device-btn svg {
-      width: 14px;
-      height: 14px;
-    }
+    .te-device-btn svg { width: 14px; height: 14px; }
     
-    /* Container do iframe - OCUPA TODO O ESPAÇO RESTANTE */
     .te-preview-container {
       flex: 1;
       position: relative;
@@ -207,17 +191,29 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
     }
     
-    /* Sidebar Direita */
-    .te-sidebar-right {
+    /* Edit Section - PAINEL FLUTUANTE */
+    .te-editor-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 340px;
+      height: 100%;
       background: #111113;
       border-left: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+      box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+    }
+    
+    .te-editor-panel.open {
+      transform: translateX(0);
     }
     
     .te-editor-header {
-      padding: 1.5rem;
+      padding: 1.25rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
       align-items: center;
@@ -226,24 +222,45 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
     
     .te-editor-header h2 {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
       color: #fff;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.125rem;
     }
     
     .te-editor-header p {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: rgba(255, 255, 255, 0.4);
     }
+    
+    .te-close-panel {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: none;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.7);
+      transition: all 0.2s;
+    }
+    
+    .te-close-panel:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    
+    .te-close-panel svg { width: 16px; height: 16px; }
     
     .te-save-btn {
       background: #fff;
       color: #000;
       border: none;
-      padding: 0.625rem 1.25rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
@@ -252,13 +269,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     
     .te-save-btn:hover {
       background: rgba(255, 255, 255, 0.9);
-      transform: translateY(-1px);
     }
     
     .te-save-btn.saving {
       opacity: 0.7;
       cursor: not-allowed;
-      transform: none;
     }
     
     .te-controls {
@@ -267,9 +282,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       padding: 1rem;
     }
     
-    .te-control-group {
-      margin-bottom: 1.25rem;
-    }
+    .te-control-group { margin-bottom: 1.25rem; }
     
     .te-control-label {
       display: block;
@@ -288,33 +301,27 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
     
     .te-color-input {
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       background: none;
       padding: 0;
       flex-shrink: 0;
     }
     
-    .te-color-input::-webkit-color-swatch-wrapper {
-      padding: 2px;
-    }
-    
-    .te-color-input::-webkit-color-swatch {
-      border: none;
-      border-radius: 6px;
-    }
+    .te-color-input::-webkit-color-swatch-wrapper { padding: 2px; }
+    .te-color-input::-webkit-color-swatch { border: none; border-radius: 4px; }
     
     .te-text-input, .te-select-input, .te-textarea-input {
       flex: 1;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 0.625rem 0.875rem;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
       color: #fff;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-family: inherit;
       transition: border-color 0.2s;
     }
@@ -322,7 +329,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     .te-text-input:focus, .te-select-input:focus, .te-textarea-input:focus {
       outline: none;
       border-color: rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.06);
     }
     
     .te-select-input {
@@ -334,14 +340,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       padding-right: 2rem;
     }
     
-    .te-select-input option {
-      background: #1a1a1e;
-      color: #fff;
-    }
+    .te-select-input option { background: #1a1a1e; color: #fff; }
     
     .te-textarea-input {
       resize: vertical;
-      min-height: 80px;
+      min-height: 70px;
       line-height: 1.5;
     }
     
@@ -353,18 +356,46 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
     
     .te-checkbox-row input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       accent-color: #fff;
       cursor: pointer;
     }
     
     .te-checkbox-row span {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: rgba(255, 255, 255, 0.8);
     }
     
-    /* Toast de sucesso */
+    /* Botão flutuante para abrir o painel */
+    .te-open-editor-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 0.625rem 1rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    
+    .te-open-editor-btn:hover {
+      background: rgba(0, 0, 0, 0.9);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .te-open-editor-btn svg { width: 14px; height: 14px; }
+    
+    /* Toast */
     .te-toast {
       position: fixed;
       bottom: 2rem;
@@ -390,15 +421,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       opacity: 1;
     }
     
-    .te-toast svg {
-      width: 18px;
-      height: 18px;
-      color: #22c55e;
-    }
+    .te-toast svg { width: 18px; height: 18px; color: #22c55e; }
   </style>
 
   <div class="theme-editor-wrapper">
-    <!-- Sidebar Esquerda: Page Structure -->
+    <!-- Sidebar Esquerda -->
     <div class="te-sidebar-left">
       <div class="te-sidebar-header">
         <h2>Page Structure</h2>
@@ -478,7 +505,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       </div>
     </div>
     
-    <!-- Centro: Preview (OCUPA TODO O ESPAÇO) -->
+    <!-- Centro: Preview + Painel Flutuante -->
     <div class="te-preview">
       <div class="te-preview-header">
         <button class="te-device-btn active" data-device="desktop">
@@ -505,29 +532,45 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         </button>
       </div>
       
-      <!-- Container do iframe - OCUPA TODO O ESPAÇO -->
       <div class="te-preview-container">
         <iframe id="preview-frame" class="te-preview-frame" src="/" sandbox="allow-same-origin allow-scripts"></iframe>
-      </div>
-    </div>
-    
-    <!-- Sidebar Direita: Editor -->
-    <div class="te-sidebar-right">
-      <div class="te-editor-header">
-        <div>
-          <h2>Edit Section</h2>
-          <p id="section-description">Global color palette</p>
+        
+        <!-- Botão para abrir o painel de edição -->
+        <button class="te-open-editor-btn" id="open-editor-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          Edit Section
+        </button>
+        
+        <!-- Painel de Edição Flutuante -->
+        <div class="te-editor-panel" id="editor-panel">
+          <div class="te-editor-header">
+            <div>
+              <h2>Edit Section</h2>
+              <p id="section-description">Global color palette</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button id="save-btn" class="te-save-btn">Save</button>
+              <button class="te-close-panel" id="close-panel-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="te-controls" id="controls-container">
+            <!-- Controles injetados via JS -->
+          </div>
         </div>
-        <button id="save-btn" class="te-save-btn">Save Changes</button>
-      </div>
-      
-      <div class="te-controls" id="controls-container">
-        <!-- Controles injetados via JS -->
       </div>
     </div>
   </div>
 
-  <!-- Toast de sucesso -->
+  <!-- Toast -->
   <div id="te-toast" class="te-toast">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -558,7 +601,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         { key: 'colors.error', label: 'Error Color', type: 'color' },
         { key: 'colors.warning', label: 'Warning Color', type: 'color' },
       ],
-      
       typography: [
         { key: 'typography.font_heading', label: 'Heading Font', type: 'select', options: ['Anton', 'Playfair Display', 'Oswald', 'Bebas Neue', 'Montserrat'] },
         { key: 'typography.font_body', label: 'Body Font', type: 'select', options: ['Inter, sans-serif', 'Roboto, sans-serif', 'Open Sans, sans-serif', 'DM Sans, sans-serif'] },
@@ -571,7 +613,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         { key: 'typography.tracking_heading', label: 'Heading Letter Spacing', type: 'text', placeholder: '-0.02em' },
         { key: 'typography.tracking_body', label: 'Body Letter Spacing', type: 'text', placeholder: '0.05em' },
       ],
-      
       layout: [
         { key: 'layout.container_max_width', label: 'Max Container Width', type: 'text', placeholder: '1536px' },
         { key: 'layout.section_padding', label: 'Section Padding', type: 'text', placeholder: '3rem' },
@@ -579,14 +620,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         { key: 'layout.border_radius', label: 'Border Radius', type: 'text', placeholder: '0px' },
         { key: 'layout.hero_height', label: 'Hero Height', type: 'text', placeholder: '100vh' },
       ],
-      
       branding: [
         { key: 'branding.site_name', label: 'Site Name', type: 'text', placeholder: 'WOLTZ' },
         { key: 'branding.tagline', label: 'Tagline', type: 'text', placeholder: 'Premium Digital Fashion' },
         { key: 'branding.logo_url', label: 'Logo URL', type: 'text', placeholder: 'https://...' },
         { key: 'branding.favicon_url', label: 'Favicon URL', type: 'text', placeholder: 'https://...' },
       ],
-      
       footer: [
         { key: 'footer.text_left', label: 'Left Column Text', type: 'textarea', rows: 3 },
         { key: 'footer.text_center', label: 'Center Column Text', type: 'textarea', rows: 3 },
@@ -608,16 +647,9 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
     async function loadThemeSettings() {
       try {
-        const { data, error } = await supabase
-          .from('theme_settings')
-          .select('*');
-        
+        const { data, error } = await supabase.from('theme_settings').select('*');
         if (error) throw error;
-        
-        data.forEach((row: any) => {
-          themeData[row.key] = row.value;
-        });
-        
+        data.forEach((row: any) => { themeData[row.key] = row.value; });
         renderControls();
       } catch (err) {
         console.error('Error loading theme:', err);
@@ -639,14 +671,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             <div class="te-control-group">
               <label class="te-control-label">${control.label}</label>
               <div class="te-color-row">
-                <input type="color" 
-                       class="te-color-input" 
-                       data-key="${control.key}" 
-                       value="${value || '#ffffff'}" />
-                <input type="text" 
-                       class="te-text-input" 
-                       data-key="${control.key}" 
-                       value="${value || '#ffffff'}" />
+                <input type="color" class="te-color-input" data-key="${control.key}" value="${value || '#ffffff'}" />
+                <input type="text" class="te-text-input" data-key="${control.key}" value="${value || '#ffffff'}" />
               </div>
             </div>
           `;
@@ -655,9 +681,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             <div class="te-control-group">
               <label class="te-control-label">${control.label}</label>
               <select class="te-select-input" data-key="${control.key}">
-                ${control.options.map((opt: string) => `
-                  <option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>
-                `).join('')}
+                ${control.options.map((opt: string) => `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`).join('')}
               </select>
             </div>
           `;
@@ -666,9 +690,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             <div class="te-control-group">
               <label class="te-control-label">${control.label}</label>
               <label class="te-checkbox-row">
-                <input type="checkbox" 
-                       data-key="${control.key}" 
-                       ${value ? 'checked' : ''} />
+                <input type="checkbox" data-key="${control.key}" ${value ? 'checked' : ''} />
                 <span>Enabled</span>
               </label>
             </div>
@@ -677,20 +699,14 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           return `
             <div class="te-control-group">
               <label class="te-control-label">${control.label}</label>
-              <textarea class="te-textarea-input" 
-                        data-key="${control.key}" 
-                        rows="${control.rows || 3}">${value}</textarea>
+              <textarea class="te-textarea-input" data-key="${control.key}" rows="${control.rows || 3}">${value}</textarea>
             </div>
           `;
         } else {
           return `
             <div class="te-control-group">
               <label class="te-control-label">${control.label}</label>
-              <input type="${control.type}" 
-                     class="te-text-input" 
-                     data-key="${control.key}" 
-                     value="${value}"
-                     placeholder="${control.placeholder || ''}" />
+              <input type="${control.type}" class="te-text-input" data-key="${control.key}" value="${value}" placeholder="${control.placeholder || ''}" />
             </div>
           `;
         }
@@ -700,10 +716,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         input.addEventListener('input', (e: any) => {
           const key = e.target.dataset.key;
           const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-          
-          if (!themeData[key]) {
-            themeData[key] = { value: '', label: key };
-          }
+          if (!themeData[key]) themeData[key] = { value: '', label: key };
           themeData[key].value = value;
           hasChanges = true;
           
@@ -721,7 +734,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
     document.getElementById('save-btn')?.addEventListener('click', async () => {
       if (!hasChanges) return;
-      
       const btn = document.getElementById('save-btn');
       if (!btn) return;
       
@@ -730,20 +742,14 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       
       try {
         const updates = Object.entries(themeData).map(([key, value]: any) => ({
-          key,
-          value,
-          category: key.split('.')[0],
-          updated_at: new Date().toISOString(),
+          key, value, category: key.split('.')[0], updated_at: new Date().toISOString(),
         }));
         
-        const { error } = await supabase
-          .from('theme_settings')
-          .upsert(updates, { onConflict: 'key' });
-        
+        const { error } = await supabase.from('theme_settings').upsert(updates, { onConflict: 'key' });
         if (error) throw error;
         
         hasChanges = false;
-        btn.textContent = 'Save Changes';
+        btn.textContent = 'Save';
         btn.classList.remove('saving');
         
         const toast = document.getElementById('te-toast');
@@ -753,13 +759,10 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         }
         
         const iframe = document.getElementById('preview-frame') as HTMLIFrameElement;
-        if (iframe) {
-          iframe.src = iframe.src;
-        }
-        
+        if (iframe) iframe.src = iframe.src;
       } catch (err: any) {
         console.error('Error saving:', err);
-        btn.textContent = 'Save Changes';
+        btn.textContent = 'Save';
         btn.classList.remove('saving');
         alert('Error saving: ' + err.message);
       }
@@ -771,9 +774,25 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         item.classList.add('active');
         currentSection = item.dataset.section!;
         renderControls();
+        
+        // Abre o painel automaticamente ao clicar em uma seção
+        const panel = document.getElementById('editor-panel');
+        if (panel) panel.classList.add('open');
       });
     });
 
+    // Abrir/fechar painel
+    document.getElementById('open-editor-btn')?.addEventListener('click', () => {
+      const panel = document.getElementById('editor-panel');
+      if (panel) panel.classList.add('open');
+    });
+
+    document.getElementById('close-panel-btn')?.addEventListener('click', () => {
+      const panel = document.getElementById('editor-panel');
+      if (panel) panel.classList.remove('open');
+    });
+
+    // Troca de dispositivo
     document.querySelectorAll('.te-device-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.te-device-btn').forEach(b => b.classList.remove('active'));
