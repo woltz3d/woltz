@@ -25,7 +25,7 @@ import '../styles/global.css';
       <div class="flex gap-5 text-white/60">
         <button class="hover:text-white transition-colors duration-500 clickable"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
         
-        <!-- ÍCONE DO CARRINHO: SACOLA COM SETINHA DIAGONAL (ORIGINAL) -->
+        <!-- ÍCONE DO CARRINHO: SACOLA COM SETINHA DIAGONAL -->
         <button id="cart-btn" class="relative hover:text-white transition-colors duration-500 clickable">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
@@ -54,8 +54,8 @@ import '../styles/global.css';
         </div>
         
         <div class="flex items-center gap-8">
-          <!-- BOTÃO GRANDE DO HERO: AGORA ADICIONA PACK AO CARRINHO -->
-          <button id="add-pack-hero-btn" class="group relative w-24 h-24 flex items-center justify-center clickable" data-product="">
+          <!-- BOTÃO GRANDE DO HERO: SETINHA DIAGONAL -->
+          <button id="add-pack-hero-btn" class="group relative w-24 h-24 flex items-center justify-center clickable" onclick="window.addCurrentPack()">
             <svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full"><polygon points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30" fill="none" stroke="rgba(168,181,196,0.4)" stroke-width="1" class="transition-all duration-700 group-hover:stroke-white group-hover:stroke-[1.5]"/></svg>
             <svg class="w-6 h-6 text-white/70 group-hover:text-white transition-all duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
           </button>
@@ -196,71 +196,71 @@ import '../styles/global.css';
   </div>
 
   <!-- ========================================== -->
-  <!-- CARRINHO: MODAL COMPLETO (MAIOR E LIMPO)   -->
+  <!-- CARRINHO: MODAL COMPLETO (TAMANHO NORMAL)  -->
   <!-- ========================================== -->
   <div id="cart-modal" class="fixed inset-0 z-[150] hidden">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-xl" id="cart-modal-overlay"></div>
     
-    <!-- Modal Centralizado: TAMANHO AUMENTADO (max-w-7xl = 1280px) -->
+    <!-- Modal Centralizado: TAMANHO NORMAL (max-w-5xl = 1024px) -->
     <div class="absolute inset-0 flex items-center justify-center p-4 md:p-8">
-      <div class="relative w-full max-w-7xl max-h-[90vh] bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden transform scale-95 opacity-0 transition-all duration-500" id="cart-modal-panel">
+      <div class="relative w-full max-w-5xl max-h-[85vh] bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden transform scale-95 opacity-0 transition-all duration-500" id="cart-modal-panel">
         
         <!-- Header com X -->
-        <div class="flex items-center justify-between px-10 py-6 border-b border-white/20 bg-black/20">
-          <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-wide">Your Cart</h3>
+        <div class="flex items-center justify-between px-8 py-5 border-b border-white/20 bg-black/20">
+          <h3 class="font-['Anton'] text-2xl md:text-3xl uppercase text-white tracking-wide">Your Cart</h3>
           <button id="close-cart-modal" class="text-white/70 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
 
-        <!-- Corpo do Modal: GRID 2/1 (PRODUTOS MAIORES) -->
+        <!-- Corpo do Modal: GRID 2/1 -->
         <div class="flex-1 overflow-hidden">
-          <div class="h-full grid grid-cols-1 lg:grid-cols-[1fr_380px] overflow-hidden">
+          <div class="h-full grid grid-cols-1 lg:grid-cols-[1fr_320px] overflow-hidden">
             
             <!-- Lista de Produtos (com scroll interno) -->
-            <div class="overflow-y-auto p-10" id="cart-modal-items">
+            <div class="overflow-y-auto p-8" id="cart-modal-items">
               <p class="text-white/50 text-center py-12 font-vcr text-sm">Your cart is empty</p>
             </div>
 
             <!-- Resumo (lateral fixa) -->
-            <div class="bg-black/30 backdrop-blur-md border-l border-white/20 p-8 overflow-y-auto">
-              <h4 class="font-['Anton'] text-2xl uppercase tracking-wide mb-8 text-white">Order Summary</h4>
+            <div class="bg-black/30 backdrop-blur-md border-l border-white/20 p-6 overflow-y-auto">
+              <h4 class="font-['Anton'] text-xl uppercase tracking-wide mb-6 text-white">Order Summary</h4>
               
-              <div class="space-y-4 mb-8 pb-8 border-b border-white/20">
+              <div class="space-y-3 mb-6 pb-6 border-b border-white/20">
                 <div class="flex justify-between items-center">
                   <span class="text-white/70 font-vcr uppercase text-xs tracking-wider">Subtotal</span>
-                  <span id="modal-subtotal" class="font-mono text-white text-lg">$ 0.00</span>
+                  <span id="modal-subtotal" class="font-mono text-white text-base">$ 0.00</span>
                 </div>
                 <div class="flex justify-between items-center">
                   <span class="text-white/70 font-vcr uppercase text-xs tracking-wider">Shipping</span>
-                  <span class="font-mono text-green-400 text-lg">FREE</span>
+                  <span class="font-mono text-green-400 text-base">FREE</span>
                 </div>
                 <div id="modal-discount-row" class="hidden flex justify-between items-center">
                   <span class="text-white/70 font-vcr uppercase text-xs tracking-wider">Discount</span>
-                  <span id="modal-discount" class="font-mono text-red-400 text-lg">- $ 0.00</span>
+                  <span id="modal-discount" class="font-mono text-red-400 text-base">- $ 0.00</span>
                 </div>
               </div>
 
               <!-- Cupom -->
-              <div class="mb-8">
-                <label class="text-[10px] tracking-[0.2em] text-white/60 uppercase mb-3 block font-vcr">Coupon Code</label>
+              <div class="mb-6">
+                <label class="text-[10px] tracking-[0.2em] text-white/60 uppercase mb-2 block font-vcr">Coupon Code</label>
                 <div class="flex gap-2">
-                  <input type="text" id="modal-coupon-input" placeholder="ENTER CODE" class="flex-1 bg-black/40 border border-white/20 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/50 uppercase font-vcr" />
-                  <button id="modal-apply-coupon" class="bg-white text-black px-5 py-3 text-xs uppercase tracking-wider font-bold hover:bg-white/90 transition-colors rounded-lg whitespace-nowrap">Apply</button>
+                  <input type="text" id="modal-coupon-input" placeholder="ENTER CODE" class="flex-1 bg-black/40 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/50 uppercase font-vcr" />
+                  <button id="modal-apply-coupon" class="bg-white text-black px-4 py-2 text-xs uppercase tracking-wider font-bold hover:bg-white/90 transition-colors rounded-lg whitespace-nowrap">Apply</button>
                 </div>
-                <p id="modal-coupon-message" class="text-xs mt-3 hidden font-vcr"></p>
+                <p id="modal-coupon-message" class="text-xs mt-2 hidden font-vcr"></p>
               </div>
 
-              <div class="flex justify-between items-center mb-8 pb-8 border-b border-white/20">
+              <div class="flex justify-between items-center mb-6 pb-6 border-b border-white/20">
                 <span class="text-white uppercase tracking-wider text-sm font-vcr">Total</span>
-                <span id="modal-total" class="font-['Anton'] text-4xl">$ 0.00</span>
+                <span id="modal-total" class="font-['Anton'] text-3xl">$ 0.00</span>
               </div>
 
-              <button id="modal-checkout-btn" class="w-full bg-white text-black py-4 text-sm uppercase tracking-[0.3em] font-bold hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-lg shadow-lg">
+              <button id="modal-checkout-btn" class="w-full bg-white text-black py-3 text-sm uppercase tracking-[0.3em] font-bold hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-lg shadow-lg">
                 Proceed to Checkout
               </button>
               
-              <p class="text-center text-white/40 text-[10px] font-vcr mt-4 uppercase tracking-wider">
+              <p class="text-center text-white/40 text-[10px] font-vcr mt-3 uppercase tracking-wider">
                 Secure payment via Stripe
               </p>
             </div>
@@ -288,7 +288,7 @@ import '../styles/global.css';
       clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
       background-color: #5f7085;
     }
-    /* Remove scrollbars estranhos mas mantém scroll funcional */
+    /* Scrollbar customizada apenas onde precisa */
     #cart-modal-items::-webkit-scrollbar { width: 6px; }
     #cart-modal-items::-webkit-scrollbar-track { background: transparent; }
     #cart-modal-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
@@ -448,21 +448,21 @@ import '../styles/global.css';
 
         if (checkoutBtn) checkoutBtn.disabled = false;
 
-        // Cards maiores com mais espaço
-        container.innerHTML = '<div class="space-y-4">' + this.items.map(item => `
-          <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-5 flex gap-6 items-center hover:bg-white/15 transition-colors">
-            <img src="${item.thumbnail ? item.thumbnail + '?width=200&quality=80' : ''}" class="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg border border-white/10 flex-shrink-0" />
+        // Cards com tamanho normal
+        container.innerHTML = '<div class="space-y-3">' + this.items.map(item => `
+          <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-4 flex gap-4 items-center hover:bg-white/15 transition-colors">
+            <img src="${item.thumbnail ? item.thumbnail + '?width=150&quality=80' : ''}" class="w-24 h-24 md:w-28 md:h-28 object-cover rounded-lg border border-white/10 flex-shrink-0" />
             <div class="flex-1 min-w-0">
-              <h4 class="font-['Anton'] text-2xl uppercase tracking-wide mb-2 text-white">${item.name}</h4>
-              <p class="text-white/60 text-xs font-vcr mb-4 uppercase tracking-wider">${item.isPack ? 'COLLECTION PACK' : 'DIGITAL DOWNLOAD'}</p>
-              <div class="flex items-center gap-4">
-                <button data-dec="${item.id}" class="qty-btn w-10 h-10 rounded-lg border border-white/30 flex items-center justify-center hover:bg-white hover:text-black transition-colors text-lg font-bold">−</button>
-                <span class="text-lg font-mono w-8 text-center text-white">${item.qty}</span>
-                <button data-inc="${item.id}" class="qty-btn w-10 h-10 rounded-lg border border-white/30 flex items-center justify-center hover:bg-white hover:text-black transition-colors text-lg font-bold">+</button>
+              <h4 class="font-['Anton'] text-lg uppercase tracking-wide mb-1 text-white">${item.name}</h4>
+              <p class="text-white/60 text-xs font-vcr mb-3 uppercase tracking-wider">${item.isPack ? 'COLLECTION PACK' : 'DIGITAL DOWNLOAD'}</p>
+              <div class="flex items-center gap-3">
+                <button data-dec="${item.id}" class="qty-btn w-8 h-8 rounded-lg border border-white/30 flex items-center justify-center hover:bg-white hover:text-black transition-colors text-sm font-bold">−</button>
+                <span class="text-sm font-mono w-6 text-center text-white">${item.qty}</span>
+                <button data-inc="${item.id}" class="qty-btn w-8 h-8 rounded-lg border border-white/30 flex items-center justify-center hover:bg-white hover:text-black transition-colors text-sm font-bold">+</button>
               </div>
             </div>
             <div class="text-right flex-shrink-0">
-              <p class="font-mono text-2xl mb-3 text-white">$ ${(item.price * item.qty).toFixed(2)}</p>
+              <p class="font-mono text-lg mb-2 text-white">$ ${(item.price * item.qty).toFixed(2)}</p>
               <button data-remove="${item.id}" class="remove-btn text-white/50 hover:text-red-400 text-xs uppercase tracking-wider transition-colors font-vcr">Remove</button>
             </div>
           </div>
@@ -550,6 +550,18 @@ import '../styles/global.css';
     };
 
     // ============================================
+    // VARIÁVEL GLOBAL PARA O PACK ATUAL
+    // ============================================
+    let currentPackData = null;
+
+    // Função global para adicionar o pack atual (chamada pelo onclick)
+    window.addCurrentPack = function() {
+      if (currentPackData) {
+        Cart.add(currentPackData);
+      }
+    };
+
+    // ============================================
     // CARREGAR DADOS DA HOME
     // ============================================
     document.addEventListener('DOMContentLoaded', async () => {
@@ -588,24 +600,6 @@ import '../styles/global.css';
         const priceEl = document.getElementById('collection-price');
         const indicator = document.getElementById('image-indicator');
         const sidebarContainer = document.getElementById('sidebar-thumbs');
-        const addPackHeroBtn = document.getElementById('add-pack-hero-btn');
-
-        // Dados do pack para o botão do hero
-        const packProductData = {
-          id: 'pack-' + featuredCollection.id,
-          name: featuredCollection.name + ' (Pack)',
-          price_usd: featuredCollection.pack_price_usd,
-          thumbnail_url: featuredCollection.image_url,
-          isPack: true
-        };
-
-        // Adiciona listener no botão grande do Hero
-        if (addPackHeroBtn) {
-          addPackHeroBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            Cart.add(packProductData);
-          });
-        }
 
         const allHeroData = [featuredCollection, ...sidebarCollections].map((col, i) => ({
           index: i,
@@ -635,19 +629,14 @@ import '../styles/global.css';
             setsEl.innerHTML = `<span class="text-white cursor-pointer clickable">${d.sets}</span>`;
             priceEl.innerText = d.price;
 
-            // Atualiza o botão grande do Hero com os dados da nova coleção
-            if (addPackHeroBtn) {
-              addPackHeroBtn.onclick = (e) => {
-                e.preventDefault();
-                Cart.add({
-                  id: 'pack-' + d.collectionId,
-                  name: d.title + ' (Pack)',
-                  price_usd: d.packPriceUsd,
-                  thumbnail_url: d.collectionImage,
-                  isPack: true
-                });
-              };
-            }
+            // Atualiza o pack atual para o botão do Hero
+            currentPackData = {
+              id: 'pack-' + d.collectionId,
+              name: d.title + ' (Pack)',
+              price_usd: d.packPriceUsd,
+              thumbnail_url: d.collectionImage,
+              isPack: true
+            };
 
             const thumbs = sidebarContainer.querySelectorAll('.thumb-item');
             thumbs.forEach((t, i) => {
@@ -697,14 +686,7 @@ import '../styles/global.css';
         
         let gridHtml = `<div class="grid grid-cols-5 gap-4 md:gap-6">`;
         
-        const packProductDataStr = JSON.stringify({
-          id: 'pack-' + featuredCollection.id,
-          name: featuredCollection.name + ' (Pack)',
-          price_usd: featuredCollection.pack_price_usd,
-          thumbnail_url: featuredCollection.image_url,
-          isPack: true
-        }).replace(/'/g, "&#39;");
-
+        // Card Grande da Coleção - ÍCONE DE SETINHA (↗) IGUAL AO HERO
         gridHtml += `
           <div class="col-span-2 relative group clickable h-[550px]">
             <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
@@ -717,8 +699,8 @@ import '../styles/global.css';
                       <p class="text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Pack Price</p>
                       <p class="text-lg font-light text-white drop-shadow-sm">$ ${Number(featuredCollection.pack_price_usd).toFixed(2)}</p>
                    </div>
-                   <button class="add-pack-btn w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white" data-product='${packProductDataStr}'>
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                   <button class="add-pack-btn w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white" onclick="window.addPackFromCard('${featuredCollection.id}', '${featuredCollection.name.replace(/'/g, "\\'")}', '${featuredCollection.pack_price_usd}', '${featuredCollection.image_url}')">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
                    </button>
                 </div>
               </div>
@@ -737,7 +719,7 @@ import '../styles/global.css';
                 <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
                 <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
                 <div class="flex items-center justify-between">
-                  <button class="add-to-cart-btn w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" data-product='${JSON.stringify({id: p.id, name: p.name, price_usd: p.price_usd, thumbnail_url: p.thumbnail_url}).replace(/'/g, "&#39;")}'>
+                  <button class="add-to-cart-btn w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                   </button>
                   <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
@@ -762,7 +744,7 @@ import '../styles/global.css';
                   <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
                   <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
                   <div class="flex items-center justify-between">
-                    <button class="add-to-cart-btn w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" data-product='${JSON.stringify({id: p.id, name: p.name, price_usd: p.price_usd, thumbnail_url: p.thumbnail_url}).replace(/'/g, "&#39;")}'>
+                    <button class="add-to-cart-btn w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     </button>
                     <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
@@ -776,32 +758,25 @@ import '../styles/global.css';
 
         gridContainer.innerHTML = gridHtml;
 
-        // --- EVENTOS ---
-        gridContainer.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            try {
-              const product = JSON.parse(btn.dataset.product.replace(/&#39;/g, "'"));
-              Cart.add(product);
-            } catch(err) {
-              console.error('Error adding to cart:', err);
-            }
+        // --- FUNÇÕES GLOBAIS PARA ADD TO CART (evita listeners duplicados) ---
+        window.addProductToCart = function(id, name, price, thumbnail) {
+          Cart.add({
+            id: id,
+            name: name,
+            price_usd: price,
+            thumbnail_url: thumbnail
           });
-        });
+        };
 
-        gridContainer.querySelectorAll('.add-pack-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            try {
-              const product = JSON.parse(btn.dataset.product.replace(/&#39;/g, "'"));
-              Cart.add(product);
-            } catch(err) {
-              console.error('Error adding pack to cart:', err);
-            }
+        window.addPackFromCard = function(id, name, price, thumbnail) {
+          Cart.add({
+            id: 'pack-' + id,
+            name: name + ' (Pack)',
+            price_usd: price,
+            thumbnail_url: thumbnail,
+            isPack: true
           });
-        });
+        };
 
         // --- CARRINHO: EVENTOS ---
         document.getElementById('cart-btn')?.addEventListener('click', () => Cart.openPreview());
