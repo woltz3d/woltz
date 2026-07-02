@@ -3,10 +3,10 @@ import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import '../styles/global.css';
 
-// --- BUSCA DE DADOS DINÂMICOS ---
-let featuredCollection = null;
-let sidebarCollections = [];
-let gridProducts = [];
+// --- BUSCA DE DADOS DINÂMICOS NO SERVIDOR ---
+let featuredCollection: any = null;
+let sidebarCollections: any[] = [];
+let gridProducts: any[] = [];
 
 try {
   // 1. Busca TODAS as coleções published ordenadas por data
@@ -28,8 +28,8 @@ try {
       .eq('status', 'published');
     
     const count = prods?.length || 0;
-    const totalBrl = prods?.reduce((s, p) => s + (parseFloat(p.price_brl)||0), 0) || 0;
-    const totalUsd = prods?.reduce((s, p) => s + (parseFloat(p.price_usd)||0), 0) || 0;
+    const totalBrl = prods?.reduce((s: number, p: any) => s + (parseFloat(p.price_brl)||0), 0) || 0;
+    const totalUsd = prods?.reduce((s: number, p: any) => s + (parseFloat(p.price_usd)||0), 0) || 0;
     
     featuredCollection = {
       ...mainCol,
@@ -53,7 +53,7 @@ try {
   
   // Filtra duplicatas manualmente no JS para garantir
   const seenNames = new Set();
-  gridProducts = (recentProds || []).filter(p => {
+  gridProducts = (recentProds || []).filter((p: any) => {
     if (seenNames.has(p.name)) return false;
     seenNames.add(p.name);
     return true;
@@ -64,19 +64,17 @@ try {
 }
 
 // Helper para imagens otimizadas
-const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
+const imgUrl = (url: string | null, w=800) => url ? `${url}?width=${w}&quality=80` : '';
 
 // Helper para renderizar cores corretamente (HTML string seguro)
-// AUMENTEI O TAMANHO DAS BOLINHAS PARA w-3 h-3 (12px)
-const renderColors = (colors) => {
+const renderColors = (colors: any[]) => {
   if (!colors || !Array.isArray(colors) || colors.length === 0) return '';
   
   let html = '<div class="flex items-center gap-1.5">';
   const displayColors = colors.slice(0, 4);
   
-  displayColors.forEach(c => {
+  displayColors.forEach((c: any) => {
     if (c.type === 'pattern' && c.url) {
-      // Aumentado para w-3 h-3 e borda mais visível
       html += `<span class="w-3 h-3 rounded-full overflow-hidden border border-white/70 inline-block shadow-sm"><img src="${c.url}?width=20" class="w-full h-full object-cover" /></span>`;
     } else {
       html += `<span class="w-3 h-3 rounded-full shadow-sm inline-block border border-white/30" style="background:${c.hex || '#ccc'}"></span>`;
@@ -90,6 +88,17 @@ const renderColors = (colors) => {
   html += '</div>';
   return html;
 };
+
+// Prepara dados completos para o JavaScript (incluindo coleções laterais)
+const allHeroData = [featuredCollection, ...sidebarCollections].filter(Boolean).map((col: any, i: number) => ({
+  index: i,
+  image: imgUrl(col.image_url, 2400),
+  thumbImage: imgUrl(col.image_url, 600),
+  series: `[ Series: ${col.category || 'Latest Drop'} ] · [ Collection ]`,
+  title: col.name,
+  sets: `${col.product_count || 0} Items`,
+  price: `$ ${Number(col.pack_price_usd || 0).toFixed(2)}`
+}));
 ---
 
 <Layout title="WOLTZ | NOCTIS VOL. I">
@@ -151,43 +160,23 @@ const renderColors = (colors) => {
         </div>
       </div>
 
-      <!-- SIDEBAR LATERAL INTERATIVA COM DADOS INJETADOS -->
+      <!-- SIDEBAR LATERAL INTERATIVA -->
       <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
         <div class="flex flex-col gap-4 w-full" id="sidebar-thumbs">
           
           <!-- Thumbnail 1: Coleção Destaque (Ativa) -->
-          <div 
-            data-index="0" 
-            data-image={imgUrl(featuredCollection?.image_url, 600)}
-            data-series="[ Series: {featuredCollection?.category || 'Latest Drop'} ] · [ Collection ]"
-            data-title="{featuredCollection?.name}"
-            data-sets="{featuredCollection?.product_count || 0} Items"
-            data-price="$ {Number(featuredCollection?.pack_price_usd || 0).toFixed(2)}"
-            class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100"
-          >
+          <div data-index="0" class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100">
             <img src={imgUrl(featuredCollection?.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500 pointer-events-none" alt={featuredCollection?.name} />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
 
           <!-- Thumbnails 2 e 3: Coleções Anteriores -->
-          {sidebarCollections.map((col, i) => {
-             // Calcula dados para cada coleção lateral
-             // Nota: Em produção idealmente faríamos uma query única, mas aqui simplificamos
-             return (
-              <div 
-                data-index={i+1} 
-                data-image={imgUrl(col.image_url, 600)}
-                data-series="[ Series: {col.category || 'Archive'} ] · [ Collection ]"
-                data-title="{col.name}"
-                data-sets="0 Items" 
-                data-price="$ 0.00"
-                class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0"
-              >
-                <img src={imgUrl(col.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt={col.name} />
-                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-             )
-          })}
+          {sidebarCollections.map((col, i) => (
+            <div data-index={i+1} class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0">
+              <img src={imgUrl(col.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt={col.name} />
+              <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+          ))}
 
         </div>
         <div class="text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-2 w-full flex justify-end" id="image-indicator">
@@ -393,8 +382,11 @@ const renderColors = (colors) => {
 
   </footer>
 
-  <!-- SCRIPT PARA INTERATIVIDADE DO HERO COM ATUALIZAÇÃO DE DADOS -->
+  <!-- SCRIPT PARA INTERATIVIDADE DO HERO COM DADOS INJETADOS -->
   <script is:inline>
+    // Dados injetados pelo Astro durante o build
+    const heroData = JSON.parse('{JSON.stringify(allHeroData)}');
+
     document.addEventListener('DOMContentLoaded', () => {
       const thumbs = document.querySelectorAll('.thumb-item');
       const mainImg = document.getElementById('hero-main-img');
@@ -405,15 +397,8 @@ const renderColors = (colors) => {
       const indicator = document.getElementById('image-indicator');
 
       function updateHero(index) {
-        const targetThumb = thumbs[index];
-        if (!targetThumb) return;
-
-        // Pega os dados injetados nos data-attributes
-        const newImage = targetThumb.dataset.image;
-        const newSeries = targetThumb.dataset.series;
-        const newTitle = targetThumb.dataset.title;
-        const newSets = targetThumb.dataset.sets;
-        const newPrice = targetThumb.dataset.price;
+        const data = heroData[index];
+        if (!data) return;
 
         // Atualiza classes visuais das thumbnails
         thumbs.forEach((t, i) => {
@@ -439,12 +424,12 @@ const renderColors = (colors) => {
         }
 
         setTimeout(() => {
-          // Aplica os novos valores
-          if(mainImg && newImage) mainImg.src = newImage;
-          if(seriesEl && newSeries) seriesEl.innerText = newSeries;
-          if(titleEl && newTitle) titleEl.innerText = newTitle;
-          if(setsEl && newSets) setsEl.innerHTML = `<span class="text-white cursor-pointer clickable">${newSets}</span>`;
-          if(priceEl && newPrice) priceEl.innerText = newPrice;
+          // Aplica os novos valores vindos do objeto injetado
+          if(mainImg) mainImg.src = data.image;
+          if(seriesEl) seriesEl.innerText = data.series;
+          if(titleEl) titleEl.innerText = data.title;
+          if(setsEl) setsEl.innerHTML = `<span class="text-white cursor-pointer clickable">${data.sets}</span>`;
+          if(priceEl) priceEl.innerText = data.price;
 
           // Fade in da imagem e textos
           if(mainImg) {
