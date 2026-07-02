@@ -5,7 +5,7 @@ export const onRequestGet = async (context: any) => {
   try {
     const supabase = createClient(context.env.SUPABASE_URL, context.env.SUPABASE_ANON_KEY);
 
-    // 1. Busca Coleções Published
+    // 1. Busca TODAS as Coleções Published
     const { data: allCols, error: colError } = await supabase
       .from('collections')
       .select('*')
@@ -17,31 +17,40 @@ export const onRequestGet = async (context: any) => {
     let featuredCollection: any = null;
     let sidebarCollections: any[] = [];
 
-    if (allCols && allCols.length > 0) {
-      const mainCol = allCols[0];
-      
-      // Calcula preço pack e contagem
+    // Função auxiliar para calcular dados de uma coleção
+    const calculateCollectionData = async (col: any) => {
       const { data: prods } = await supabase
         .from('products')
-        .select('price_brl, price_usd')
-        .eq('collection_id', mainCol.id)
+        .select('price_brl, price_usd, net_brl') // Adicionei net_brl aqui
+        .eq('collection_id', col.id)
         .eq('status', 'published');
       
       const count = prods?.length || 0;
       const totalBrl = prods?.reduce((s: number, p: any) => s + (parseFloat(p.price_brl)||0), 0) || 0;
       const totalUsd = prods?.reduce((s: number, p: any) => s + (parseFloat(p.price_usd)||0), 0) || 0;
+      // Estimativa de líquido: soma dos net_brl individuais ou cálculo reverso se não existir
+      const estNet = prods?.reduce((s: number, p: any) => s + (parseFloat(p.net_brl)||0), 0) || 0;
       
-      featuredCollection = {
-        ...mainCol,
+      return {
+        ...col,
         product_count: count,
         pack_price_brl: (totalBrl * 0.85).toFixed(2),
-        pack_price_usd: (totalUsd * 0.85).toFixed(2)
+        pack_price_usd: (totalUsd * 0.85).toFixed(2),
+        estimated_net_brl: estNet.toFixed(2)
       };
+    };
 
-      sidebarCollections = allCols.slice(1, 3);
+    if (allCols && allCols.length > 0) {
+      // Calcula dados da coleção destaque
+      featuredCollection = await calculateCollectionData(allCols[0]);
+      
+      // Calcula dados das coleções laterais (próximas 2)
+      for (let i = 1; i < Math.min(allCols.length, 3); i++) {
+        sidebarCollections.push(await calculateCollectionData(allCols[i]));
+      }
     }
 
-    // 2. Busca Produtos Recentes
+    // 2. Busca Produtos Recentes para o Grid
     const { data: recentProds, error: prodError } = await supabase
       .from('products')
       .select('*, collections(name)')
@@ -52,7 +61,7 @@ export const onRequestGet = async (context: any) => {
 
     if (prodError) throw prodError;
 
-    // Remove duplicatas
+    // Remove duplicatas por nome
     const seenNames = new Set();
     const gridProducts = (recentProds || []).filter((p: any) => {
       if (seenNames.has(p.name)) return false;
