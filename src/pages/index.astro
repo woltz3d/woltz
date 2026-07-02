@@ -9,7 +9,7 @@ let sidebarCollections = [];
 let gridProducts = [];
 
 try {
-  // 1. Busca TODAS as coleções published ordenadas por data (para Hero e Sidebar)
+  // 1. Busca TODAS as coleções published ordenadas por data
   const { data: allCols } = await supabase
     .from('collections')
     .select('*')
@@ -42,17 +42,23 @@ try {
     sidebarCollections = allCols.slice(1, 3);
   }
 
-  // 2. Busca os Produtos Recentes para a GRADE EDITORIAL (Latest Drops)
-  // Pega os últimos produtos published com imagem
+  // 2. Busca os Produtos Recentes para a GRADE EDITORIAL
+  // Usa distinct on name para evitar duplicatas se houver variantes
   const { data: recentProds } = await supabase
     .from('products')
     .select('*, collections(name)')
     .eq('status', 'published')
     .not('thumbnail_url', 'is', null)
     .order('created_at', { ascending: false })
-    .limit(9); // Limite seguro, mas vamos renderizar apenas o que existir
+    .limit(9);
   
-  gridProducts = recentProds || [];
+  // Filtra duplicatas manualmente no JS para garantir
+  const seenNames = new Set();
+  gridProducts = (recentProds || []).filter(p => {
+    if (seenNames.has(p.name)) return false;
+    seenNames.add(p.name);
+    return true;
+  }).slice(0, 9);
 
 } catch(e) {
   console.error("Erro ao carregar home:", e);
@@ -60,12 +66,35 @@ try {
 
 // Helper para imagens otimizadas
 const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
+
+// Helper para renderizar cores corretamente (HTML string seguro)
+const renderColors = (colors) => {
+  if (!colors || !Array.isArray(colors) || colors.length === 0) return '';
+  
+  let html = '<div class="flex items-center gap-1.5">';
+  const displayColors = colors.slice(0, 4);
+  
+  displayColors.forEach(c => {
+    if (c.type === 'pattern' && c.url) {
+      html += `<span class="w-2 h-2 rounded-full overflow-hidden border border-white/50 inline-block"><img src="${c.url}?width=10" class="w-full h-full object-cover" /></span>`;
+    } else {
+      html += `<span class="w-2 h-2 rounded-full shadow-sm inline-block" style="background:${c.hex || '#ccc'}"></span>`;
+    }
+  });
+  
+  if (colors.length > 4) {
+    html += `<span class="text-[9px] text-white/70 font-vcr ml-1">+${colors.length - 4}</span>`;
+  }
+  
+  html += '</div>';
+  return html;
+};
 ---
 
 <Layout title="WOLTZ | NOCTIS VOL. I">
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 1: HERO BANNER                       -->
+  <!-- SEÇÃO 1: HERO BANNER INTERATIVO            -->
   <!-- ========================================== -->
   <main class="relative w-full h-screen overflow-hidden bg-[#121214]">
     <div class="absolute inset-0 z-0">
@@ -95,15 +124,14 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
           [ Series: {featuredCollection?.category || 'Latest Drop'} ] &nbsp;·&nbsp; [ Collection ]
         </div>
         
-        <!-- Título Dinâmico (SEM TM) -->
+        <!-- Título Dinâmico -->
         <h1 id="collection-title" class="font-['Anton'] text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-10 uppercase text-white transition-opacity duration-500">
           {featuredCollection?.name || 'NEW<br/>ARRIVAL'}
         </h1>
         
         <div class="flex items-center gap-8 mb-5">
           <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Sets</span>
-          <!-- Quantidade de Sets Dinâmica -->
-          <div id="collection-colors" class="flex gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500">
+          <div id="collection-sets" class="flex gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500">
             <span class="text-white cursor-pointer clickable">{featuredCollection?.product_count || 0} Items</span>
           </div>
         </div>
@@ -115,7 +143,6 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
           </button>
           <div>
             <div class="text-[10px] tracking-[0.3em] text-white/40 uppercase mb-2 font-light">Pack Price</div>
-            <!-- Preço do Pack Dinâmico -->
             <div id="collection-price" class="text-3xl font-extralight text-white tracking-tight transition-opacity duration-500">
               $ {Number(featuredCollection?.pack_price_usd || 0).toFixed(2)}
             </div>
@@ -123,19 +150,19 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
         </div>
       </div>
 
-      <!-- SIDEBAR LATERAL: Coleção Atual + 2 Anteriores -->
+      <!-- SIDEBAR LATERAL INTERATIVA -->
       <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
-        <div class="flex flex-col gap-4 w-full">
+        <div class="flex flex-col gap-4 w-full" id="sidebar-thumbs">
           
-          <!-- Thumbnail 1: Coleção Destaque (Atual) -->
-          <div id="thumb-0" class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100">
+          <!-- Thumbnail 1: Coleção Destaque (Ativa) -->
+          <div data-index="0" class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100">
             <img src={imgUrl(featuredCollection?.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500 pointer-events-none" alt={featuredCollection?.name} />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
 
           <!-- Thumbnails 2 e 3: Coleções Anteriores -->
           {sidebarCollections.map((col, i) => (
-            <div id={`thumb-${i+1}`} class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0">
+            <div data-index={i+1} class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0">
               <img src={imgUrl(col.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt={col.name} />
               <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
@@ -162,7 +189,6 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
     
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
       <div class="flex-1">
-        <!-- TÍTULO CORRIGIDO PARA NEW COLLECTION -->
         <h2 class="font-['Anton'] text-6xl md:text-8xl uppercase text-white tracking-tight mb-6">NEW COLLECTION</h2>
         <div class="flex flex-wrap gap-x-16 gap-y-4 text-[10px] tracking-[0.2em] text-white/70 uppercase font-vcr">
           <div class="flex flex-col gap-1">
@@ -188,10 +214,10 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
       </button>
     </div>
 
-    <!-- GRID DINÂMICO: Card Grande da Coleção + Cards Estreitos dos Produtos -->
+    <!-- GRID DINÂMICO -->
     <div class="grid grid-cols-5 gap-4 md:gap-6 mb-16 md:mb-24">
       
-      <!-- CARD GRANDE DA COLEÇÃO (Ocupa 2 colunas, altura maior) -->
+      <!-- CARD GRANDE DA COLEÇÃO -->
       {featuredCollection && (
         <div class="col-span-2 relative group clickable h-[450px]">
           <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
@@ -213,8 +239,8 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
         </div>
       )}
 
-      <!-- CARDS ESTREITOS DOS PRODUTOS (Ocupam 1 coluna cada) -->
-      {gridProducts.map((product) => (
+      <!-- CARDS ESTREITOS DOS PRODUTOS (Primeira fileira: até 3 produtos) -->
+      {gridProducts.slice(0, 3).map((product) => (
         <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
           <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
             <img src={imgUrl(product.thumbnail_url, 600)} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={product.name} />
@@ -223,17 +249,8 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
             <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">{product.name}</h4>
             <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">{product.description ? product.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
             
-            <!-- Cores Dinâmicas (Máx 4 + Contador) -->
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center gap-1.5">
-                {product.colors && Array.isArray(product.colors) && product.colors.slice(0, 4).map(c => (
-                  c.type === 'pattern' && c.url ? 
-                    `<span class="w-2 h-2 rounded-full overflow-hidden border border-white/50 inline-block"><img src="${c.url}?width=10" class="w-full h-full object-cover" /></span>` :
-                    `<span class="w-2 h-2 rounded-full shadow-sm inline-block" style="background:${c.hex}"></span>`
-                )).join('')}
-                {product.colors?.length > 4 && `<span class="text-[9px] text-white/70 font-vcr ml-1">+${product.colors.length - 4}</span>`}
-              </div>
-            </div>
+            <!-- Cores Renderizadas Corretamente -->
+            <div class="flex items-center justify-between mb-2" set:html={renderColors(product.colors)}></div>
 
             <!-- Botão Carrinho + Preço -->
             <div class="flex items-center justify-between">
@@ -248,7 +265,7 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
 
     </div>
 
-    <!-- SEGUNDA FILEIRA (Só aparece se houver mais de 3 produtos além do card grande) -->
+    <!-- SEGUNDA FILEIRA (Só aparece se houver mais de 3 produtos) -->
     {gridProducts.length > 3 && (
       <div class="grid grid-cols-5 gap-4 md:gap-6">
         {gridProducts.slice(3).map((product) => (
@@ -260,16 +277,7 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
               <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">{product.name}</h4>
               <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">{product.description ? product.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
               
-              <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-1.5">
-                  {product.colors && Array.isArray(product.colors) && product.colors.slice(0, 4).map(c => (
-                    c.type === 'pattern' && c.url ? 
-                      `<span class="w-2 h-2 rounded-full overflow-hidden border border-white/50 inline-block"><img src="${c.url}?width=10" class="w-full h-full object-cover" /></span>` :
-                      `<span class="w-2 h-2 rounded-full shadow-sm inline-block" style="background:${c.hex}"></span>`
-                  )).join('')}
-                  {product.colors?.length > 4 && `<span class="text-[9px] text-white/70 font-vcr ml-1">+${product.colors.length - 4}</span>`}
-                </div>
-              </div>
+              <div class="flex items-center justify-between mb-2" set:html={renderColors(product.colors)}></div>
 
               <div class="flex items-center justify-between">
                 <button class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2">
@@ -364,23 +372,97 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
 
   </footer>
 
-  <!-- Estilo Global para Fonte VCR e Clip-Path Assimétrico -->
+  <!-- SCRIPT PARA INTERATIVIDADE DO HERO -->
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Dados das coleções injetados pelo Astro
+      const collectionsData = [
+        {
+          image: document.getElementById('hero-main-img')?.src,
+          series: document.getElementById('collection-series')?.innerText,
+          title: document.getElementById('collection-title')?.innerText,
+          sets: document.getElementById('collection-sets')?.innerText,
+          price: document.getElementById('collection-price')?.innerText
+        },
+        ...Array.from(document.querySelectorAll('.thumb-item')).slice(1).map((thumb, i) => {
+          const img = thumb.querySelector('img');
+          // Aqui você poderia injetar dados reais via data-attributes se necessário
+          // Por enquanto, vamos apenas trocar a imagem visualmente
+          return { image: img?.src };
+        })
+      ];
+
+      const thumbs = document.querySelectorAll('.thumb-item');
+      const mainImg = document.getElementById('hero-main-img');
+      const seriesEl = document.getElementById('collection-series');
+      const titleEl = document.getElementById('collection-title');
+      const setsEl = document.getElementById('collection-sets');
+      const priceEl = document.getElementById('collection-price');
+      const indicator = document.getElementById('image-indicator');
+
+      function updateHero(index) {
+        // Atualiza classes visuais das thumbnails
+        thumbs.forEach((t, i) => {
+          const img = t.querySelector('img');
+          if (i === index) {
+            t.classList.remove('opacity-60', 'grayscale');
+            t.classList.add('opacity-100');
+            img?.classList.remove('border-transparent');
+            img?.classList.add('border-white/80');
+          } else {
+            t.classList.remove('opacity-100');
+            t.classList.add('opacity-60', 'grayscale');
+            img?.classList.remove('border-white/80');
+            img?.classList.add('border-transparent');
+          }
+        });
+
+        // Animação de transição
+        [seriesEl, titleEl, setsEl, priceEl].forEach(el => el && (el.style.opacity = '0'));
+        if(mainImg) {
+            mainImg.style.opacity = '0';
+            mainImg.style.filter = 'blur(15px) scale(1.05)';
+        }
+
+        setTimeout(() => {
+          // Atualiza conteúdo (apenas imagem por enquanto, dados textuais viriam de um objeto completo)
+          if(mainImg && collectionsData[index]?.image) mainImg.src = collectionsData[index].image;
+          
+          // Simulação de atualização de texto (em produção, use data attributes nas thumbs)
+          if(seriesEl && collectionsData[index]?.series) seriesEl.innerText = collectionsData[index].series;
+          if(titleEl && collectionsData[index]?.title) titleEl.innerText = collectionsData[index].title;
+          if(setsEl && collectionsData[index]?.sets) setsEl.innerText = collectionsData[index].sets;
+          if(priceEl && collectionsData[index]?.price) priceEl.innerText = collectionsData[index].price;
+
+          if(mainImg) {
+              mainImg.onload = () => {
+                mainImg.style.opacity = '1';
+                mainImg.style.filter = 'blur(0px) scale(1)';
+              };
+              setTimeout(() => {
+                mainImg.style.opacity = '1';
+                mainImg.style.filter = 'blur(0px) scale(1)';
+              }, 600);
+          }
+
+          [seriesEl, titleEl, setsEl, priceEl].forEach(el => el && (el.style.opacity = '1'));
+          
+          if (indicator) indicator.textContent = `0${index + 1} — 0${thumbs.length}`;
+        }, 500);
+      }
+
+      thumbs.forEach((thumb, i) => {
+        thumb.addEventListener('click', () => updateHero(i));
+      });
+    });
+  </script>
+
+  <!-- Estilo Global -->
   <style is:global>
     @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
-
-    .font-vcr {
-      font-family: 'VCR OSD Mono', monospace;
-    }
-
+    .font-vcr { font-family: 'VCR OSD Mono', monospace; }
     .tech-card-asymmetric {
-      clip-path: polygon(
-        12px 0,
-        100% 0,
-        100% calc(100% - 12px),
-        calc(100% - 12px) 100%,
-        0 100%,
-        0 12px
-      );
+      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
       background-color: #5f7085;
     }
   </style>
