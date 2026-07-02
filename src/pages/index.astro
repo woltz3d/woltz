@@ -24,7 +24,6 @@ import '../styles/global.css';
       </nav>
       <div class="flex gap-5 text-white/60">
         <button class="hover:text-white transition-colors duration-500 clickable"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
-        <!-- CARRINHO COM CONTADOR -->
         <button id="cart-btn" class="relative hover:text-white transition-colors duration-500 clickable">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           <span id="cart-count" class="absolute -top-2 -right-2 bg-white text-black text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span>
@@ -75,7 +74,7 @@ import '../styles/global.css';
   </main>
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 2: GRADE EDITORIAL (SEM TEXTOS)      -->
+  <!-- SEÇÃO 2: NEW COLLECTION (COM CARD GRANDE)  -->
   <!-- ========================================== -->
   <section class="relative w-full bg-[#6b7c93] py-12 px-6 md:px-12 lg:px-20">
     
@@ -161,28 +160,31 @@ import '../styles/global.css';
   </footer>
 
   <!-- ========================================== -->
-  <!-- CARRINHO: PREVIEW LATERAL (DRAWER)         -->
+  <!-- CARRINHO: PREVIEW GLASSMORPHISM            -->
   <!-- ========================================== -->
   <div id="cart-preview" class="fixed inset-0 z-[100] hidden">
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="cart-preview-overlay"></div>
-    <div class="absolute right-0 top-0 h-full w-[400px] max-w-[90vw] bg-[#1a1a1e] border-l border-white/10 flex flex-col transform translate-x-full transition-transform duration-300" id="cart-preview-panel">
-      <div class="flex items-center justify-between p-6 border-b border-white/10">
-        <h3 class="font-['Anton'] text-xl uppercase text-white tracking-wide">Your Cart</h3>
-        <button id="close-cart-preview" class="text-white/60 hover:text-white">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    <!-- Overlay com blur forte -->
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-xl" id="cart-preview-overlay"></div>
+    
+    <!-- Panel com glassmorphism -->
+    <div class="absolute right-0 top-0 h-full w-[420px] max-w-[90vw] bg-white/10 backdrop-blur-2xl border-l border-white/20 flex flex-col transform translate-x-full transition-transform duration-500 ease-out shadow-2xl" id="cart-preview-panel">
+      <div class="flex items-center justify-between p-6 border-b border-white/20">
+        <h3 class="font-['Anton'] text-2xl uppercase text-white tracking-wide">Your Cart</h3>
+        <button id="close-cart-preview" class="text-white/70 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
       
-      <div id="cart-preview-items" class="flex-1 overflow-y-auto p-6 space-y-4">
-        <p class="text-white/40 text-sm text-center">Your cart is empty</p>
+      <div id="cart-preview-items" class="flex-1 overflow-y-auto p-6 space-y-3">
+        <p class="text-white/50 text-sm text-center py-8 font-vcr">Your cart is empty</p>
       </div>
 
-      <div class="border-t border-white/10 p-6 space-y-4">
+      <div class="border-t border-white/20 p-6 space-y-4 bg-black/20">
         <div class="flex justify-between items-center">
-          <span class="text-white/60 text-sm uppercase tracking-wider">Subtotal</span>
-          <span id="cart-preview-total" class="text-white font-mono text-lg">$ 0.00</span>
+          <span class="text-white/70 text-sm uppercase tracking-wider font-vcr">Subtotal</span>
+          <span id="cart-preview-total" class="text-white font-mono text-xl">$ 0.00</span>
         </div>
-        <button id="view-full-cart" class="w-full bg-white text-black py-3 text-sm uppercase tracking-widest font-bold hover:bg-white/90 transition-colors">
+        <button id="view-full-cart" class="w-full bg-white text-black py-4 text-sm uppercase tracking-[0.3em] font-bold hover:bg-white/90 transition-all duration-300 shadow-lg">
           View Full Cart →
         </button>
       </div>
@@ -192,7 +194,7 @@ import '../styles/global.css';
   <!-- ========================================== -->
   <!-- CARRINHO: NOTIFICAÇÃO TOAST                -->
   <!-- ========================================== -->
-  <div id="cart-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-6 py-3 rounded-lg shadow-2xl z-[200] transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3">
+  <div id="cart-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-xl text-black px-6 py-3 rounded-lg shadow-2xl z-[200] transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 border border-white/50">
     <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
     <span id="cart-toast-message" class="text-sm font-medium">Added to cart</span>
   </div>
@@ -250,11 +252,6 @@ import '../styles/global.css';
         this.save();
       },
       
-      clear() {
-        this.items = [];
-        this.save();
-      },
-      
       getTotal() {
         return this.items.reduce((sum, i) => sum + (i.price * i.qty), 0);
       },
@@ -264,15 +261,12 @@ import '../styles/global.css';
       },
       
       updateUI() {
-        // Atualiza contador no header
         const countEl = document.getElementById('cart-count');
         const count = this.getCount();
         if (countEl) {
           countEl.textContent = count;
           countEl.style.opacity = count > 0 ? '1' : '0';
         }
-        
-        // Atualiza preview
         this.renderPreview();
       },
       
@@ -282,20 +276,20 @@ import '../styles/global.css';
         if (!container) return;
         
         if (this.items.length === 0) {
-          container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Your cart is empty</p>';
+          container.innerHTML = '<p class="text-white/50 text-sm text-center py-8 font-vcr">Your cart is empty</p>';
           if (totalEl) totalEl.textContent = '$ 0.00';
           return;
         }
         
         container.innerHTML = this.items.map(item => `
-          <div class="flex gap-4 items-center bg-white/5 p-3 rounded-lg border border-white/10">
-            <img src="${item.thumbnail ? item.thumbnail + '?width=80&quality=80' : ''}" class="w-16 h-16 object-cover rounded" />
+          <div class="flex gap-4 items-center bg-white/10 backdrop-blur-md p-3 rounded-lg border border-white/20 hover:bg-white/15 transition-colors">
+            <img src="${item.thumbnail ? item.thumbnail + '?width=80&quality=80' : ''}" class="w-16 h-16 object-cover rounded-md border border-white/10" />
             <div class="flex-1 min-w-0">
-              <h4 class="text-white text-sm font-medium truncate">${item.name}</h4>
-              <p class="text-white/60 text-xs">Qty: ${item.qty}</p>
-              <p class="text-white font-mono text-sm">$ ${(item.price * item.qty).toFixed(2)}</p>
+              <h4 class="text-white text-sm font-medium truncate font-['Anton'] uppercase tracking-wide">${item.name}</h4>
+              <p class="text-white/60 text-xs font-vcr">Qty: ${item.qty}</p>
+              <p class="text-white font-mono text-sm mt-1">$ ${(item.price * item.qty).toFixed(2)}</p>
             </div>
-            <button data-remove="${item.id}" class="text-white/40 hover:text-red-400 p-2 remove-item-btn">
+            <button data-remove="${item.id}" class="remove-item-btn text-white/50 hover:text-red-400 p-2 hover:bg-white/10 rounded-full transition-all">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
@@ -303,7 +297,6 @@ import '../styles/global.css';
         
         if (totalEl) totalEl.textContent = `$ ${this.getTotal().toFixed(2)}`;
         
-        // Adiciona listeners de remover
         container.querySelectorAll('.remove-item-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
             const id = e.currentTarget.dataset.remove;
@@ -341,7 +334,7 @@ import '../styles/global.css';
         const panel = document.getElementById('cart-preview-panel');
         if (preview && panel) {
           panel.classList.add('translate-x-full');
-          setTimeout(() => preview.classList.add('hidden'), 300);
+          setTimeout(() => preview.classList.add('hidden'), 500);
         }
       }
     };
@@ -454,26 +447,49 @@ import '../styles/global.css';
 
         updateHero(0);
 
-        // --- GRID DE PRODUTOS ---
+        // --- GRID: CARD GRANDE DA COLEÇÃO + PRODUTOS ---
         const gridContainer = document.getElementById('dynamic-grid');
         
-        let gridHtml = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+        let gridHtml = `<div class="grid grid-cols-5 gap-4 md:gap-6">`;
         
-        gridProducts.forEach(p => {
+        // Card Grande da Coleção (ocupa 2 colunas)
+        gridHtml += `
+          <div class="col-span-2 relative group clickable h-[550px]">
+            <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
+              <img src="${imgUrl(featuredCollection.image_url, 1200)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="${featuredCollection.name}" />
+              <div class="absolute bottom-6 right-6 z-10 text-right">
+                <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">${featuredCollection.name.toUpperCase()}</h3>
+                <p class="text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-3 font-vcr">${featuredCollection.description ? featuredCollection.description.substring(0, 30) + '...' : 'PREMIUM COLLECTION'}</p>
+                <div class="flex items-center justify-end gap-3">
+                   <div class="text-right hidden md:block">
+                      <p class="text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Pack Price</p>
+                      <p class="text-lg font-light text-white drop-shadow-sm">$ ${Number(featuredCollection.pack_price_usd).toFixed(2)}</p>
+                   </div>
+                   <button class="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                   </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Cards de Produtos (até 3 na primeira fileira)
+        gridProducts.slice(0, 3).forEach(p => {
           gridHtml += `
-            <div class="relative group flex flex-col">
-              <div class="relative w-full aspect-[3/4] overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
+            <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
+              <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
                 <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
               </div>
               <div class="mt-auto">
-                <h4 class="font-['Anton'] text-lg tracking-wide uppercase mb-1 text-white">${p.name}</h4>
-                <p class="text-white/60 text-[10px] tracking-wider uppercase mb-3 font-vcr">${p.description ? p.description.substring(0, 30) + '...' : 'PREMIUM DIGITAL SET'}</p>
-                <div class="mb-3">${renderColors(p.colors)}</div>
+                <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
+                <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
                 <div class="flex items-center justify-between">
-                  <button class="add-to-cart-btn w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white" data-product='${JSON.stringify({id: p.id, name: p.name, price_usd: p.price_usd, thumbnail_url: p.thumbnail_url}).replace(/'/g, "&#39;")}'>
-                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                  <button class="add-to-cart-btn w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" data-product='${JSON.stringify({id: p.id, name: p.name, price_usd: p.price_usd, thumbnail_url: p.thumbnail_url}).replace(/'/g, "&#39;")}'>
+                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                   </button>
-                  <p class="text-white text-sm font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
+                  <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
                 </div>
               </div>
             </div>
@@ -481,12 +497,40 @@ import '../styles/global.css';
         });
 
         gridHtml += `</div>`;
+
+        // Segunda fileira (se houver mais produtos)
+        if (gridProducts.length > 3) {
+          gridHtml += `<div class="grid grid-cols-5 gap-4 md:gap-6 mt-6">`;
+          gridProducts.slice(3).forEach(p => {
+            gridHtml += `
+              <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
+                <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
+                  <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
+                </div>
+                <div class="mt-auto">
+                  <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
+                  <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                  <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
+                  <div class="flex items-center justify-between">
+                    <button class="add-to-cart-btn w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" data-product='${JSON.stringify({id: p.id, name: p.name, price_usd: p.price_usd, thumbnail_url: p.thumbnail_url}).replace(/'/g, "&#39;")}'>
+                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </button>
+                    <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          gridHtml += `</div>`;
+        }
+
         gridContainer.innerHTML = gridHtml;
 
         // Adiciona listeners dos botões Add to Cart
         gridContainer.querySelectorAll('.add-to-cart-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             try {
               const product = JSON.parse(btn.dataset.product.replace(/&#39;/g, "'"));
               Cart.add(product);
@@ -505,7 +549,7 @@ import '../styles/global.css';
           window.location.href = '/cart';
         });
 
-        // --- FILTROS (placeholder) ---
+        // --- FILTROS ---
         document.getElementById('filters-btn')?.addEventListener('click', () => {
           alert('Filters coming soon!');
         });
