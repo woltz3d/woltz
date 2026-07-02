@@ -10,7 +10,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
   <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
   
   <style is:global>
-    /* Container principal - sidebar mais estreita */
     .theme-editor-wrapper {
       display: grid;
       grid-template-columns: 200px 1fr;
@@ -20,7 +19,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       position: relative;
     }
     
-    /* Scrollbar global */
     .theme-editor-wrapper ::-webkit-scrollbar { width: 5px; }
     .theme-editor-wrapper ::-webkit-scrollbar-track { background: transparent; }
     .theme-editor-wrapper ::-webkit-scrollbar-thumb {
@@ -31,7 +29,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       background: rgba(255, 255, 255, 0.3);
     }
     
-    /* Sidebar Esquerda - MAIS ESTREITA */
     .te-sidebar-left {
       background: #111113;
       border-right: 1px solid rgba(255, 255, 255, 0.06);
@@ -74,6 +71,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       cursor: pointer;
       transition: all 0.2s ease;
       margin-bottom: 2px;
+      user-select: none;
     }
     
     .te-section-item:hover { background: rgba(255, 255, 255, 0.04); }
@@ -114,7 +112,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       color: rgba(255, 255, 255, 0.4);
     }
     
-    /* Centro - Preview */
     .te-preview {
       background: #1a1a1e;
       position: relative;
@@ -193,7 +190,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
     }
     
-    /* Edit Section - PAINEL FLUTUANTE */
     .te-editor-panel {
       position: absolute;
       top: 0;
@@ -363,7 +359,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       color: rgba(255, 255, 255, 0.8);
     }
     
-    /* Botão flutuante para abrir o painel */
     .te-open-editor-btn {
       position: absolute;
       top: 1rem;
@@ -391,7 +386,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     
     .te-open-editor-btn svg { width: 14px; height: 14px; }
     
-    /* Toast */
     .te-toast {
       position: fixed;
       bottom: 2rem;
@@ -421,14 +415,13 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
   </style>
 
   <div class="theme-editor-wrapper">
-    <!-- Sidebar Esquerda - MAIS ESTREITA -->
     <div class="te-sidebar-left">
       <div class="te-sidebar-header">
         <h2>Page Structure</h2>
         <p>Select a section</p>
       </div>
       
-      <div class="te-sections-list">
+      <div class="te-sections-list" id="sections-list">
         <div class="te-section-item active" data-section="colors">
           <div class="te-section-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -501,7 +494,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       </div>
     </div>
     
-    <!-- Centro: Preview + Painel Flutuante -->
     <div class="te-preview">
       <div class="te-preview-header">
         <button class="te-device-btn active" data-device="desktop">
@@ -531,8 +523,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       <div class="te-preview-container">
         <iframe id="preview-frame" class="te-preview-frame" src="/" sandbox="allow-same-origin allow-scripts"></iframe>
         
-        <!-- Botão para abrir o painel de edição -->
-        <button class="te-open-editor-btn" id="open-editor-btn">
+        <button class="te-open-editor-btn" id="open-editor-btn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -540,7 +531,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           Edit
         </button>
         
-        <!-- Painel de Edição Flutuante -->
         <div class="te-editor-panel" id="editor-panel">
           <div class="te-editor-header">
             <div>
@@ -548,8 +538,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
               <p id="section-description">Global color palette</p>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center;">
-              <button id="save-btn" class="te-save-btn">Save</button>
-              <button class="te-close-panel" id="close-panel-btn">
+              <button id="save-btn" class="te-save-btn" type="button">Save</button>
+              <button class="te-close-panel" id="close-panel-btn" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"/>
                   <line x1="6" y1="6" x2="18" y2="18"/>
@@ -558,15 +548,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             </div>
           </div>
           
-          <div class="te-controls" id="controls-container">
-            <!-- Controles injetados via JS -->
-          </div>
+          <div class="te-controls" id="controls-container"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Toast -->
   <div id="te-toast" class="te-toast">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -574,234 +561,314 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     <span>Saved</span>
   </div>
 
-  <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  <script>
+    // Script inline para garantir que rode imediatamente
+    (function() {
+      console.log('Theme Editor script loaded');
+      
+      const sectionControls = {
+        colors: [
+          { key: 'colors.primary', label: 'Primary Color', type: 'color' },
+          { key: 'colors.secondary', label: 'Secondary Color', type: 'color' },
+          { key: 'colors.background', label: 'Background Color', type: 'color' },
+          { key: 'colors.background_alt', label: 'Alt Background', type: 'color' },
+          { key: 'colors.text', label: 'Text Color', type: 'color' },
+          { key: 'colors.text_muted', label: 'Muted Text', type: 'color' },
+          { key: 'colors.accent', label: 'Accent Color', type: 'color' },
+          { key: 'colors.success', label: 'Success', type: 'color' },
+          { key: 'colors.error', label: 'Error', type: 'color' },
+          { key: 'colors.warning', label: 'Warning', type: 'color' },
+        ],
+        typography: [
+          { key: 'typography.font_heading', label: 'Heading Font', type: 'select', options: ['Anton', 'Playfair Display', 'Oswald', 'Bebas Neue', 'Montserrat'] },
+          { key: 'typography.font_body', label: 'Body Font', type: 'select', options: ['Inter, sans-serif', 'Roboto, sans-serif', 'Open Sans, sans-serif', 'DM Sans, sans-serif'] },
+          { key: 'typography.font_mono', label: 'Monospace Font', type: 'text', placeholder: 'VCR OSD Mono, monospace' },
+          { key: 'typography.size_h1', label: 'H1 Size', type: 'text', placeholder: 'clamp(3rem, 8vw, 6rem)' },
+          { key: 'typography.size_h2', label: 'H2 Size', type: 'text', placeholder: 'clamp(2rem, 5vw, 4rem)' },
+          { key: 'typography.size_body', label: 'Body Size', type: 'text', placeholder: '1rem' },
+          { key: 'typography.weight_heading', label: 'Heading Weight', type: 'select', options: ['300', '400', '500', '600', '700', '800'] },
+          { key: 'typography.weight_body', label: 'Body Weight', type: 'select', options: ['300', '400', '500', '600'] },
+          { key: 'typography.tracking_heading', label: 'Heading Spacing', type: 'text', placeholder: '-0.02em' },
+          { key: 'typography.tracking_body', label: 'Body Spacing', type: 'text', placeholder: '0.05em' },
+        ],
+        layout: [
+          { key: 'layout.container_max_width', label: 'Max Width', type: 'text', placeholder: '1536px' },
+          { key: 'layout.section_padding', label: 'Section Padding', type: 'text', placeholder: '3rem' },
+          { key: 'layout.grid_gap', label: 'Grid Gap', type: 'text', placeholder: '1.5rem' },
+          { key: 'layout.border_radius', label: 'Border Radius', type: 'text', placeholder: '0px' },
+          { key: 'layout.hero_height', label: 'Hero Height', type: 'text', placeholder: '100vh' },
+        ],
+        branding: [
+          { key: 'branding.site_name', label: 'Site Name', type: 'text', placeholder: 'WOLTZ' },
+          { key: 'branding.tagline', label: 'Tagline', type: 'text', placeholder: 'Premium Digital Fashion' },
+          { key: 'branding.logo_url', label: 'Logo URL', type: 'text', placeholder: 'https://...' },
+          { key: 'branding.favicon_url', label: 'Favicon URL', type: 'text', placeholder: 'https://...' },
+        ],
+        footer: [
+          { key: 'footer.text_left', label: 'Left Text', type: 'textarea', rows: 3 },
+          { key: 'footer.text_center', label: 'Center Text', type: 'textarea', rows: 3 },
+          { key: 'footer.lettering_text', label: 'Giant Lettering', type: 'text', placeholder: 'WOLTZ PUFFERS' },
+          { key: 'footer.show_social', label: 'Show Social Icons', type: 'checkbox' },
+          { key: 'footer.social_instagram', label: 'Instagram URL', type: 'text', placeholder: 'https://instagram.com/...' },
+          { key: 'footer.social_twitter', label: 'Twitter URL', type: 'text', placeholder: 'https://twitter.com/...' },
+          { key: 'footer.social_youtube', label: 'YouTube URL', type: 'text', placeholder: 'https://youtube.com/...' },
+        ],
+      };
 
-    const configEl = document.getElementById('app-config');
-    const supabase = createClient(configEl?.dataset.supabaseUrl, configEl?.dataset.supabaseKey);
+      const sectionDescriptions = {
+        colors: 'Global color palette',
+        typography: 'Fonts and sizes',
+        layout: 'Spacing',
+        branding: 'Logo & identity',
+        footer: 'Content & links',
+      };
 
-    let currentSection = 'colors';
-    let themeData: any = {};
-    let hasChanges = false;
+      let currentSection = 'colors';
+      let themeData = {};
+      let hasChanges = false;
 
-    const sectionControls: any = {
-      colors: [
-        { key: 'colors.primary', label: 'Primary Color', type: 'color' },
-        { key: 'colors.secondary', label: 'Secondary Color', type: 'color' },
-        { key: 'colors.background', label: 'Background Color', type: 'color' },
-        { key: 'colors.background_alt', label: 'Alt Background', type: 'color' },
-        { key: 'colors.text', label: 'Text Color', type: 'color' },
-        { key: 'colors.text_muted', label: 'Muted Text', type: 'color' },
-        { key: 'colors.accent', label: 'Accent Color', type: 'color' },
-        { key: 'colors.success', label: 'Success', type: 'color' },
-        { key: 'colors.error', label: 'Error', type: 'color' },
-        { key: 'colors.warning', label: 'Warning', type: 'color' },
-      ],
-      typography: [
-        { key: 'typography.font_heading', label: 'Heading Font', type: 'select', options: ['Anton', 'Playfair Display', 'Oswald', 'Bebas Neue', 'Montserrat'] },
-        { key: 'typography.font_body', label: 'Body Font', type: 'select', options: ['Inter, sans-serif', 'Roboto, sans-serif', 'Open Sans, sans-serif', 'DM Sans, sans-serif'] },
-        { key: 'typography.font_mono', label: 'Monospace Font', type: 'text', placeholder: 'VCR OSD Mono, monospace' },
-        { key: 'typography.size_h1', label: 'H1 Size', type: 'text', placeholder: 'clamp(3rem, 8vw, 6rem)' },
-        { key: 'typography.size_h2', label: 'H2 Size', type: 'text', placeholder: 'clamp(2rem, 5vw, 4rem)' },
-        { key: 'typography.size_body', label: 'Body Size', type: 'text', placeholder: '1rem' },
-        { key: 'typography.weight_heading', label: 'Heading Weight', type: 'select', options: ['300', '400', '500', '600', '700', '800'] },
-        { key: 'typography.weight_body', label: 'Body Weight', type: 'select', options: ['300', '400', '500', '600'] },
-        { key: 'typography.tracking_heading', label: 'Heading Spacing', type: 'text', placeholder: '-0.02em' },
-        { key: 'typography.tracking_body', label: 'Body Spacing', type: 'text', placeholder: '0.05em' },
-      ],
-      layout: [
-        { key: 'layout.container_max_width', label: 'Max Width', type: 'text', placeholder: '1536px' },
-        { key: 'layout.section_padding', label: 'Section Padding', type: 'text', placeholder: '3rem' },
-        { key: 'layout.grid_gap', label: 'Grid Gap', type: 'text', placeholder: '1.5rem' },
-        { key: 'layout.border_radius', label: 'Border Radius', type: 'text', placeholder: '0px' },
-        { key: 'layout.hero_height', label: 'Hero Height', type: 'text', placeholder: '100vh' },
-      ],
-      branding: [
-        { key: 'branding.site_name', label: 'Site Name', type: 'text', placeholder: 'WOLTZ' },
-        { key: 'branding.tagline', label: 'Tagline', type: 'text', placeholder: 'Premium Digital Fashion' },
-        { key: 'branding.logo_url', label: 'Logo URL', type: 'text', placeholder: 'https://...' },
-        { key: 'branding.favicon_url', label: 'Favicon URL', type: 'text', placeholder: 'https://...' },
-      ],
-      footer: [
-        { key: 'footer.text_left', label: 'Left Text', type: 'textarea', rows: 3 },
-        { key: 'footer.text_center', label: 'Center Text', type: 'textarea', rows: 3 },
-        { key: 'footer.lettering_text', label: 'Giant Lettering', type: 'text', placeholder: 'WOLTZ PUFFERS' },
-        { key: 'footer.show_social', label: 'Show Social Icons', type: 'checkbox' },
-        { key: 'footer.social_instagram', label: 'Instagram URL', type: 'text', placeholder: 'https://instagram.com/...' },
-        { key: 'footer.social_twitter', label: 'Twitter URL', type: 'text', placeholder: 'https://twitter.com/...' },
-        { key: 'footer.social_youtube', label: 'YouTube URL', type: 'text', placeholder: 'https://youtube.com/...' },
-      ],
-    };
-
-    const sectionDescriptions: any = {
-      colors: 'Global color palette',
-      typography: 'Fonts and sizes',
-      layout: 'Spacing',
-      branding: 'Logo & identity',
-      footer: 'Content & links',
-    };
-
-    async function loadThemeSettings() {
-      try {
-        const { data, error } = await supabase.from('theme_settings').select('*');
-        if (error) throw error;
-        data.forEach((row: any) => { themeData[row.key] = row.value; });
-        renderControls();
-      } catch (err) {
-        console.error('Error loading theme:', err);
-      }
-    }
-
-    function renderControls() {
-      const container = document.getElementById('controls-container');
-      if (!container) return;
-
-      const controls = sectionControls[currentSection] || [];
-      document.getElementById('section-description')!.textContent = sectionDescriptions[currentSection];
-
-      container.innerHTML = controls.map((control: any) => {
-        const value = themeData[control.key]?.value ?? '';
+      // Inicializa quando o DOM estiver pronto
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM ready, initializing Theme Editor');
         
-        if (control.type === 'color') {
-          return `
-            <div class="te-control-group">
-              <label class="te-control-label">${control.label}</label>
-              <div class="te-color-row">
-                <input type="color" class="te-color-input" data-key="${control.key}" value="${value || '#ffffff'}" />
-                <input type="text" class="te-text-input" data-key="${control.key}" value="${value || '#ffffff'}" />
-              </div>
-            </div>
-          `;
-        } else if (control.type === 'select') {
-          return `
-            <div class="te-control-group">
-              <label class="te-control-label">${control.label}</label>
-              <select class="te-select-input" data-key="${control.key}">
-                ${control.options.map((opt: string) => `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`).join('')}
-              </select>
-            </div>
-          `;
-        } else if (control.type === 'checkbox') {
-          return `
-            <div class="te-control-group">
-              <label class="te-control-label">${control.label}</label>
-              <label class="te-checkbox-row">
-                <input type="checkbox" data-key="${control.key}" ${value ? 'checked' : ''} />
-                <span>Enabled</span>
-              </label>
-            </div>
-          `;
-        } else if (control.type === 'textarea') {
-          return `
-            <div class="te-control-group">
-              <label class="te-control-label">${control.label}</label>
-              <textarea class="te-textarea-input" data-key="${control.key}" rows="${control.rows || 3}">${value}</textarea>
-            </div>
-          `;
-        } else {
-          return `
-            <div class="te-control-group">
-              <label class="te-control-label">${control.label}</label>
-              <input type="${control.type}" class="te-text-input" data-key="${control.key}" value="${value}" placeholder="${control.placeholder || ''}" />
-            </div>
-          `;
+        const configEl = document.getElementById('app-config');
+        if (!configEl) {
+          console.error('app-config not found');
+          return;
         }
-      }).join('');
+        
+        const supabaseUrl = configEl.dataset.supabaseUrl;
+        const supabaseKey = configEl.dataset.supabaseKey;
+        
+        console.log('Supabase URL:', supabaseUrl);
+        
+        // Carrega Supabase
+        const script = document.createElement('script');
+        script.src = 'https://esm.sh/@supabase/supabase-js@2';
+        script.type = 'module';
+        script.onload = function() {
+          console.log('Supabase loaded');
+          initEditor(supabaseUrl, supabaseKey);
+        };
+        document.head.appendChild(script);
+      });
 
-      container.querySelectorAll('input, select, textarea').forEach((input: any) => {
-        input.addEventListener('input', (e: any) => {
-          const key = e.target.dataset.key;
-          const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-          if (!themeData[key]) themeData[key] = { value: '', label: key };
-          themeData[key].value = value;
-          hasChanges = true;
+      function initEditor(supabaseUrl, supabaseKey) {
+        import('https://esm.sh/@supabase/supabase-js@2').then(({ createClient }) => {
+          const supabase = createClient(supabaseUrl, supabaseKey);
+          console.log('Supabase client created');
           
-          if (e.target.type === 'color') {
-            const textInput = input.parentElement?.querySelector('.te-text-input');
-            if (textInput) textInput.value = value;
-          }
-          if (e.target.type === 'text' && input.previousElementSibling?.type === 'color') {
-            const colorInput = input.parentElement?.querySelector('.te-color-input');
-            if (colorInput) colorInput.value = value;
-          }
+          // Carrega configurações
+          loadThemeSettings(supabase);
+          
+          // Configura event listeners
+          setupEventListeners(supabase);
+        }).catch(err => {
+          console.error('Error loading Supabase:', err);
         });
-      });
-    }
-
-    document.getElementById('save-btn')?.addEventListener('click', async () => {
-      if (!hasChanges) return;
-      const btn = document.getElementById('save-btn');
-      if (!btn) return;
-      
-      btn.classList.add('saving');
-      btn.textContent = 'Saving...';
-      
-      try {
-        const updates = Object.entries(themeData).map(([key, value]: any) => ({
-          key, value, category: key.split('.')[0], updated_at: new Date().toISOString(),
-        }));
-        
-        const { error } = await supabase.from('theme_settings').upsert(updates, { onConflict: 'key' });
-        if (error) throw error;
-        
-        hasChanges = false;
-        btn.textContent = 'Save';
-        btn.classList.remove('saving');
-        
-        const toast = document.getElementById('te-toast');
-        if (toast) {
-          toast.classList.add('show');
-          setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-        
-        const iframe = document.getElementById('preview-frame') as HTMLIFrameElement;
-        if (iframe) iframe.src = iframe.src;
-      } catch (err: any) {
-        console.error('Error saving:', err);
-        btn.textContent = 'Save';
-        btn.classList.remove('saving');
-        alert('Error: ' + err.message);
       }
-    });
 
-    document.querySelectorAll('.te-section-item').forEach(item => {
-      item.addEventListener('click', () => {
-        document.querySelectorAll('.te-section-item').forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        currentSection = item.dataset.section!;
-        renderControls();
-        
-        // Abre o painel automaticamente
-        const panel = document.getElementById('editor-panel');
-        if (panel) panel.classList.add('open');
-      });
-    });
-
-    document.getElementById('open-editor-btn')?.addEventListener('click', () => {
-      const panel = document.getElementById('editor-panel');
-      if (panel) panel.classList.add('open');
-    });
-
-    document.getElementById('close-panel-btn')?.addEventListener('click', () => {
-      const panel = document.getElementById('editor-panel');
-      if (panel) panel.classList.remove('open');
-    });
-
-    document.querySelectorAll('.te-device-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.te-device-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        const iframe = document.getElementById('preview-frame') as HTMLIFrameElement;
-        if (iframe) {
-          iframe.className = 'te-preview-frame';
-          const device = btn.dataset.device;
-          if (device === 'tablet') iframe.classList.add('tablet');
-          if (device === 'mobile') iframe.classList.add('mobile');
+      async function loadThemeSettings(supabase) {
+        try {
+          const { data, error } = await supabase.from('theme_settings').select('*');
+          if (error) throw error;
+          
+          data.forEach((row) => {
+            themeData[row.key] = row.value;
+          });
+          
+          console.log('Theme settings loaded:', Object.keys(themeData).length, 'settings');
+          renderControls();
+        } catch (err) {
+          console.error('Error loading theme:', err);
         }
-      });
-    });
+      }
 
-    loadThemeSettings();
+      function setupEventListeners(supabase) {
+        // Sidebar items
+        const sectionItems = document.querySelectorAll('.te-section-item');
+        console.log('Found', sectionItems.length, 'section items');
+        
+        sectionItems.forEach(item => {
+          item.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Clicked section:', this.dataset.section);
+            
+            document.querySelectorAll('.te-section-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            
+            currentSection = this.dataset.section;
+            console.log('Current section:', currentSection);
+            
+            renderControls();
+            
+            const panel = document.getElementById('editor-panel');
+            if (panel) {
+              panel.classList.add('open');
+              console.log('Panel opened');
+            }
+          });
+        });
+
+        // Open editor button
+        const openBtn = document.getElementById('open-editor-btn');
+        if (openBtn) {
+          openBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Open button clicked');
+            const panel = document.getElementById('editor-panel');
+            if (panel) panel.classList.add('open');
+          });
+        }
+
+        // Close panel button
+        const closeBtn = document.getElementById('close-panel-btn');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const panel = document.getElementById('editor-panel');
+            if (panel) panel.classList.remove('open');
+          });
+        }
+
+        // Save button
+        const saveBtn = document.getElementById('save-btn');
+        if (saveBtn) {
+          saveBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            if (!hasChanges) return;
+            
+            this.classList.add('saving');
+            this.textContent = 'Saving...';
+            
+            try {
+              const updates = Object.entries(themeData).map(([key, value]) => ({
+                key, value, category: key.split('.')[0], updated_at: new Date().toISOString(),
+              }));
+              
+              const { error } = await supabase.from('theme_settings').upsert(updates, { onConflict: 'key' });
+              if (error) throw error;
+              
+              hasChanges = false;
+              this.textContent = 'Save';
+              this.classList.remove('saving');
+              
+              const toast = document.getElementById('te-toast');
+              if (toast) {
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+              }
+              
+              const iframe = document.getElementById('preview-frame');
+              if (iframe) iframe.src = iframe.src;
+            } catch (err) {
+              console.error('Error saving:', err);
+              this.textContent = 'Save';
+              this.classList.remove('saving');
+              alert('Error: ' + err.message);
+            }
+          });
+        }
+
+        // Device buttons
+        document.querySelectorAll('.te-device-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.te-device-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const iframe = document.getElementById('preview-frame');
+            if (iframe) {
+              iframe.className = 'te-preview-frame';
+              const device = this.dataset.device;
+              if (device === 'tablet') iframe.classList.add('tablet');
+              if (device === 'mobile') iframe.classList.add('mobile');
+            }
+          });
+        });
+      }
+
+      function renderControls() {
+        const container = document.getElementById('controls-container');
+        if (!container) return;
+
+        const controls = sectionControls[currentSection] || [];
+        const descEl = document.getElementById('section-description');
+        if (descEl) descEl.textContent = sectionDescriptions[currentSection];
+
+        console.log('Rendering controls for:', currentSection, 'with', controls.length, 'controls');
+
+        container.innerHTML = controls.map((control) => {
+          const value = themeData[control.key]?.value ?? '';
+          
+          if (control.type === 'color') {
+            return `
+              <div class="te-control-group">
+                <label class="te-control-label">${control.label}</label>
+                <div class="te-color-row">
+                  <input type="color" class="te-color-input" data-key="${control.key}" value="${value || '#ffffff'}" />
+                  <input type="text" class="te-text-input" data-key="${control.key}" value="${value || '#ffffff'}" />
+                </div>
+              </div>
+            `;
+          } else if (control.type === 'select') {
+            return `
+              <div class="te-control-group">
+                <label class="te-control-label">${control.label}</label>
+                <select class="te-select-input" data-key="${control.key}">
+                  ${control.options.map((opt) => `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                </select>
+              </div>
+            `;
+          } else if (control.type === 'checkbox') {
+            return `
+              <div class="te-control-group">
+                <label class="te-control-label">${control.label}</label>
+                <label class="te-checkbox-row">
+                  <input type="checkbox" data-key="${control.key}" ${value ? 'checked' : ''} />
+                  <span>Enabled</span>
+                </label>
+              </div>
+            `;
+          } else if (control.type === 'textarea') {
+            return `
+              <div class="te-control-group">
+                <label class="te-control-label">${control.label}</label>
+                <textarea class="te-textarea-input" data-key="${control.key}" rows="${control.rows || 3}">${value}</textarea>
+              </div>
+            `;
+          } else {
+            return `
+              <div class="te-control-group">
+                <label class="te-control-label">${control.label}</label>
+                <input type="${control.type}" class="te-text-input" data-key="${control.key}" value="${value}" placeholder="${control.placeholder || ''}" />
+              </div>
+            `;
+          }
+        }).join('');
+
+        // Adiciona event listeners nos controles
+        container.querySelectorAll('input, select, textarea').forEach((input) => {
+          input.addEventListener('input', function(e) {
+            const key = this.dataset.key;
+            const value = this.type === 'checkbox' ? this.checked : this.value;
+            if (!themeData[key]) themeData[key] = { value: '', label: key };
+            themeData[key].value = value;
+            hasChanges = true;
+            
+            if (this.type === 'color') {
+              const textInput = this.parentElement?.querySelector('.te-text-input');
+              if (textInput) textInput.value = value;
+            }
+            if (this.type === 'text' && this.previousElementSibling?.type === 'color') {
+              const colorInput = this.parentElement?.querySelector('.te-color-input');
+              if (colorInput) colorInput.value = value;
+            }
+          });
+        });
+      }
+    })();
   </script>
 </AdminLayout>
