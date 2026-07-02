@@ -1,115 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { supabase } from '../lib/supabase';
 import '../styles/global.css';
-
-// --- BUSCA DE DADOS DINÂMICOS NO SERVIDOR ---
-let featuredCollection: any = null;
-let sidebarCollections: any[] = [];
-let gridProducts: any[] = [];
-
-try {
-  // 1. Busca TODAS as coleções published ordenadas por data
-  const { data: allCols } = await supabase
-    .from('collections')
-    .select('*')
-    .eq('status', 'published')
-    .order('created_at', { ascending: false });
-
-  if (allCols && allCols.length > 0) {
-    // A primeira é a destaque principal
-    const mainCol = allCols[0];
-    
-    // Calcula preço do pack e contagem para a coleção destaque
-    const { data: prods } = await supabase
-      .from('products')
-      .select('price_brl, price_usd')
-      .eq('collection_id', mainCol.id)
-      .eq('status', 'published');
-    
-    const count = prods?.length || 0;
-    const totalBrl = prods?.reduce((s: number, p: any) => s + (parseFloat(p.price_brl)||0), 0) || 0;
-    const totalUsd = prods?.reduce((s: number, p: any) => s + (parseFloat(p.price_usd)||0), 0) || 0;
-    
-    featuredCollection = {
-      ...mainCol,
-      product_count: count,
-      pack_price_brl: (totalBrl * 0.85).toFixed(2),
-      pack_price_usd: (totalUsd * 0.85).toFixed(2)
-    };
-
-    // As próximas 2 vão para a sidebar lateral
-    sidebarCollections = allCols.slice(1, 3);
-  }
-
-  // 2. Busca os Produtos Recentes para a GRADE EDITORIAL
-  const { data: recentProds } = await supabase
-    .from('products')
-    .select('*, collections(name)')
-    .eq('status', 'published')
-    .not('thumbnail_url', 'is', null)
-    .order('created_at', { ascending: false })
-    .limit(9);
-  
-  // Filtra duplicatas manualmente no JS para garantir
-  const seenNames = new Set();
-  gridProducts = (recentProds || []).filter((p: any) => {
-    if (seenNames.has(p.name)) return false;
-    seenNames.add(p.name);
-    return true;
-  }).slice(0, 9);
-
-} catch(e) {
-  console.error("Erro ao carregar home:", e);
-}
-
-// Helper para imagens otimizadas
-const imgUrl = (url: string | null, w=800) => url ? `${url}?width=${w}&quality=80` : '';
-
-// Helper para renderizar cores corretamente (HTML string seguro)
-const renderColors = (colors: any[]) => {
-  if (!colors || !Array.isArray(colors) || colors.length === 0) return '';
-  
-  let html = '<div class="flex items-center gap-1.5">';
-  const displayColors = colors.slice(0, 4);
-  
-  displayColors.forEach((c: any) => {
-    if (c.type === 'pattern' && c.url) {
-      html += `<span class="w-3 h-3 rounded-full overflow-hidden border border-white/70 inline-block shadow-sm"><img src="${c.url}?width=20" class="w-full h-full object-cover" /></span>`;
-    } else {
-      html += `<span class="w-3 h-3 rounded-full shadow-sm inline-block border border-white/30" style="background:${c.hex || '#ccc'}"></span>`;
-    }
-  });
-  
-  if (colors.length > 4) {
-    html += `<span class="text-[10px] text-white/80 font-vcr ml-1 font-bold">+${colors.length - 4}</span>`;
-  }
-  
-  html += '</div>';
-  return html;
-};
-
-// Prepara dados completos para o JavaScript (incluindo coleções laterais)
-const allHeroData = [featuredCollection, ...sidebarCollections].filter(Boolean).map((col: any, i: number) => ({
-  index: i,
-  image: imgUrl(col.image_url, 2400),
-  thumbImage: imgUrl(col.image_url, 600),
-  series: `[ Series: ${col.category || 'Latest Drop'} ] · [ Collection ]`,
-  title: col.name,
-  sets: `${col.product_count || 0} Items`,
-  price: `$ ${Number(col.pack_price_usd || 0).toFixed(2)}`
-}));
 ---
 
 <Layout title="WOLTZ | NOCTIS VOL. I">
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 1: HERO BANNER INTERATIVO            -->
+  <!-- SEÇÃO 1: HERO BANNER                       -->
   <!-- ========================================== -->
-  <main class="relative w-full h-screen overflow-hidden bg-[#121214]">
+  <main class="relative w-full h-screen overflow-hidden bg-[#121214]" id="hero-section">
     <div class="absolute inset-0 z-0">
-      <!-- Imagem Dinâmica da Coleção Destaque -->
-      <img id="hero-main-img" src={imgUrl(featuredCollection?.image_url, 2400)} alt={featuredCollection?.name} class="w-full h-full object-cover transition-all duration-1000 ease-out" />
+      <img id="hero-main-img" src="" alt="" class="w-full h-full object-cover transition-all duration-1000 ease-out opacity-0" />
       <div class="absolute inset-0 bg-gradient-to-br from-[#121214]/90 via-[#121214]/60 to-transparent"></div>
     </div>
 
@@ -129,20 +30,16 @@ const allHeroData = [featuredCollection, ...sidebarCollections].filter(Boolean).
 
     <div class="relative z-10 w-full h-full flex items-center px-8 md:px-16 lg:px-24">
       <div class="max-w-2xl fade-in-up">
-        <!-- Série Dinâmica -->
-        <div id="collection-series" class="text-[10px] tracking-[0.4em] text-white/40 mb-8 uppercase font-light transition-opacity duration-500">
-          [ Series: {featuredCollection?.category || 'Latest Drop'} ] &nbsp;·&nbsp; [ Collection ]
-        </div>
+        <div id="collection-series" class="text-[10px] tracking-[0.4em] text-white/40 mb-8 uppercase font-light transition-opacity duration-500 opacity-0">Loading...</div>
         
-        <!-- Título Dinâmico -->
-        <h1 id="collection-title" class="font-['Anton'] text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-10 uppercase text-white transition-opacity duration-500">
-          {featuredCollection?.name || 'NEW<br/>ARRIVAL'}
+        <h1 id="collection-title" class="font-['Anton'] text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-10 uppercase text-white transition-opacity duration-500 opacity-0">
+          WOLTZ
         </h1>
         
         <div class="flex items-center gap-8 mb-5">
           <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Sets</span>
-          <div id="collection-sets" class="flex gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500">
-            <span class="text-white cursor-pointer clickable">{featuredCollection?.product_count || 0} Items</span>
+          <div id="collection-sets" class="flex gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500 opacity-0">
+            <span class="text-white cursor-pointer clickable">-</span>
           </div>
         </div>
         
@@ -153,34 +50,20 @@ const allHeroData = [featuredCollection, ...sidebarCollections].filter(Boolean).
           </button>
           <div>
             <div class="text-[10px] tracking-[0.3em] text-white/40 uppercase mb-2 font-light">Pack Price</div>
-            <div id="collection-price" class="text-3xl font-extralight text-white tracking-tight transition-opacity duration-500">
-              $ {Number(featuredCollection?.pack_price_usd || 0).toFixed(2)}
+            <div id="collection-price" class="text-3xl font-extralight text-white tracking-tight transition-opacity duration-500 opacity-0">
+              $ -.--
             </div>
           </div>
         </div>
       </div>
 
-      <!-- SIDEBAR LATERAL INTERATIVA -->
-      <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
+      <!-- SIDEBAR LATERAL -->
+      <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]" id="sidebar-container">
         <div class="flex flex-col gap-4 w-full" id="sidebar-thumbs">
-          
-          <!-- Thumbnail 1: Coleção Destaque (Ativa) -->
-          <div data-index="0" class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100">
-            <img src={imgUrl(featuredCollection?.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500 pointer-events-none" alt={featuredCollection?.name} />
-            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </div>
-
-          <!-- Thumbnails 2 e 3: Coleções Anteriores -->
-          {sidebarCollections.map((col, i) => (
-            <div data-index={i+1} class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0">
-              <img src={imgUrl(col.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt={col.name} />
-              <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </div>
-          ))}
-
+          <!-- Thumbnails serão injetadas via JS -->
         </div>
         <div class="text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-2 w-full flex justify-end" id="image-indicator">
-          01 — 0{Math.max(1, sidebarCollections.length + 1)}
+          -- — --
         </div>
       </div>
 
@@ -193,7 +76,7 @@ const allHeroData = [featuredCollection, ...sidebarCollections].filter(Boolean).
   </main>
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 2: GRADE EDITORIAL (NEW COLLECTION)  -->
+  <!-- SEÇÃO 2: GRADE EDITORIAL                   -->
   <!-- ========================================== -->
   <section class="relative w-full bg-[#6b7c93] py-24 px-6 md:px-12 lg:px-20">
     
@@ -224,82 +107,10 @@ const allHeroData = [featuredCollection, ...sidebarCollections].filter(Boolean).
       </button>
     </div>
 
-    <!-- GRID DINÂMICO -->
-    <div class="grid grid-cols-5 gap-4 md:gap-6 mb-16 md:mb-24">
-      
-      <!-- CARD GRANDE DA COLEÇÃO -->
-      {featuredCollection && (
-        <div class="col-span-2 relative group clickable h-[450px]">
-          <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
-            <img src={imgUrl(featuredCollection.image_url, 1200)} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={featuredCollection.name} />
-            <div class="absolute bottom-6 right-6 z-10 text-right">
-              <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">{featuredCollection.name.toUpperCase()}</h3>
-              <p class="text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-3 font-vcr">{featuredCollection.description ? featuredCollection.description.substring(0, 30) + '...' : 'PREMIUM COLLECTION'}</p>
-              <div class="flex items-center justify-end gap-3">
-                 <div class="text-right hidden md:block">
-                    <p class="text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Pack Price</p>
-                    <p class="text-lg font-light text-white drop-shadow-sm">$ {Number(featuredCollection.pack_price_usd).toFixed(2)}</p>
-                 </div>
-                 <button class="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-                 </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <!-- CARDS ESTREITOS DOS PRODUTOS (Primeira fileira: até 3 produtos) -->
-      {gridProducts.slice(0, 3).map((product) => (
-        <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-          <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-            <img src={imgUrl(product.thumbnail_url, 600)} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={product.name} />
-          </div>
-          <div class="mt-auto">
-            <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">{product.name}</h4>
-            <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">{product.description ? product.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
-            
-            <!-- Cores Renderizadas Corretamente (MAIORES) -->
-            <div class="flex items-center justify-between mb-2" set:html={renderColors(product.colors)}></div>
-
-            <!-- Botão Carrinho + Preço -->
-            <div class="flex items-center justify-between">
-              <button class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2">
-                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-              </button>
-              <p class="text-white text-xs font-light font-vcr">$ {Number(product.price_usd || 0).toFixed(2)}</p>
-            </div>
-          </div>
-        </div>
-      ))}
-
+    <!-- Container do Grid Dinâmico -->
+    <div id="dynamic-grid" class="min-h-[400px]">
+      <p class="text-white/50 font-vcr text-sm animate-pulse">Loading latest drops...</p>
     </div>
-
-    <!-- SEGUNDA FILEIRA (Só aparece se houver mais de 3 produtos) -->
-    {gridProducts.length > 3 && (
-      <div class="grid grid-cols-5 gap-4 md:gap-6">
-        {gridProducts.slice(3).map((product) => (
-          <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-            <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-              <img src={imgUrl(product.thumbnail_url, 600)} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={product.name} />
-            </div>
-            <div class="mt-auto">
-              <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">{product.name}</h4>
-              <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">{product.description ? product.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
-              
-              <div class="flex items-center justify-between mb-2" set:html={renderColors(product.colors)}></div>
-
-              <div class="flex items-center justify-between">
-                <button class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2">
-                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                </button>
-                <p class="text-white text-xs font-light font-vcr">$ {Number(product.price_usd || 0).toFixed(2)}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
 
   </section>
 
@@ -382,81 +193,7 @@ const allHeroData = [featuredCollection, ...sidebarCollections].filter(Boolean).
 
   </footer>
 
-  <!-- SCRIPT PARA INTERATIVIDADE DO HERO COM DADOS INJETADOS -->
-  <script is:inline>
-    // Dados injetados pelo Astro durante o build
-    const heroData = JSON.parse('{JSON.stringify(allHeroData)}');
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const thumbs = document.querySelectorAll('.thumb-item');
-      const mainImg = document.getElementById('hero-main-img');
-      const seriesEl = document.getElementById('collection-series');
-      const titleEl = document.getElementById('collection-title');
-      const setsEl = document.getElementById('collection-sets');
-      const priceEl = document.getElementById('collection-price');
-      const indicator = document.getElementById('image-indicator');
-
-      function updateHero(index) {
-        const data = heroData[index];
-        if (!data) return;
-
-        // Atualiza classes visuais das thumbnails
-        thumbs.forEach((t, i) => {
-          const img = t.querySelector('img');
-          if (i === index) {
-            t.classList.remove('opacity-60', 'grayscale');
-            t.classList.add('opacity-100');
-            img?.classList.remove('border-transparent');
-            img?.classList.add('border-white/80');
-          } else {
-            t.classList.remove('opacity-100');
-            t.classList.add('opacity-60', 'grayscale');
-            img?.classList.remove('border-white/80');
-            img?.classList.add('border-transparent');
-          }
-        });
-
-        // Animação de transição suave
-        [seriesEl, titleEl, setsEl, priceEl].forEach(el => el && (el.style.opacity = '0'));
-        if(mainImg) {
-            mainImg.style.opacity = '0';
-            mainImg.style.filter = 'blur(15px) scale(1.05)';
-        }
-
-        setTimeout(() => {
-          // Aplica os novos valores vindos do objeto injetado
-          if(mainImg) mainImg.src = data.image;
-          if(seriesEl) seriesEl.innerText = data.series;
-          if(titleEl) titleEl.innerText = data.title;
-          if(setsEl) setsEl.innerHTML = `<span class="text-white cursor-pointer clickable">${data.sets}</span>`;
-          if(priceEl) priceEl.innerText = data.price;
-
-          // Fade in da imagem e textos
-          if(mainImg) {
-              mainImg.onload = () => {
-                mainImg.style.opacity = '1';
-                mainImg.style.filter = 'blur(0px) scale(1)';
-              };
-              // Fallback caso onload falhe (imagem em cache)
-              setTimeout(() => {
-                mainImg.style.opacity = '1';
-                mainImg.style.filter = 'blur(0px) scale(1)';
-              }, 600);
-          }
-
-          [seriesEl, titleEl, setsEl, priceEl].forEach(el => el && (el.style.opacity = '1'));
-          
-          if (indicator) indicator.textContent = `0${index + 1} — 0${thumbs.length}`;
-        }, 500);
-      }
-
-      thumbs.forEach((thumb, i) => {
-        thumb.addEventListener('click', () => updateHero(i));
-      });
-    });
-  </script>
-
-  <!-- Estilo Global -->
+  <!-- ESTILOS GLOBAIS -->
   <style is:global>
     @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
     .font-vcr { font-family: 'VCR OSD Mono', monospace; }
@@ -465,5 +202,207 @@ const allHeroData = [featuredCollection, ...sidebarCollections].filter(Boolean).
       background-color: #5f7085;
     }
   </style>
+
+  <!-- SCRIPT PRINCIPAL: BUSCA DADOS E RENDERIZA TUDO -->
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Busca dados frescos da API
+        const res = await fetch('/api/home-data');
+        if (!res.ok) throw new Error('Failed to load data');
+        const data = await res.json();
+
+        const { featuredCollection, sidebarCollections, gridProducts } = data;
+        if (!featuredCollection) return; // Se não tiver coleção, não renderiza
+
+        // Helper de imagem
+        const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
+        
+        // Helper de cores
+        const renderColors = (colors) => {
+          if (!colors || !Array.isArray(colors) || colors.length === 0) return '';
+          let html = '<div class="flex items-center gap-1.5">';
+          colors.slice(0, 4).forEach(c => {
+            if (c.type === 'pattern' && c.url) {
+              html += `<span class="w-3 h-3 rounded-full overflow-hidden border border-white/70 inline-block shadow-sm"><img src="${c.url}?width=20" class="w-full h-full object-cover" /></span>`;
+            } else {
+              html += `<span class="w-3 h-3 rounded-full shadow-sm inline-block border border-white/30" style="background:${c.hex || '#ccc'}"></span>`;
+            }
+          });
+          if (colors.length > 4) html += `<span class="text-[10px] text-white/80 font-vcr ml-1 font-bold">+${colors.length - 4}</span>`;
+          html += '</div>';
+          return html;
+        };
+
+        // --- 1. ATUALIZAR HERO ---
+        const mainImg = document.getElementById('hero-main-img');
+        const seriesEl = document.getElementById('collection-series');
+        const titleEl = document.getElementById('collection-title');
+        const setsEl = document.getElementById('collection-sets');
+        const priceEl = document.getElementById('collection-price');
+        const indicator = document.getElementById('image-indicator');
+        const sidebarContainer = document.getElementById('sidebar-thumbs');
+
+        // Prepara array completo de dados para o JS
+        const allHeroData = [featuredCollection, ...sidebarCollections].map((col, i) => ({
+          index: i,
+          image: imgUrl(col.image_url, 2400),
+          thumbImage: imgUrl(col.image_url, 600),
+          series: `[ Series: ${col.category || 'Latest Drop'} ] · [ Collection ]`,
+          title: col.name,
+          sets: `${col.product_count || 0} Items`,
+          price: `$ ${Number(col.pack_price_usd || 0).toFixed(2)}`
+        }));
+
+        function updateHero(index) {
+          const d = allHeroData[index];
+          if (!d) return;
+
+          // Animação de saída
+          [seriesEl, titleEl, setsEl, priceEl].forEach(el => el.style.opacity = '0');
+          mainImg.style.opacity = '0';
+          mainImg.style.filter = 'blur(15px) scale(1.05)';
+
+          setTimeout(() => {
+            // Atualiza conteúdo
+            mainImg.src = d.image;
+            seriesEl.innerText = d.series;
+            titleEl.innerText = d.title;
+            setsEl.innerHTML = `<span class="text-white cursor-pointer clickable">${d.sets}</span>`;
+            priceEl.innerText = d.price;
+
+            // Atualiza thumbnails visuais
+            const thumbs = sidebarContainer.querySelectorAll('.thumb-item');
+            thumbs.forEach((t, i) => {
+              const img = t.querySelector('img');
+              if (i === index) {
+                t.classList.remove('opacity-60', 'grayscale');
+                t.classList.add('opacity-100');
+                img?.classList.remove('border-transparent');
+                img?.classList.add('border-white/80');
+              } else {
+                t.classList.remove('opacity-100');
+                t.classList.add('opacity-60', 'grayscale');
+                img?.classList.remove('border-white/80');
+                img?.classList.add('border-transparent');
+              }
+            });
+
+            // Animação de entrada
+            mainImg.onload = () => {
+              mainImg.style.opacity = '1';
+              mainImg.style.filter = 'blur(0px) scale(1)';
+            };
+            setTimeout(() => {
+              mainImg.style.opacity = '1';
+              mainImg.style.filter = 'blur(0px) scale(1)';
+            }, 500);
+
+            [seriesEl, titleEl, setsEl, priceEl].forEach(el => el.style.opacity = '1');
+            indicator.textContent = `0${index + 1} — 0${thumbs.length}`;
+          }, 500);
+        }
+
+        // Renderiza Thumbnails Laterais
+        sidebarContainer.innerHTML = allHeroData.map((d, i) => `
+          <div data-index="${i}" class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 ${i === 0 ? 'opacity-100' : 'opacity-60 hover:opacity-90 grayscale hover:grayscale-0'}">
+            <img src="${d.thumbImage}" class="w-full h-32 md:h-40 object-cover border ${i === 0 ? 'border-white/80' : 'border-transparent'} transition-all duration-500 pointer-events-none" alt="${d.title}" />
+            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+        `).join('');
+
+        // Adiciona eventos de clique
+        sidebarContainer.querySelectorAll('.thumb-item').forEach((thumb, i) => {
+          thumb.addEventListener('click', () => updateHero(i));
+        });
+
+        // Inicializa Hero
+        updateHero(0);
+
+        // --- 2. ATUALIZAR GRID DE PRODUTOS ---
+        const gridContainer = document.getElementById('dynamic-grid');
+        
+        let gridHtml = `<div class="grid grid-cols-5 gap-4 md:gap-6 mb-16 md:mb-24">`;
+        
+        // Card Grande da Coleção
+        gridHtml += `
+          <div class="col-span-2 relative group clickable h-[450px]">
+            <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
+              <img src="${imgUrl(featuredCollection.image_url, 1200)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="${featuredCollection.name}" />
+              <div class="absolute bottom-6 right-6 z-10 text-right">
+                <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">${featuredCollection.name.toUpperCase()}</h3>
+                <p class="text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-3 font-vcr">${featuredCollection.description ? featuredCollection.description.substring(0, 30) + '...' : 'PREMIUM COLLECTION'}</p>
+                <div class="flex items-center justify-end gap-3">
+                   <div class="text-right hidden md:block">
+                      <p class="text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Pack Price</p>
+                      <p class="text-lg font-light text-white drop-shadow-sm">$ ${Number(featuredCollection.pack_price_usd).toFixed(2)}</p>
+                   </div>
+                   <button class="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                   </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Cards de Produtos (Primeira fileira)
+        gridProducts.slice(0, 3).forEach(p => {
+          gridHtml += `
+            <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
+              <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
+                <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
+              </div>
+              <div class="mt-auto">
+                <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
+                <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
+                <div class="flex items-center justify-between">
+                  <button class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2">
+                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                  </button>
+                  <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        gridHtml += `</div>`;
+
+        // Segunda fileira (se houver mais produtos)
+        if (gridProducts.length > 3) {
+          gridHtml += `<div class="grid grid-cols-5 gap-4 md:gap-6">`;
+          gridProducts.slice(3).forEach(p => {
+            gridHtml += `
+              <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
+                <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
+                  <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
+                </div>
+                <div class="mt-auto">
+                  <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
+                  <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                  <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
+                  <div class="flex items-center justify-between">
+                    <button class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2">
+                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </button>
+                    <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          gridHtml += `</div>`;
+        }
+
+        gridContainer.innerHTML = gridHtml;
+
+      } catch (err) {
+        console.error('Homepage Load Error:', err);
+        document.getElementById('dynamic-grid').innerHTML = '<p class="text-red-400">Error loading content. Please refresh.</p>';
+      }
+    });
+  </script>
 
 </Layout>
