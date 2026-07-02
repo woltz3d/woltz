@@ -213,7 +213,7 @@ import '../styles/global.css';
         const data = await res.json();
 
         const { featuredCollection, sidebarCollections, gridProducts } = data;
-        if (!featuredCollection) return; // Se não tiver coleção, não renderiza
+        if (!featuredCollection) return; 
 
         // Helper de imagem
         const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
