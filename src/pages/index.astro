@@ -1,26 +1,108 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabase';
 import '../styles/global.css';
+
+// ==========================================
+// BUSCA DE DADOS DINÂMICOS (SSG)
+// ==========================================
+let featured = null;
+let recentProducts = [];
+
+try {
+  // 1. Busca a Coleção Mais Recente Publicada
+  const { data: colData } = await supabase
+    .from('collections')
+    .select('*')
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (colData) {
+    // Calcula preço do pack e conta produtos
+    const { data: prodsInCol } = await supabase
+      .from('products')
+      .select('price_brl, price_usd')
+      .eq('collection_id', colData.id)
+      .eq('status', 'published');
+
+    const count = prodsInCol?.length || 0;
+    const totalBrl = prodsInCol?.reduce((sum, p) => sum + (parseFloat(p.price_brl) || 0), 0) || 0;
+    const totalUsd = prodsInCol?.reduce((sum, p) => sum + (parseFloat(p.price_usd) || 0), 0) || 0;
+
+    featured = {
+      ...colData,
+      product_count: count,
+      pack_price_brl: (totalBrl * 0.85).toFixed(2), // 15% off no pack
+      pack_price_usd: (totalUsd * 0.85).toFixed(2)
+    };
+  }
+
+  // 2. Busca os Últimos 6 Produtos Publicados com Imagem
+  const { data: prodData } = await supabase
+    .from('products')
+    .select('*, collections(name)')
+    .eq('status', 'published')
+    .not('thumbnail_url', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(6);
+  
+  recentProducts = prodData || [];
+
+} catch (e) {
+  console.error("Erro ao carregar dados da home:", e);
+}
+
+// Helper para imagens otimizadas
+const getImg = (url, w = 800) => url ? `${url}?width=${w}&quality=80` : '';
+
+// Prepara dados para o script inline (Hero Slider)
+// Se tiver menos de 3 coleções/produtos, completa com placeholders ou repete
+const heroSlides = [];
+if (featured) {
+  heroSlides.push({
+    image: getImg(featured.image_url, 2400),
+    series: `[ Series: ${featured.name} ] · [ Collection ]`,
+    title: `Collection<br/>${featured.name}<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>`,
+    colors: featured.description ? `<span class="text-white cursor-pointer clickable">${featured.description.substring(0, 10)}...</span>` : '<span class="text-white cursor-pointer clickable">Default</span>',
+    price: `$ ${Number(featured.pack_price_usd).toLocaleString('en-US', {minimumFractionDigits: 2})}`
+  });
+}
+// Adiciona slides extras baseados em produtos recentes se necessário
+recentProducts.slice(0, 2).forEach(p => {
+  heroSlides.push({
+    image: getImg(p.thumbnail_url, 2400),
+    series: `[ Product: ${p.name} ] · [ Set ]`,
+    title: `Set<br/>${p.name}<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>`,
+    colors: `<span class="text-white cursor-pointer clickable">$ ${Number(p.price_usd).toFixed(2)}</span>`,
+    price: `$ ${Number(p.price_usd).toLocaleString('en-US', {minimumFractionDigits: 2})}`
+  });
+});
+// Garante pelo menos 3 slides para o layout não quebrar
+while(heroSlides.length < 3) {
+  heroSlides.push(heroSlides[0] || { image: '', series: '', title: '', colors: '', price: '' });
+}
 ---
 
-<Layout title="WOLTZ | NOCTIS VOL. I">
+<Layout title={`WOLTZ | ${featured ? featured.name : 'NOCTIS VOL. I'}`}>
 
   <!-- ========================================== -->
   <!-- SEÇÃO 1: HERO BANNER                       -->
   <!-- ========================================== -->
   <main class="relative w-full h-screen overflow-hidden bg-[#121214]">
     <div class="absolute inset-0 z-0">
-      <img id="hero-main-img" src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=2400&auto=format&fit=crop" alt="WOLTZ Collection" class="w-full h-full object-cover transition-all duration-1000 ease-out" />
+      <img id="hero-main-img" src={heroSlides[0].image} alt="WOLTZ Collection" class="w-full h-full object-cover transition-all duration-1000 ease-out" />
       <div class="absolute inset-0 bg-gradient-to-br from-[#121214]/90 via-[#121214]/60 to-transparent"></div>
     </div>
 
     <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 md:px-16 py-8">
       <div class="text-lg font-light tracking-[0.5em] text-white">WOLTZ</div>
       <nav class="hidden md:flex gap-10 text-[10px] tracking-[0.3em] text-white/60 uppercase font-light">
-        <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Catalog ]</a>
+        <a href="/catalog" class="hover:text-white transition-colors duration-500 clickable">[ Catalog ]</a>
         <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Puffers ]</a>
         <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Boots ]</a>
-        <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Collections ]</a>
+        <a href="/collections" class="hover:text-white transition-colors duration-500 clickable">[ Collections ]</a>
       </nav>
       <div class="flex gap-5 text-white/60">
         <button class="hover:text-white transition-colors duration-500 clickable"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
@@ -30,8 +112,8 @@ import '../styles/global.css';
 
     <div class="relative z-10 w-full h-full flex items-center px-8 md:px-16 lg:px-24">
       <div class="max-w-2xl fade-in-up">
-        <div id="collection-series" class="text-[10px] tracking-[0.4em] text-white/40 mb-8 uppercase font-light transition-opacity duration-500">[ Series: Noctis Vol. I ] &nbsp;·&nbsp; [ Series ]</div>
-        <h1 id="collection-title" class="font-['Anton'] text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-10 uppercase text-white transition-opacity duration-500">Collection<br/>Artic 01<span class="text-white/60 text-5xl md:text-6xl align-top">™</span></h1>
+        <div id="collection-series" class="text-[10px] tracking-[0.4em] text-white/40 mb-8 uppercase font-light transition-opacity duration-500">{heroSlides[0].series}</div>
+        <h1 id="collection-title" class="font-['Anton'] text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-10 uppercase text-white transition-opacity duration-500 set-html">{heroSlides[0].title}</h1>
         <div class="flex items-center gap-8 mb-5">
           <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Size</span>
           <div class="flex gap-6 text-xs tracking-[0.2em] font-light">
@@ -43,10 +125,7 @@ import '../styles/global.css';
         </div>
         <div class="flex items-center gap-8 mb-12">
           <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Colour</span>
-          <div id="collection-colors" class="flex gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500">
-            <span class="text-white cursor-pointer clickable">White</span>
-            <span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable">Silver</span>
-          </div>
+          <div id="collection-colors" class="flex gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500 set-html">{heroSlides[0].colors}</div>
         </div>
         <div class="flex items-center gap-8">
           <button class="group relative w-24 h-24 flex items-center justify-center clickable">
@@ -55,7 +134,7 @@ import '../styles/global.css';
           </button>
           <div>
             <div class="text-[10px] tracking-[0.3em] text-white/40 uppercase mb-2 font-light">Add to Cart</div>
-            <div id="collection-price" class="text-3xl font-extralight text-white tracking-tight transition-opacity duration-500">$899.99</div>
+            <div id="collection-price" class="text-3xl font-extralight text-white tracking-tight transition-opacity duration-500">{heroSlides[0].price}</div>
           </div>
         </div>
       </div>
@@ -63,15 +142,15 @@ import '../styles/global.css';
       <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
         <div class="flex flex-col gap-4 w-full">
           <div id="thumb-0" class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100">
-            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500 pointer-events-none" alt="Artic 01" />
+            <img src={heroSlides[0].image.replace('width=2400', 'width=600')} class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500 pointer-events-none" alt="Thumb 1" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
           <div id="thumb-1" class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0">
-            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt="Noctis Vol. II" />
+            <img src={heroSlides[1].image.replace('width=2400', 'width=600')} class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt="Thumb 2" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
           <div id="thumb-2" class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0">
-            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt="Urban Shell" />
+            <img src={heroSlides[2].image.replace('width=2400', 'width=600')} class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt="Thumb 3" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
         </div>
@@ -118,238 +197,96 @@ import '../styles/global.css';
       </button>
     </div>
 
+    <!-- GRID PRINCIPAL: Card Grande + 3 Cards Pequenos -->
     <div class="grid grid-cols-5 gap-4 md:gap-6 mb-16 md:mb-24">
       
-      <div class="col-span-2 relative group clickable h-[450px]">
-        <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
-          <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Aurora" />
-          <div class="absolute bottom-6 right-6 z-10 text-right">
-            <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">AURORA™</h3>
-            <p class="text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-3 font-vcr">REFLECTIVE SHELL JACKET</p>
-            <div class="flex items-center justify-end gap-3">
-               <div class="text-right hidden md:block">
-                  <p class="text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Add to Cart</p>
-                  <p class="text-lg font-light text-white drop-shadow-sm">$1,999</p>
-               </div>
-               <button class="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-               </button>
+      <!-- CARD DESTAQUE (Coleção Mais Recente) -->
+      {featured ? (
+        <div class="col-span-2 relative group clickable h-[450px]">
+          <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
+            <img src={getImg(featured.image_url, 1200)} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={featured.name} />
+            <div class="absolute bottom-6 right-6 z-10 text-right">
+              <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">{featured.name.toUpperCase()}™</h3>
+              <p class="text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-3 font-vcr">{featured.description ? featured.description.substring(0, 30) + '...' : 'PREMIUM DIGITAL COLLECTION'}</p>
+              <div class="flex items-center justify-end gap-3">
+                 <div class="text-right hidden md:block">
+                    <p class="text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Pack Price</p>
+                    <p class="text-lg font-light text-white drop-shadow-sm">$ {Number(featured.pack_price_usd).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                 </div>
+                 <button class="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                 </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div class="col-span-2 h-[450px] bg-[#5f7085] flex items-center justify-center text-white/30 font-vcr text-xs">NO FEATURED COLLECTION</div>
+      )}
 
-      <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-        <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Aurora Silver" />
-        </div>
-        <div class="mt-auto">
-          <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">AURORA SILVER</h4>
-          <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">REFLECTIVE PUFFER JACKET</p>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-white shadow-sm"></span>
-              <span class="text-[9px] text-white/70 font-vcr">WHITE</span>
-              <span class="w-2 h-2 rounded-full bg-blue-400 shadow-sm ml-2"></span>
-              <span class="text-[9px] text-white/70 font-vcr">BLUE</span>
+      <!-- CARDS DE PRODUTOS RECENTES (Até 3) -->
+      {recentProducts.slice(0, 3).map((product) => (
+        <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
+          <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
+            <img src={getImg(product.thumbnail_url, 600)} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={product.name} />
+          </div>
+          <div class="mt-auto">
+            <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">{product.name}</h4>
+            <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">{product.collections?.name || product.type.toUpperCase()}</p>
+            <div class="flex items-center justify-between">
+              <!-- Cores Dinâmicas -->
+              <div class="flex items-center gap-1.5">
+                {product.colors && Array.isArray(product.colors) && product.colors.slice(0, 2).map(c => (
+                  c.type === 'pattern' && c.url ? 
+                    `<span class="w-2 h-2 rounded-full overflow-hidden border border-white/50 shadow-sm"><img src="${c.url}?width=10" class="w-full h-full object-cover"></span>` :
+                    `<span class="w-2 h-2 rounded-full shadow-sm" style="background-color: ${c.hex}"></span>`
+                )).join('')}
+                <span class="text-[9px] text-white/70 font-vcr ml-1">{product.colors?.[0]?.name || 'DEFAULT'}</span>
+              </div>
+              <p class="text-white text-xs font-light font-vcr">$ {Number(product.price_usd || 0).toFixed(2)}</p>
             </div>
-            <p class="text-white text-xs font-light font-vcr">$999.99</p>
           </div>
         </div>
-      </div>
-
-      <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-        <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-          <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Orbit Silver" />
-        </div>
-        <div class="mt-auto">
-          <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">ORBIT SILVER</h4>
-          <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">HIGH-GLOSS PUFFER</p>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-gray-300 shadow-sm"></span>
-              <span class="text-[9px] text-white/70 font-vcr">SILVER</span>
-            </div>
-            <p class="text-white text-xs font-light font-vcr">$1,299.99</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-        <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-          <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Black" />
-        </div>
-        <div class="mt-auto">
-          <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">STEALTH BLACK</h4>
-          <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">HEAVY SHIELD PUFFER</p>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-black border border-white/30 shadow-sm"></span>
-              <span class="text-[9px] text-white/70 font-vcr">BLACK</span>
-              <span class="w-2 h-2 rounded-full bg-white shadow-sm ml-2"></span>
-              <span class="text-[9px] text-white/70 font-vcr">WHITE</span>
-            </div>
-            <p class="text-white text-xs font-light font-vcr">$1,199.99</p>
-          </div>
-        </div>
-      </div>
-
+      ))}
     </div>
 
+    <!-- SEGUNDA FILEIRA: Mais Produtos (Até 5) -->
     <div class="grid grid-cols-5 gap-4 md:gap-6">
-      
-      <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-        <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-          <img src="https://images.unsplash.com/photo-1544923246-77307dd270b1?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Glacier White" />
-        </div>
-        <div class="mt-auto">
-          <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">GLACIER WHITE</h4>
-          <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">INSULATED PUFFER JACKET</p>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-gray-400 shadow-sm"></span>
-              <span class="text-[9px] text-white/70 font-vcr">GREY</span>
+      {recentProducts.slice(3, 8).map((product) => (
+        <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
+          <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
+            <img src={getImg(product.thumbnail_url, 600)} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={product.name} />
+          </div>
+          <div class="mt-auto">
+            <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">{product.name}</h4>
+            <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">{product.collections?.name || product.type.toUpperCase()}</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                {product.colors && Array.isArray(product.colors) && product.colors.slice(0, 2).map(c => (
+                  c.type === 'pattern' && c.url ? 
+                    `<span class="w-2 h-2 rounded-full overflow-hidden border border-white/50 shadow-sm"><img src="${c.url}?width=10" class="w-full h-full object-cover"></span>` :
+                    `<span class="w-2 h-2 rounded-full shadow-sm" style="background-color: ${c.hex}"></span>`
+                )).join('')}
+                <span class="text-[9px] text-white/70 font-vcr ml-1">{product.colors?.[0]?.name || 'DEFAULT'}</span>
+              </div>
+              <p class="text-white text-xs font-light font-vcr">$ {Number(product.price_usd || 0).toFixed(2)}</p>
             </div>
-            <p class="text-white text-xs font-light font-vcr">$1,299.99</p>
           </div>
         </div>
-      </div>
-
-      <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-        <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-          <img src="https://images.unsplash.com/photo-1550928431-ee0ec6db30d3?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Polar Gloss" />
-        </div>
-        <div class="mt-auto">
-          <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">POLAR GLOSS</h4>
-          <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">BLUE PUFFER JACKET</p>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-blue-300 shadow-sm"></span>
-              <span class="text-[9px] text-white/70 font-vcr">BLUE GLOSS</span>
-            </div>
-            <p class="text-white text-xs font-light font-vcr">$899.99</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-        <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-          <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Stealth Heavy" />
-        </div>
-        <div class="mt-auto">
-          <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">STEALTH BLACK</h4>
-          <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">HEAVY PUFFER JACKET</p>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-blue-900 shadow-sm"></span>
-              <span class="text-[9px] text-white/70 font-vcr">NAVY BLUE</span>
-              <span class="w-2 h-2 rounded-full bg-black border border-white/30 shadow-sm ml-2"></span>
-              <span class="text-[9px] text-white/70 font-vcr">BLACK</span>
-            </div>
-            <p class="text-white text-xs font-light font-vcr">$1,199.99</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-        <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-          <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Icefield Blue" />
-        </div>
-        <div class="mt-auto">
-          <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">ICEFIELD BLUE</h4>
-          <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">TECH PUFFER JACKET</p>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-blue-400 shadow-sm"></span>
-              <span class="text-[9px] text-white/70 font-vcr">BLUE</span>
-            </div>
-            <p class="text-white text-xs font-light font-vcr">$999.99</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-        <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Polar White" />
-        </div>
-        <div class="mt-auto">
-          <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">POLAR WHITE</h4>
-          <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">SHELL PUFFER JACKET</p>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-white shadow-sm"></span>
-              <span class="text-[9px] text-white/70 font-vcr">WHITE</span>
-            </div>
-            <p class="text-white text-xs font-light font-vcr">$1,499.99</p>
-          </div>
-        </div>
-      </div>
-
+      ))}
     </div>
   </section>
 
   <!-- ========================================== -->
-  <!-- FOOTER: CONTEÚDO → LETREIRO → COOKIES     -->
+  <!-- FOOTER                                     -->
   <!-- ========================================== -->
   <footer class="relative w-full bg-[#6b7c93] pt-16 pb-12 px-6 md:px-12 lg:px-20 overflow-hidden flex flex-col">
     
-    <!-- CONTEÚDO PRINCIPAL (em cima) -->
     <div class="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-8">
       
-      <!-- Coluna 1: Código de Barras + Copyright + Endereço -->
       <div class="flex flex-col gap-6">
         <svg class="w-48 h-10 text-white/80" viewBox="0 0 200 40" fill="currentColor">
-          <rect x="0" y="0" width="2" height="40"/>
-          <rect x="4" y="0" width="1" height="40"/>
-          <rect x="7" y="0" width="3" height="40"/>
-          <rect x="12" y="0" width="1" height="40"/>
-          <rect x="15" y="0" width="2" height="40"/>
-          <rect x="19" y="0" width="4" height="40"/>
-          <rect x="25" y="0" width="1" height="40"/>
-          <rect x="28" y="0" width="2" height="40"/>
-          <rect x="32" y="0" width="3" height="40"/>
-          <rect x="37" y="0" width="1" height="40"/>
-          <rect x="40" y="0" width="2" height="40"/>
-          <rect x="44" y="0" width="1" height="40"/>
-          <rect x="47" y="0" width="3" height="40"/>
-          <rect x="52" y="0" width="2" height="40"/>
-          <rect x="56" y="0" width="1" height="40"/>
-          <rect x="59" y="0" width="4" height="40"/>
-          <rect x="65" y="0" width="1" height="40"/>
-          <rect x="68" y="0" width="2" height="40"/>
-          <rect x="72" y="0" width="1" height="40"/>
-          <rect x="75" y="0" width="3" height="40"/>
-          <rect x="80" y="0" width="2" height="40"/>
-          <rect x="84" y="0" width="1" height="40"/>
-          <rect x="87" y="0" width="2" height="40"/>
-          <rect x="91" y="0" width="3" height="40"/>
-          <rect x="96" y="0" width="1" height="40"/>
-          <rect x="99" y="0" width="2" height="40"/>
-          <rect x="103" y="0" width="4" height="40"/>
-          <rect x="109" y="0" width="1" height="40"/>
-          <rect x="112" y="0" width="2" height="40"/>
-          <rect x="116" y="0" width="1" height="40"/>
-          <rect x="119" y="0" width="3" height="40"/>
-          <rect x="124" y="0" width="2" height="40"/>
-          <rect x="128" y="0" width="1" height="40"/>
-          <rect x="131" y="0" width="2" height="40"/>
-          <rect x="135" y="0" width="3" height="40"/>
-          <rect x="140" y="0" width="1" height="40"/>
-          <rect x="143" y="0" width="2" height="40"/>
-          <rect x="147" y="0" width="1" height="40"/>
-          <rect x="150" y="0" width="4" height="40"/>
-          <rect x="156" y="0" width="1" height="40"/>
-          <rect x="159" y="0" width="2" height="40"/>
-          <rect x="163" y="0" width="3" height="40"/>
-          <rect x="168" y="0" width="1" height="40"/>
-          <rect x="171" y="0" width="2" height="40"/>
-          <rect x="175" y="0" width="1" height="40"/>
-          <rect x="178" y="0" width="3" height="40"/>
-          <rect x="183" y="0" width="2" height="40"/>
-          <rect x="187" y="0" width="1" height="40"/>
-          <rect x="190" y="0" width="2" height="40"/>
-          <rect x="194" y="0" width="3" height="40"/>
-          <rect x="199" y="0" width="1" height="40"/>
+          <rect x="0" y="0" width="2" height="40"/><rect x="4" y="0" width="1" height="40"/><rect x="7" y="0" width="3" height="40"/><rect x="12" y="0" width="1" height="40"/><rect x="15" y="0" width="2" height="40"/><rect x="19" y="0" width="4" height="40"/><rect x="25" y="0" width="1" height="40"/><rect x="28" y="0" width="2" height="40"/><rect x="32" y="0" width="3" height="40"/><rect x="37" y="0" width="1" height="40"/><rect x="40" y="0" width="2" height="40"/><rect x="44" y="0" width="1" height="40"/><rect x="47" y="0" width="3" height="40"/><rect x="52" y="0" width="2" height="40"/><rect x="56" y="0" width="1" height="40"/><rect x="59" y="0" width="4" height="40"/><rect x="65" y="0" width="1" height="40"/><rect x="68" y="0" width="2" height="40"/><rect x="72" y="0" width="1" height="40"/><rect x="75" y="0" width="3" height="40"/><rect x="80" y="0" width="2" height="40"/><rect x="84" y="0" width="1" height="40"/><rect x="87" y="0" width="2" height="40"/><rect x="91" y="0" width="3" height="40"/><rect x="96" y="0" width="1" height="40"/><rect x="99" y="0" width="2" height="40"/><rect x="103" y="0" width="4" height="40"/><rect x="109" y="0" width="1" height="40"/><rect x="112" y="0" width="2" height="40"/><rect x="116" y="0" width="1" height="40"/><rect x="119" y="0" width="3" height="40"/><rect x="124" y="0" width="2" height="40"/><rect x="128" y="0" width="1" height="40"/><rect x="131" y="0" width="2" height="40"/><rect x="135" y="0" width="3" height="40"/><rect x="140" y="0" width="1" height="40"/><rect x="143" y="0" width="2" height="40"/><rect x="147" y="0" width="1" height="40"/><rect x="150" y="0" width="4" height="40"/><rect x="156" y="0" width="1" height="40"/><rect x="159" y="0" width="2" height="40"/><rect x="163" y="0" width="3" height="40"/><rect x="168" y="0" width="1" height="40"/><rect x="171" y="0" width="2" height="40"/><rect x="175" y="0" width="1" height="40"/><rect x="178" y="0" width="3" height="40"/><rect x="183" y="0" width="2" height="40"/><rect x="187" y="0" width="1" height="40"/><rect x="190" y="0" width="2" height="40"/><rect x="194" y="0" width="3" height="40"/><rect x="199" y="0" width="1" height="40"/>
         </svg>
         
         <div class="font-vcr text-[10px] tracking-[0.15em] text-white/80 uppercase leading-relaxed">
@@ -364,7 +301,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- Coluna 2: Newsletter -->
       <div class="flex flex-col gap-4">
         <div class="font-vcr text-[10px] tracking-[0.2em] text-white/80 uppercase">
           <p>NEWSLETTER SIGN UP</p>
@@ -385,10 +321,9 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- Coluna 3: Menu de Navegação -->
       <div class="flex flex-col gap-3">
         <nav class="flex flex-col gap-2 font-vcr text-[10px] tracking-[0.2em] text-white/70 uppercase">
-          <a href="#" class="hover:text-white transition-colors duration-300">[ CATALOG ]</a>
+          <a href="/catalog" class="hover:text-white transition-colors duration-300">[ CATALOG ]</a>
           <a href="#" class="hover:text-white transition-colors duration-300">[ PUFFERS ]</a>
           <a href="#" class="hover:text-white transition-colors duration-300">[ BOOTS ]</a>
           <a href="#" class="hover:text-white transition-colors duration-300">[ ABOUT US ]</a>
@@ -396,39 +331,30 @@ import '../styles/global.css';
         </nav>
       </div>
 
-      <!-- Coluna 4: Logo + Redes Sociais -->
       <div class="flex flex-col items-start md:items-end gap-6">
         <div class="font-['Anton'] text-3xl tracking-[0.2em] text-white">WOLTZ</div>
         
         <div class="flex gap-4">
           <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-            </svg>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
           </a>
           <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-            </svg>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
           </a>
           <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-            </svg>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
           </a>
         </div>
       </div>
 
     </div>
 
-    <!-- LETREIRO GIGANTE "WOLTZ PUFFERS" (abaixo do conteúdo) -->
     <div class="relative w-full flex items-center justify-center py-12 md:py-16 overflow-hidden">
       <h2 class="font-['Anton'] text-[18vw] md:text-[15vw] leading-none text-white/[0.07] tracking-tight select-none whitespace-nowrap">
         WOLTZ PUFFERS
       </h2>
     </div>
 
-    <!-- LINHA DIVISÓRIA + COOKIES (no final) -->
     <div class="relative z-10 border-t border-white/20 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 font-vcr text-[9px] tracking-[0.2em] text-white/40 uppercase">
       <p>MADE WITH PRECISION IN BROOKLYN</p>
       <p>TERMS · PRIVACY · COOKIES</p>
@@ -440,32 +366,13 @@ import '../styles/global.css';
   <script is:inline>
     document.addEventListener('DOMContentLoaded', () => {
       
-      const collections = [
-        {
-          image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=2400&auto=format&fit=crop',
-          series: '[ Series: Noctis Vol. I ] · [ Series ]',
-          title: 'Collection<br/>Artic 01<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
-          colors: '<span class="text-white cursor-pointer clickable">White</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Silver</span>',
-          price: '$899.99'
-        },
-        {
-          image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2400&auto=format&fit=crop',
-          series: '[ Series: Noctis Vol. II ] · [ Series ]',
-          title: 'Collection<br/>Noctis 02<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
-          colors: '<span class="text-white cursor-pointer clickable">Black</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Navy</span>',
-          price: '$1,249.00'
-        },
-        {
-          image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=2400&auto=format&fit=crop',
-          series: '[ Series: Urban Shell ] · [ Series ]',
-          title: 'Collection<br/>Shell 03<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>',
-          colors: '<span class="text-white cursor-pointer clickable">Olive</span><span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable ml-6">Sand</span>',
-          price: '$749.50'
-        }
-      ];
+      // Dados injetados pelo Astro
+      const collections = JSON.parse(document.getElementById('home-data').textContent);
 
       function updateHero(index) {
         const data = collections[index];
+        if(!data) return;
+
         const mainImg = document.getElementById('hero-main-img');
         const seriesEl = document.getElementById('collection-series');
         const titleEl = document.getElementById('collection-title');
@@ -534,6 +441,11 @@ import '../styles/global.css';
     });
   </script>
 
+  <!-- Dados para o Script Inline -->
+  <script type="application/json" id="home-data">
+    {JSON.stringify(heroSlides)}
+  </script>
+
   <!-- Estilo Global para Fonte VCR e Clip-Path Assimétrico -->
   <style is:global>
     @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
@@ -552,6 +464,11 @@ import '../styles/global.css';
         0 12px
       );
       background-color: #5f7085;
+    }
+    
+    /* Classe utilitária para inserir HTML seguro */
+    .set-html {
+      display: contents;
     }
   </style>
 
