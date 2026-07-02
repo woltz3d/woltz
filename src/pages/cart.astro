@@ -1,0 +1,239 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
+---
+
+<Layout title="WOLTZ | Cart">
+
+  <div class="min-h-screen bg-[#0a0a0c] text-white relative overflow-hidden">
+    <!-- Imagem de Fundo -->
+    <div class="absolute inset-0 z-0">
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=2400&auto=format&fit=crop" class="w-full h-full object-cover opacity-20" />
+      <div class="absolute inset-0 bg-gradient-to-b from-[#0a0a0c]/80 via-[#0a0a0c]/60 to-[#0a0a0c]"></div>
+    </div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6 py-12">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-12">
+        <a href="/" class="text-lg font-light tracking-[0.5em] text-white hover:text-white/80 transition-colors">WOLTZ</a>
+        <a href="/" class="text-[10px] tracking-[0.3em] text-white/60 uppercase hover:text-white transition-colors">← Continue Shopping</a>
+      </div>
+
+      <h1 class="font-['Anton'] text-5xl md:text-7xl uppercase tracking-tight mb-8">Your Cart</h1>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Lista de Produtos -->
+        <div class="lg:col-span-2 space-y-4" id="cart-items-container">
+          <p class="text-white/40 text-center py-12">Your cart is empty</p>
+        </div>
+
+        <!-- Resumo -->
+        <div class="lg:col-span-1">
+          <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg p-6 sticky top-8">
+            <h3 class="font-['Anton'] text-xl uppercase tracking-wide mb-6">Order Summary</h3>
+            
+            <div class="space-y-3 mb-6 pb-6 border-b border-white/10">
+              <div class="flex justify-between text-sm">
+                <span class="text-white/60">Subtotal</span>
+                <span id="summary-subtotal" class="font-mono">$ 0.00</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-white/60">Shipping</span>
+                <span class="font-mono text-green-400">FREE</span>
+              </div>
+              <div id="discount-row" class="hidden flex justify-between text-sm">
+                <span class="text-white/60">Discount</span>
+                <span id="summary-discount" class="font-mono text-red-400">- $ 0.00</span>
+              </div>
+            </div>
+
+            <!-- Cupom -->
+            <div class="mb-6">
+              <label class="text-[10px] tracking-[0.2em] text-white/60 uppercase mb-2 block">Coupon Code</label>
+              <div class="flex gap-2">
+                <input type="text" id="coupon-input" placeholder="Enter code" class="flex-1 bg-black/30 border border-white/20 rounded px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/50 uppercase" />
+                <button id="apply-coupon" class="bg-white text-black px-4 py-2 text-xs uppercase tracking-wider font-bold hover:bg-white/90 transition-colors">Apply</button>
+              </div>
+              <p id="coupon-message" class="text-xs mt-2 hidden"></p>
+            </div>
+
+            <div class="flex justify-between items-center mb-6 pb-6 border-b border-white/10">
+              <span class="text-white uppercase tracking-wider text-sm">Total</span>
+              <span id="summary-total" class="font-['Anton'] text-3xl">$ 0.00</span>
+            </div>
+
+            <button id="checkout-btn" class="w-full bg-white text-black py-4 text-sm uppercase tracking-widest font-bold hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Proceed to Checkout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style is:global>
+    @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
+    .font-vcr { font-family: 'VCR OSD Mono', monospace; }
+  </style>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const Cart = {
+        items: [],
+        discount: 0,
+        couponCode: null,
+
+        init() {
+          const saved = localStorage.getItem('woltz_cart');
+          if (saved) {
+            try { this.items = JSON.parse(saved); } catch(e) { this.items = []; }
+          }
+          this.render();
+        },
+
+        save() {
+          localStorage.setItem('woltz_cart', JSON.stringify(this.items));
+        },
+
+        remove(productId) {
+          this.items = this.items.filter(i => i.id !== productId);
+          this.save();
+          this.render();
+        },
+
+        updateQty(productId, delta) {
+          const item = this.items.find(i => i.id === productId);
+          if (item) {
+            item.qty += delta;
+            if (item.qty <= 0) {
+              this.remove(productId);
+              return;
+            }
+          }
+          this.save();
+          this.render();
+        },
+
+        applyCoupon(code) {
+          // Cupons de exemplo (depois virão do banco)
+          const coupons = {
+            'WELCOME10': 0.10,
+            'INFLUENCER15': 0.15,
+            'VIP20': 0.20
+          };
+          
+          const upperCode = code.toUpperCase().trim();
+          if (coupons[upperCode]) {
+            this.discount = coupons[upperCode];
+            this.couponCode = upperCode;
+            return { success: true, message: `Coupon ${upperCode} applied! ${Math.round(this.discount*100)}% off` };
+          }
+          return { success: false, message: 'Invalid coupon code' };
+        },
+
+        getSubtotal() {
+          return this.items.reduce((sum, i) => sum + (i.price * i.qty), 0);
+        },
+
+        getDiscount() {
+          return this.getSubtotal() * this.discount;
+        },
+
+        getTotal() {
+          return this.getSubtotal() - this.getDiscount();
+        },
+
+        render() {
+          const container = document.getElementById('cart-items-container');
+          const subtotalEl = document.getElementById('summary-subtotal');
+          const totalEl = document.getElementById('summary-total');
+          const discountRow = document.getElementById('discount-row');
+          const discountEl = document.getElementById('summary-discount');
+          const checkoutBtn = document.getElementById('checkout-btn');
+
+          if (this.items.length === 0) {
+            container.innerHTML = '<p class="text-white/40 text-center py-12 font-vcr text-sm">Your cart is empty</p>';
+            if (subtotalEl) subtotalEl.textContent = '$ 0.00';
+            if (totalEl) totalEl.textContent = '$ 0.00';
+            if (discountRow) discountRow.classList.add('hidden');
+            if (checkoutBtn) checkoutBtn.disabled = true;
+            return;
+          }
+
+          if (checkoutBtn) checkoutBtn.disabled = false;
+
+          container.innerHTML = this.items.map(item => `
+            <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg p-4 flex gap-4 items-center">
+              <img src="${item.thumbnail ? item.thumbnail + '?width=120&quality=80' : ''}" class="w-24 h-24 md:w-32 md:h-32 object-cover rounded" />
+              <div class="flex-1 min-w-0">
+                <h4 class="font-['Anton'] text-lg uppercase tracking-wide mb-1">${item.name}</h4>
+                <p class="text-white/60 text-xs font-vcr mb-3">DIGITAL DOWNLOAD</p>
+                <div class="flex items-center gap-3">
+                  <button data-dec="${item.id}" class="qty-btn w-7 h-7 rounded border border-white/30 flex items-center justify-center hover:bg-white hover:text-black transition-colors text-sm">−</button>
+                  <span class="text-sm font-mono w-6 text-center">${item.qty}</span>
+                  <button data-inc="${item.id}" class="qty-btn w-7 h-7 rounded border border-white/30 flex items-center justify-center hover:bg-white hover:text-black transition-colors text-sm">+</button>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-mono text-lg mb-2">$ ${(item.price * item.qty).toFixed(2)}</p>
+                <button data-remove="${item.id}" class="remove-btn text-white/40 hover:text-red-400 text-xs uppercase tracking-wider transition-colors">Remove</button>
+              </div>
+            </div>
+          `).join('');
+
+          // Atualiza resumo
+          const subtotal = this.getSubtotal();
+          const discount = this.getDiscount();
+          const total = this.getTotal();
+
+          if (subtotalEl) subtotalEl.textContent = `$ ${subtotal.toFixed(2)}`;
+          if (totalEl) totalEl.textContent = `$ ${total.toFixed(2)}`;
+          
+          if (discount > 0) {
+            if (discountRow) discountRow.classList.remove('hidden');
+            if (discountEl) discountEl.textContent = `- $ ${discount.toFixed(2)}`;
+          } else {
+            if (discountRow) discountRow.classList.add('hidden');
+          }
+
+          // Listeners
+          container.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.remove(btn.dataset.remove));
+          });
+          container.querySelectorAll('.qty-btn[data-inc]').forEach(btn => {
+            btn.addEventListener('click', () => this.updateQty(btn.dataset.inc, 1));
+          });
+          container.querySelectorAll('.qty-btn[data-dec]').forEach(btn => {
+            btn.addEventListener('click', () => this.updateQty(btn.dataset.dec, -1));
+          });
+        }
+      };
+
+      Cart.init();
+
+      // Cupom
+      document.getElementById('apply-coupon')?.addEventListener('click', () => {
+        const input = document.getElementById('coupon-input');
+        const msgEl = document.getElementById('coupon-message');
+        if (!input || !msgEl) return;
+        
+        const result = Cart.applyCoupon(input.value);
+        msgEl.textContent = result.message;
+        msgEl.classList.remove('hidden', 'text-green-400', 'text-red-400');
+        msgEl.classList.add(result.success ? 'text-green-400' : 'text-red-400');
+        
+        if (result.success) {
+          input.value = '';
+          Cart.render();
+        }
+      });
+
+      // Checkout (Stripe)
+      document.getElementById('checkout-btn')?.addEventListener('click', () => {
+        alert('Stripe checkout integration coming next! This will redirect to the payment page.');
+        // Aqui vamos integrar com Stripe depois
+      });
+    });
+  </script>
+
+</Layout>
