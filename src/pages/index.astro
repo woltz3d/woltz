@@ -43,7 +43,6 @@ try {
   }
 
   // 2. Busca os Produtos Recentes para a GRADE EDITORIAL
-  // Usa distinct on name para evitar duplicatas se houver variantes
   const { data: recentProds } = await supabase
     .from('products')
     .select('*, collections(name)')
@@ -68,6 +67,7 @@ try {
 const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
 
 // Helper para renderizar cores corretamente (HTML string seguro)
+// AUMENTEI O TAMANHO DAS BOLINHAS PARA w-3 h-3 (12px)
 const renderColors = (colors) => {
   if (!colors || !Array.isArray(colors) || colors.length === 0) return '';
   
@@ -76,14 +76,15 @@ const renderColors = (colors) => {
   
   displayColors.forEach(c => {
     if (c.type === 'pattern' && c.url) {
-      html += `<span class="w-2 h-2 rounded-full overflow-hidden border border-white/50 inline-block"><img src="${c.url}?width=10" class="w-full h-full object-cover" /></span>`;
+      // Aumentado para w-3 h-3 e borda mais visível
+      html += `<span class="w-3 h-3 rounded-full overflow-hidden border border-white/70 inline-block shadow-sm"><img src="${c.url}?width=20" class="w-full h-full object-cover" /></span>`;
     } else {
-      html += `<span class="w-2 h-2 rounded-full shadow-sm inline-block" style="background:${c.hex || '#ccc'}"></span>`;
+      html += `<span class="w-3 h-3 rounded-full shadow-sm inline-block border border-white/30" style="background:${c.hex || '#ccc'}"></span>`;
     }
   });
   
   if (colors.length > 4) {
-    html += `<span class="text-[9px] text-white/70 font-vcr ml-1">+${colors.length - 4}</span>`;
+    html += `<span class="text-[10px] text-white/80 font-vcr ml-1 font-bold">+${colors.length - 4}</span>`;
   }
   
   html += '</div>';
@@ -150,23 +151,43 @@ const renderColors = (colors) => {
         </div>
       </div>
 
-      <!-- SIDEBAR LATERAL INTERATIVA -->
+      <!-- SIDEBAR LATERAL INTERATIVA COM DADOS INJETADOS -->
       <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
         <div class="flex flex-col gap-4 w-full" id="sidebar-thumbs">
           
           <!-- Thumbnail 1: Coleção Destaque (Ativa) -->
-          <div data-index="0" class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100">
+          <div 
+            data-index="0" 
+            data-image={imgUrl(featuredCollection?.image_url, 600)}
+            data-series="[ Series: {featuredCollection?.category || 'Latest Drop'} ] · [ Collection ]"
+            data-title="{featuredCollection?.name}"
+            data-sets="{featuredCollection?.product_count || 0} Items"
+            data-price="$ {Number(featuredCollection?.pack_price_usd || 0).toFixed(2)}"
+            class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100"
+          >
             <img src={imgUrl(featuredCollection?.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500 pointer-events-none" alt={featuredCollection?.name} />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
 
           <!-- Thumbnails 2 e 3: Coleções Anteriores -->
-          {sidebarCollections.map((col, i) => (
-            <div data-index={i+1} class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0">
-              <img src={imgUrl(col.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt={col.name} />
-              <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </div>
-          ))}
+          {sidebarCollections.map((col, i) => {
+             // Calcula dados para cada coleção lateral
+             // Nota: Em produção idealmente faríamos uma query única, mas aqui simplificamos
+             return (
+              <div 
+                data-index={i+1} 
+                data-image={imgUrl(col.image_url, 600)}
+                data-series="[ Series: {col.category || 'Archive'} ] · [ Collection ]"
+                data-title="{col.name}"
+                data-sets="0 Items" 
+                data-price="$ 0.00"
+                class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0"
+              >
+                <img src={imgUrl(col.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt={col.name} />
+                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+             )
+          })}
 
         </div>
         <div class="text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-2 w-full flex justify-end" id="image-indicator">
@@ -249,7 +270,7 @@ const renderColors = (colors) => {
             <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">{product.name}</h4>
             <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">{product.description ? product.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
             
-            <!-- Cores Renderizadas Corretamente -->
+            <!-- Cores Renderizadas Corretamente (MAIORES) -->
             <div class="flex items-center justify-between mb-2" set:html={renderColors(product.colors)}></div>
 
             <!-- Botão Carrinho + Preço -->
@@ -372,26 +393,9 @@ const renderColors = (colors) => {
 
   </footer>
 
-  <!-- SCRIPT PARA INTERATIVIDADE DO HERO -->
+  <!-- SCRIPT PARA INTERATIVIDADE DO HERO COM ATUALIZAÇÃO DE DADOS -->
   <script is:inline>
     document.addEventListener('DOMContentLoaded', () => {
-      // Dados das coleções injetados pelo Astro
-      const collectionsData = [
-        {
-          image: document.getElementById('hero-main-img')?.src,
-          series: document.getElementById('collection-series')?.innerText,
-          title: document.getElementById('collection-title')?.innerText,
-          sets: document.getElementById('collection-sets')?.innerText,
-          price: document.getElementById('collection-price')?.innerText
-        },
-        ...Array.from(document.querySelectorAll('.thumb-item')).slice(1).map((thumb, i) => {
-          const img = thumb.querySelector('img');
-          // Aqui você poderia injetar dados reais via data-attributes se necessário
-          // Por enquanto, vamos apenas trocar a imagem visualmente
-          return { image: img?.src };
-        })
-      ];
-
       const thumbs = document.querySelectorAll('.thumb-item');
       const mainImg = document.getElementById('hero-main-img');
       const seriesEl = document.getElementById('collection-series');
@@ -401,6 +405,16 @@ const renderColors = (colors) => {
       const indicator = document.getElementById('image-indicator');
 
       function updateHero(index) {
+        const targetThumb = thumbs[index];
+        if (!targetThumb) return;
+
+        // Pega os dados injetados nos data-attributes
+        const newImage = targetThumb.dataset.image;
+        const newSeries = targetThumb.dataset.series;
+        const newTitle = targetThumb.dataset.title;
+        const newSets = targetThumb.dataset.sets;
+        const newPrice = targetThumb.dataset.price;
+
         // Atualiza classes visuais das thumbnails
         thumbs.forEach((t, i) => {
           const img = t.querySelector('img');
@@ -417,7 +431,7 @@ const renderColors = (colors) => {
           }
         });
 
-        // Animação de transição
+        // Animação de transição suave
         [seriesEl, titleEl, setsEl, priceEl].forEach(el => el && (el.style.opacity = '0'));
         if(mainImg) {
             mainImg.style.opacity = '0';
@@ -425,20 +439,20 @@ const renderColors = (colors) => {
         }
 
         setTimeout(() => {
-          // Atualiza conteúdo (apenas imagem por enquanto, dados textuais viriam de um objeto completo)
-          if(mainImg && collectionsData[index]?.image) mainImg.src = collectionsData[index].image;
-          
-          // Simulação de atualização de texto (em produção, use data attributes nas thumbs)
-          if(seriesEl && collectionsData[index]?.series) seriesEl.innerText = collectionsData[index].series;
-          if(titleEl && collectionsData[index]?.title) titleEl.innerText = collectionsData[index].title;
-          if(setsEl && collectionsData[index]?.sets) setsEl.innerText = collectionsData[index].sets;
-          if(priceEl && collectionsData[index]?.price) priceEl.innerText = collectionsData[index].price;
+          // Aplica os novos valores
+          if(mainImg && newImage) mainImg.src = newImage;
+          if(seriesEl && newSeries) seriesEl.innerText = newSeries;
+          if(titleEl && newTitle) titleEl.innerText = newTitle;
+          if(setsEl && newSets) setsEl.innerHTML = `<span class="text-white cursor-pointer clickable">${newSets}</span>`;
+          if(priceEl && newPrice) priceEl.innerText = newPrice;
 
+          // Fade in da imagem e textos
           if(mainImg) {
               mainImg.onload = () => {
                 mainImg.style.opacity = '1';
                 mainImg.style.filter = 'blur(0px) scale(1)';
               };
+              // Fallback caso onload falhe (imagem em cache)
               setTimeout(() => {
                 mainImg.style.opacity = '1';
                 mainImg.style.filter = 'blur(0px) scale(1)';
