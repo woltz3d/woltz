@@ -115,25 +115,20 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Colors & Patterns</h3>
           <div class="bg-white/5 p-4 rounded-lg border border-white/10">
-            
-            <!-- Lista de Variantes -->
             <div id="variantsList" class="flex flex-wrap mb-4 min-h-[40px] p-2 bg-black/20 rounded-lg border border-white/5"></div>
             
-            <!-- Controles -->
             <div class="space-y-3">
               <div class="flex gap-2 mb-2">
                 <button type="button" id="btnSolid" class="toggle-btn active">Solid Color</button>
                 <button type="button" id="btnPattern" class="toggle-btn">Pattern / Texture</button>
               </div>
 
-              <!-- Input Cor Sólida -->
               <div id="inputSolid" class="flex gap-2 items-center">
                 <input type="text" id="colorNameInput" placeholder="Color name (e.g., Pink)" class="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-white/30 focus:outline-none">
                 <input type="color" id="colorPickerInput" value="#ff0055" class="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0">
                 <button type="button" id="addColorBtn" class="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-white/90 whitespace-nowrap">Add Color</button>
               </div>
 
-              <!-- Input Textura -->
               <div id="inputPattern" class="hidden flex-col gap-2">
                 <input type="text" id="patternNameInput" placeholder="Pattern name (e.g., Leopard)" class="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-white/30 focus:outline-none">
                 
@@ -153,7 +148,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
         </div>
 
-        <!-- Calculadora -->
+        <!-- Calculadora de Preço -->
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2 flex items-center justify-between">
             Pricing Calculator
@@ -187,7 +182,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
         </div>
 
-        <!-- Thumbnail -->
+        <!-- Media Upload -->
         <div class="space-y-6">
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Media</h3>
           <div>
@@ -202,6 +197,28 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
               <div id="thumbProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading...</p></div>
             </div>
             <input type="hidden" name="thumbnail_url" id="thumbUrlInput">
+          </div>
+        </div>
+
+        <!-- UPLOAD DE ARQUIVO DIGITAL (NOVO!) -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Digital File</h3>
+          <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+            <label class="block text-xs text-blue-400 uppercase tracking-wider mb-2 font-bold">📦 Product File (.zip, .blend, .obj)</label>
+            <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="digitalDropZone">
+              <input type="file" id="digitalFileInput" accept=".zip,.blend,.obj,.fbx,.dae" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <div id="digitalPreview" class="hidden mb-3">
+                <svg class="w-12 h-12 text-blue-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <p id="digitalFileName" class="text-sm text-white font-mono"></p>
+              </div>
+              <div id="digitalPlaceholder">
+                <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3"/></svg>
+                <p class="text-sm text-white/60">Click to upload digital file</p>
+                <p class="text-xs text-white/40 mt-1">Max 500MB • .zip, .blend, .obj, .fbx</p>
+              </div>
+              <div id="digitalProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading file...</p></div>
+            </div>
+            <input type="hidden" name="digital_file_url" id="digitalUrlInput">
           </div>
         </div>
 
@@ -259,15 +276,24 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     const addPatternBtn = document.getElementById('addPatternBtn');
     const variantsList = document.getElementById('variantsList');
 
-    // Estado Global
+    // Digital File
+    const digitalFileInput = document.getElementById('digitalFileInput');
+    const digitalDropZone = document.getElementById('digitalDropZone');
+    const digitalPreview = document.getElementById('digitalPreview');
+    const digitalPlaceholder = document.getElementById('digitalPlaceholder');
+    const digitalProgress = document.getElementById('digitalProgress');
+    const digitalFileName = document.getElementById('digitalFileName');
+    const digitalUrlInput = document.getElementById('digitalUrlInput');
+
+    // Estado
     let currentMode = 'create';
     let uploadingThumb = false;
     let uploadingPattern = false;
+    let uploadingDigital = false;
     let currentVariants = []; 
     let tempPatternUrl = ''; 
 
     // --- LÓGICA DE VARIANTES ---
-    
     btnSolid.addEventListener('click', () => {
       btnSolid.classList.add('active'); btnPattern.classList.remove('active');
       inputSolid.classList.remove('hidden'); inputPattern.classList.add('hidden');
@@ -290,11 +316,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           previewHtml = `<div class="variant-preview" style="background-color: ${item.hex || '#ccc'}"></div>`;
         }
 
-        tag.innerHTML = `
-          ${previewHtml}
-          <span>${item.name}</span>
-          <span class="remove-variant" data-index="${index}">×</span>
-        `;
+        tag.innerHTML = `${previewHtml}<span>${item.name}</span><span class="remove-variant" data-index="${index}">×</span>`;
         variantsList.appendChild(tag);
       });
       
@@ -333,7 +355,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         const fileName = `swatch-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
         const { error } = await supabase.storage.from('woltz-images').upload(fileName, file, { cacheControl: '3600' });
         if (error) throw error;
-        
         const { data } = supabase.storage.from('woltz-images').getPublicUrl(fileName);
         tempPatternUrl = data.publicUrl;
       } catch(err) {
@@ -355,6 +376,36 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       } else if (!tempPatternUrl) {
         alert('Please upload a texture image first.');
       }
+    });
+
+    // --- UPLOAD ARQUIVO DIGITAL ---
+    digitalFileInput?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      
+      digitalFileName.textContent = file.name;
+      digitalPreview.classList.remove('hidden');
+      digitalPlaceholder.classList.add('hidden');
+
+      try {
+        uploadingDigital = true;
+        digitalProgress.classList.remove('hidden');
+        digitalProgress.querySelector('.upload-progress').style.width = '30%';
+        
+        const fileName = `digital-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
+        const { error } = await supabase.storage.from('woltz-digital').upload(fileName, file, { cacheControl: 'private' });
+        if (error) throw error;
+        
+        const { data } = supabase.storage.from('woltz-digital').getPublicUrl(fileName);
+        digitalUrlInput.value = data.publicUrl;
+        
+        digitalProgress.querySelector('.upload-progress').style.width = '100%';
+        setTimeout(() => { digitalProgress.classList.add('hidden'); }, 500);
+      } catch(err) {
+        alert('Digital file upload failed: ' + err.message);
+        digitalProgress.classList.add('hidden');
+        digitalUrlInput.value = '';
+      } finally { uploadingDigital = false; }
     });
 
     // --- COLEÇÕES ---
@@ -442,6 +493,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Product</th>
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Collection</th>
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Price (USD)</th>
+          <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Est. Net (BRL)</th>
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Variants</th>
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Status</th>
           <th class="text-right text-xs text-white/40 uppercase py-4 px-6">Actions</th>
@@ -473,6 +525,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             <td class="py-4 px-6"><div class="flex items-center gap-3">${imgUrl}<div><p class="text-sm font-medium text-white">${p.name}</p><p class="text-xs text-white/40">${p.type}</p></div></div></td>
             <td class="py-4 px-6 text-sm text-white/60">${p.collections?.name || '-'}</td>
             <td class="py-4 px-6 text-sm text-white font-mono">$ ${Number(p.price_usd || 0).toFixed(2)}</td>
+            <td class="py-4 px-6 text-sm text-green-400 font-mono">R$ ${Number(p.net_brl || 0).toFixed(2).replace('.', ',')}</td>
             <td class="py-4 px-6 flex items-center">${variantsHtml}</td>
             <td class="py-4 px-6 text-sm capitalize ${statusClass}">${p.status}</td>
             <td class="py-4 px-6 text-right">
@@ -502,6 +555,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       netBrlInput.value = ''; sellPriceBrl.value = ''; sellPriceUsd.value = '';
       thumbPreview.classList.add('hidden'); thumbPlaceholder.classList.remove('hidden'); thumbUrlInput.value = '';
       patternPreview.classList.add('hidden'); patternPlaceholder.classList.remove('hidden'); patternFileInput.value = '';
+      digitalPreview.classList.add('hidden'); digitalPlaceholder.classList.remove('hidden'); digitalUrlInput.value = '';
       drawer.classList.remove('translate-x-full');
     };
 
@@ -509,7 +563,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
     window.editProduct = (p) => {
       currentMode = 'edit';
-      // CARREGA VARIANTES DO BANCO CORRETAMENTE
       currentVariants = (p.colors && Array.isArray(p.colors)) ? [...p.colors] : [];
       renderVariants();
       
@@ -529,6 +582,13 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         thumbPreview.querySelector('img').src = p.thumbnail_url;
         thumbPreview.classList.remove('hidden'); thumbPlaceholder.classList.add('hidden');
       }
+
+      if(p.digital_file_url) {
+        digitalUrlInput.value = p.digital_file_url;
+        digitalFileName.textContent = p.digital_file_url.split('/').pop();
+        digitalPreview.classList.remove('hidden'); digitalPlaceholder.classList.add('hidden');
+      }
+      
       drawer.classList.remove('translate-x-full');
     };
 
@@ -543,7 +603,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if(uploadingThumb || uploadingPattern) { alert('Wait for uploads!'); return; }
+      if(uploadingThumb || uploadingPattern || uploadingDigital) { alert('Wait for uploads!'); return; }
       
       const originalText = submitBtn.innerText;
       submitBtn.innerText = 'Saving...'; submitBtn.disabled = true;
@@ -557,7 +617,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       if(data.price_usd) data.price_usd = parseFloat(data.price_usd);
       if(data.net_brl) data.net_brl = parseFloat(data.net_brl);
       
-      // ENVIA ARRAY DE VARIANTES DIRETAMENTE (NÃO USA O HIDDEN INPUT)
       data.colors = currentVariants; 
 
       const id = document.getElementById('productId').value;
