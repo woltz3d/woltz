@@ -10,13 +10,14 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
   <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
   
   <style is:global>
-    /* Reset do container principal do admin */
+    /* Container principal - ocupa toda a altura disponível */
     .theme-editor-wrapper {
       display: grid;
       grid-template-columns: 280px 1fr 380px;
       height: calc(100vh - 73px);
       background: #0a0a0c;
       overflow: hidden;
+      position: relative;
     }
     
     /* Scrollbar global customizada */
@@ -34,7 +35,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       background: rgba(255, 255, 255, 0.3);
     }
     
-    /* Sidebar Esquerda - Page Structure */
+    /* Sidebar Esquerda */
     .te-sidebar-left {
       background: #111113;
       border-right: 1px solid rgba(255, 255, 255, 0.06);
@@ -46,6 +47,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     .te-sidebar-header {
       padding: 1.5rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
     }
     
     .te-sidebar-header h2 {
@@ -123,13 +125,13 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       color: rgba(255, 255, 255, 0.4);
     }
     
-    /* Centro - Preview */
+    /* Centro - Preview (OCUPA TODO O ESPAÇO) */
     .te-preview {
       background: #1a1a1e;
       position: relative;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
     
     .te-preview-header {
@@ -140,6 +142,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       padding: 0.75rem;
       background: rgba(255, 255, 255, 0.03);
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
     }
     
     .te-device-btn {
@@ -172,37 +175,39 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       height: 14px;
     }
     
-    .te-preview-frame-wrapper {
+    /* Container do iframe - OCUPA TODO O ESPAÇO RESTANTE */
+    .te-preview-container {
       flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
+      position: relative;
       overflow: hidden;
+      background: #fff;
     }
     
     .te-preview-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       border: none;
-      border-radius: 8px;
-      background: #fff;
       transition: all 0.3s ease;
     }
     
     .te-preview-frame.tablet {
       width: 768px;
-      max-width: 100%;
-      height: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
     }
     
     .te-preview-frame.mobile {
       width: 375px;
-      max-width: 100%;
-      height: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
     }
     
-    /* Sidebar Direita - Editor */
+    /* Sidebar Direita */
     .te-sidebar-right {
       background: #111113;
       border-left: 1px solid rgba(255, 255, 255, 0.06);
@@ -217,6 +222,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-shrink: 0;
     }
     
     .te-editor-header h2 {
@@ -472,7 +478,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       </div>
     </div>
     
-    <!-- Centro: Preview -->
+    <!-- Centro: Preview (OCUPA TODO O ESPAÇO) -->
     <div class="te-preview">
       <div class="te-preview-header">
         <button class="te-device-btn active" data-device="desktop">
@@ -499,7 +505,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         </button>
       </div>
       
-      <div class="te-preview-frame-wrapper">
+      <!-- Container do iframe - OCUPA TODO O ESPAÇO -->
+      <div class="te-preview-container">
         <iframe id="preview-frame" class="te-preview-frame" src="/" sandbox="allow-same-origin allow-scripts"></iframe>
       </div>
     </div>
@@ -538,7 +545,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     let themeData: any = {};
     let hasChanges = false;
 
-    // Definição dos controles por seção
     const sectionControls: any = {
       colors: [
         { key: 'colors.primary', label: 'Primary Color', type: 'color' },
@@ -600,7 +606,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       footer: 'Footer content and links',
     };
 
-    // Carrega configurações do banco
     async function loadThemeSettings() {
       try {
         const { data, error } = await supabase
@@ -619,7 +624,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       }
     }
 
-    // Renderiza controles da seção atual
     function renderControls() {
       const container = document.getElementById('controls-container');
       if (!container) return;
@@ -692,7 +696,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         }
       }).join('');
 
-      // Adiciona event listeners
       container.querySelectorAll('input, select, textarea').forEach((input: any) => {
         input.addEventListener('input', (e: any) => {
           const key = e.target.dataset.key;
@@ -704,7 +707,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           themeData[key].value = value;
           hasChanges = true;
           
-          // Sincroniza color picker com text input
           if (e.target.type === 'color') {
             const textInput = input.parentElement?.querySelector('.te-text-input');
             if (textInput) textInput.value = value;
@@ -717,7 +719,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       });
     }
 
-    // Salva alterações
     document.getElementById('save-btn')?.addEventListener('click', async () => {
       if (!hasChanges) return;
       
@@ -745,14 +746,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         btn.textContent = 'Save Changes';
         btn.classList.remove('saving');
         
-        // Mostra toast
         const toast = document.getElementById('te-toast');
         if (toast) {
           toast.classList.add('show');
           setTimeout(() => toast.classList.remove('show'), 2500);
         }
         
-        // Atualiza preview
         const iframe = document.getElementById('preview-frame') as HTMLIFrameElement;
         if (iframe) {
           iframe.src = iframe.src;
@@ -766,7 +765,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       }
     });
 
-    // Seleção de seções
     document.querySelectorAll('.te-section-item').forEach(item => {
       item.addEventListener('click', () => {
         document.querySelectorAll('.te-section-item').forEach(i => i.classList.remove('active'));
@@ -776,7 +774,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       });
     });
 
-    // Troca de dispositivo no preview
     document.querySelectorAll('.te-device-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.te-device-btn').forEach(b => b.classList.remove('active'));
@@ -792,7 +789,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       });
     });
 
-    // Inicializa
     loadThemeSettings();
   </script>
 </AdminLayout>
