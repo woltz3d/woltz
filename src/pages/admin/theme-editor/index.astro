@@ -1,266 +1,425 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { supabase } from '../../../lib/supabase';
+
+const SUPABASE_URL = import.meta.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 ---
 
-<AdminLayout title="Theme Editor" activePage="theme">
+<AdminLayout title="Theme Editor" activePage="theme-editor">
   
-  <!-- Top Bar -->
-  <header class="bg-[#111113] border-b border-white/5 px-6 py-3 flex items-center justify-between sticky top-0 z-20">
-    <div class="flex items-center gap-4">
-      <h1 class="text-lg font-semibold text-white">Homepage Editor</h1>
-      <span class="px-2 py-1 rounded bg-green-500/10 text-green-400 text-xs">Saved</span>
-    </div>
-    <div class="flex items-center gap-3">
-      <button class="p-2 text-white/60 hover:text-white transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-      </button>
-      <button class="p-2 text-white/60 hover:text-white transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-      </button>
-      <button class="p-2 text-white/60 hover:text-white transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-      </button>
-      <div class="h-6 w-px bg-white/10 mx-2"></div>
-      <button class="bg-white/5 border border-white/10 text-white px-4 py-2 rounded-lg text-sm hover:bg-white/10 transition-colors">Preview</button>
-      <button class="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors">Save Changes</button>
-    </div>
-  </header>
-
-  <!-- Main Editor Layout (3 Columns) -->
-  <div class="flex h-[calc(100vh-64px)] overflow-hidden">
+  <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
+  
+  <style>
+    .editor-container {
+      display: grid;
+      grid-template-columns: 300px 1fr 350px;
+      height: calc(100vh - 80px);
+      gap: 1px;
+      background: rgba(255,255,255,0.1);
+    }
     
-    <!-- LEFT COLUMN: Structure -->
-    <aside class="w-[280px] bg-[#111113] border-r border-white/5 flex flex-col overflow-y-auto">
-      <div class="p-4 border-b border-white/5">
-        <h3 class="text-xs font-semibold text-white/40 uppercase tracking-wider">Page Structure</h3>
+    .sidebar-left, .sidebar-right {
+      background: #111113;
+      overflow-y: auto;
+    }
+    
+    .preview-frame {
+      background: #1a1a1e;
+      position: relative;
+    }
+    
+    .preview-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    .section-item {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .section-item:hover, .section-item.active {
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .section-item h3 {
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .section-item p {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+    }
+    
+    .control-group {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .control-group label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 0.75rem;
+    }
+    
+    .color-input-wrapper {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    
+    input[type="color"] {
+      width: 50px;
+      height: 40px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+    }
+    
+    input[type="text"], input[type="number"], select, textarea {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      color: white;
+      font-size: 0.875rem;
+    }
+    
+    input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: rgba(255,255,255,0.3);
+    }
+    
+    .save-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: white;
+      color: black;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      z-index: 100;
+      transition: transform 0.2s;
+    }
+    
+    .save-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .save-btn.saving {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  </style>
+
+  <div class="editor-container">
+    <!-- Sidebar Esquerda: Lista de Seções -->
+    <div class="sidebar-left">
+      <div class="p-6 border-b border-white/10">
+        <h2 class="text-lg font-semibold">Page Structure</h2>
+        <p class="text-xs text-white/50 mt-1">Select a section to edit</p>
       </div>
       
-      <div class="p-2 space-y-1">
-        <!-- Section Item: Header -->
-        <div class="group flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 cursor-pointer border border-transparent hover:border-white/10 transition-all">
-          <svg class="w-4 h-4 text-white/40 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">Header</p>
-            <p class="text-[10px] text-white/40">Navigation bar</p>
-          </div>
-          <button class="opacity-0 group-hover:opacity-100 text-white/40 hover:text-white">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-          </button>
+      <div id="sections-list">
+        <div class="section-item active" data-section="colors">
+          <h3>🎨 Colors</h3>
+          <p>Global color palette</p>
         </div>
-
-        <!-- Section Item: Hero (Active) -->
-        <div class="group flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/20 cursor-pointer transition-all">
-          <svg class="w-4 h-4 text-white/60 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">Hero Section</p>
-            <p class="text-[10px] text-white/40">Main banner</p>
-          </div>
-          <button class="text-white/60 hover:text-white">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-          </button>
+        <div class="section-item" data-section="typography">
+          <h3>🔤 Typography</h3>
+          <p>Fonts and text sizes</p>
         </div>
-
-        <!-- Section Item: Featured Collection -->
-        <div class="group flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 cursor-pointer border border-transparent hover:border-white/10 transition-all">
-          <svg class="w-4 h-4 text-white/40 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">Featured Collection</p>
-            <p class="text-[10px] text-white/40">Grid showcase</p>
-          </div>
-          <button class="opacity-0 group-hover:opacity-100 text-white/40 hover:text-white">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-          </button>
+        <div class="section-item" data-section="layout">
+          <h3>📐 Layout</h3>
+          <p>Spacing and dimensions</p>
         </div>
-
-        <!-- Section Item: Products -->
-        <div class="group flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 cursor-pointer border border-transparent hover:border-white/10 transition-all">
-          <svg class="w-4 h-4 text-white/40 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">Product Showcase</p>
-            <p class="text-[10px] text-white/40">Trending items</p>
-          </div>
-          <button class="opacity-0 group-hover:opacity-100 text-white/40 hover:text-white">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-          </button>
+        <div class="section-item" data-section="branding">
+          <h3>🏷️ Branding</h3>
+          <p>Logo and site identity</p>
         </div>
-
-        <!-- Section Item: Newsletter -->
-        <div class="group flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 cursor-pointer border border-transparent hover:border-white/10 transition-all">
-          <svg class="w-4 h-4 text-white/40 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">Newsletter</p>
-            <p class="text-[10px] text-white/40">Email signup</p>
-          </div>
-          <button class="opacity-0 group-hover:opacity-100 text-white/40 hover:text-white">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-          </button>
-        </div>
-
-        <!-- Section Item: Footer -->
-        <div class="group flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 cursor-pointer border border-transparent hover:border-white/10 transition-all">
-          <svg class="w-4 h-4 text-white/40 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">Footer</p>
-            <p class="text-[10px] text-white/40">Links and info</p>
-          </div>
-          <button class="opacity-0 group-hover:opacity-100 text-white/40 hover:text-white">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-          </button>
+        <div class="section-item" data-section="footer">
+          <h3>📄 Footer</h3>
+          <p>Footer content and links</p>
         </div>
       </div>
-
-      <div class="mt-auto p-4 border-t border-white/5">
-        <button class="w-full py-2 border border-dashed border-white/20 rounded-lg text-sm text-white/60 hover:text-white hover:border-white/40 transition-colors flex items-center justify-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-          Add Section
-        </button>
+    </div>
+    
+    <!-- Centro: Preview -->
+    <div class="preview-frame">
+      <iframe id="preview-frame" src="/" sandbox="allow-same-origin allow-scripts"></iframe>
+    </div>
+    
+    <!-- Sidebar Direita: Editor -->
+    <div class="sidebar-right" id="editor-panel">
+      <div class="p-6 border-b border-white/10">
+        <h2 class="text-lg font-semibold">Edit Section</h2>
+        <p class="text-xs text-white/50 mt-1" id="section-description">Global color palette</p>
       </div>
-    </aside>
-
-    <!-- CENTER COLUMN: Preview -->
-    <main class="flex-1 bg-[#0a0a0b] overflow-y-auto p-8 flex justify-center">
-      <div class="w-full max-w-[1000px] bg-[#121214] rounded-xl shadow-2xl overflow-hidden border border-white/5">
-        
-        <!-- Mock Header -->
-        <div class="h-16 border-b border-white/5 flex items-center justify-between px-8">
-          <div class="text-sm font-bold tracking-[0.3em] text-white">WOLTZ</div>
-          <div class="flex gap-6 text-[10px] text-white/60 uppercase">
-            <span>[ Catalog ]</span>
-            <span>[ Puffers ]</span>
-            <span>[ Collections ]</span>
-          </div>
-        </div>
-
-        <!-- Mock Hero -->
-        <div class="relative h-[500px] bg-[#1a1a1f] flex items-center px-16 overflow-hidden group">
-          <!-- Background Image Mock -->
-          <div class="absolute inset-0 bg-gradient-to-br from-[#121214] to-[#2a2a35] opacity-80"></div>
-          <div class="absolute inset-0 flex items-center justify-center opacity-20">
-             <svg class="w-64 h-64 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-          </div>
-          
-          <div class="relative z-10 max-w-lg">
-            <p class="text-[10px] tracking-[0.4em] text-white/40 mb-4 uppercase">[ Series: Noctis Vol. I ]</p>
-            <h1 class="font-['Anton'] text-6xl text-white mb-6 leading-none">COLLECTION<br/>ARTIC 01™</h1>
-            <button class="mt-4 px-8 py-3 border border-white/20 text-white text-xs tracking-widest uppercase hover:bg-white hover:text-black transition-colors">
-              Explore Collection
-            </button>
-          </div>
-
-          <!-- Selection Overlay -->
-          <div class="absolute inset-0 border-2 border-blue-500/50 pointer-events-none flex items-start justify-start p-2">
-            <span class="bg-blue-500 text-white text-[10px] px-2 py-1 rounded">Hero Section</span>
-          </div>
-        </div>
-
-        <!-- Mock Featured Collection -->
-        <div class="p-12 bg-[#121214]">
-          <h2 class="font-['Anton'] text-4xl text-white mb-8">NEW COLLECTION</h2>
-          <div class="grid grid-cols-4 gap-4">
-            <div class="aspect-[3/4] bg-[#1c1c1f] rounded-lg"></div>
-            <div class="aspect-[3/4] bg-[#1c1c1f] rounded-lg"></div>
-            <div class="aspect-[3/4] bg-[#1c1c1f] rounded-lg"></div>
-            <div class="aspect-[3/4] bg-[#1c1c1f] rounded-lg"></div>
-          </div>
-        </div>
-
+      
+      <div id="controls-container">
+        <!-- Controles serão injetados via JS -->
       </div>
-    </main>
-
-    <!-- RIGHT COLUMN: Settings -->
-    <aside class="w-[320px] bg-[#111113] border-l border-white/5 flex flex-col overflow-y-auto">
-      <div class="p-4 border-b border-white/5 flex items-center justify-between">
-        <h3 class="text-sm font-semibold text-white">Edit Section</h3>
-        <button class="text-white/40 hover:text-white">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <div class="p-6 space-y-6">
-        
-        <!-- Section Title -->
-        <div>
-          <label class="block text-[10px] text-white/40 uppercase tracking-wider mb-2">Section Type</label>
-          <div class="flex items-center gap-2 p-2 bg-white/5 rounded-lg border border-white/10">
-            <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            <span class="text-sm text-white">Hero Banner</span>
-          </div>
-        </div>
-
-        <!-- Content Settings -->
-        <div class="space-y-4">
-          <h4 class="text-xs font-medium text-white/60 uppercase tracking-wider border-b border-white/5 pb-2">Content</h4>
-          
-          <div>
-            <label class="block text-[10px] text-white/40 uppercase tracking-wider mb-2">Subtitle</label>
-            <input type="text" value="[ Series: Noctis Vol. I ]" class="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30">
-          </div>
-
-          <div>
-            <label class="block text-[10px] text-white/40 uppercase tracking-wider mb-2">Main Title</label>
-            <textarea rows="2" class="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 resize-none">COLLECTION ARTIC 01™</textarea>
-          </div>
-
-          <div>
-            <label class="block text-[10px] text-white/40 uppercase tracking-wider mb-2">Button Text</label>
-            <input type="text" value="Explore Collection" class="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30">
-          </div>
-
-          <div>
-            <label class="block text-[10px] text-white/40 uppercase tracking-wider mb-2">Button Link</label>
-            <input type="text" value="/collections/noctis" class="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30">
-          </div>
-        </div>
-
-        <!-- Media Settings -->
-        <div class="space-y-4">
-          <h4 class="text-xs font-medium text-white/60 uppercase tracking-wider border-b border-white/5 pb-2">Media</h4>
-          
-          <div>
-            <label class="block text-[10px] text-white/40 uppercase tracking-wider mb-2">Background Image</label>
-            <div class="aspect-video rounded-lg bg-white/5 border border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors">
-              <div class="text-center">
-                <svg class="w-8 h-8 text-white/20 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                <p class="text-[10px] text-white/40">Change Image</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Style Settings -->
-        <div class="space-y-4">
-          <h4 class="text-xs font-medium text-white/60 uppercase tracking-wider border-b border-white/5 pb-2">Style</h4>
-          
-          <div>
-            <label class="block text-[10px] text-white/40 uppercase tracking-wider mb-2">Overlay Opacity</label>
-            <div class="flex items-center gap-3">
-              <input type="range" min="0" max="100" value="60" class="flex-1 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer">
-              <span class="text-xs text-white w-8 text-right">60%</span>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[10px] text-white/40 uppercase tracking-wider mb-2">Height</label>
-            <select class="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none">
-              <option>Full Screen (100vh)</option>
-              <option>Large (80vh)</option>
-              <option>Medium (60vh)</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-[10px] text-white/40 uppercase tracking-wider mb-2">Text Alignment</label>
-            <div class="flex bg-white/5 rounded p-1 border border-white/10">
-              <button class="flex-1 py-1.5 rounded bg-white/10 text-white text-xs">Left</button>
-              <button class="flex-1 py-1.5 rounded text-white/40 hover:text-white text-xs">Center</button>
-              <button class="flex-1 py-1.5 rounded text-white/40 hover:text-white text-xs">Right</button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </aside>
-
+    </div>
   </div>
 
+  <button id="save-btn" class="save-btn">Save Changes</button>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    const configEl = document.getElementById('app-config');
+    const supabase = createClient(configEl?.dataset.supabaseUrl, configEl?.dataset.supabaseKey);
+
+    let currentSection = 'colors';
+    let themeData: any = {};
+    let hasChanges = false;
+
+    // Carrega configurações atuais
+    async function loadThemeSettings() {
+      try {
+        const { data, error } = await supabase
+          .from('theme_settings')
+          .select('*');
+        
+        if (error) throw error;
+        
+        data.forEach((row: any) => {
+          themeData[row.key] = row.value;
+        });
+        
+        renderControls();
+      } catch (err) {
+        console.error('Error loading theme:', err);
+      }
+    }
+
+    // Renderiza controles baseados na seção atual
+    function renderControls() {
+      const container = document.getElementById('controls-container');
+      if (!container) return;
+
+      const controls: any = {
+        colors: [
+          { key: 'colors.primary', label: 'Primary Color', type: 'color' },
+          { key: 'colors.secondary', label: 'Secondary Color', type: 'color' },
+          { key: 'colors.background', label: 'Background Color', type: 'color' },
+          { key: 'colors.background_alt', label: 'Alt Background', type: 'color' },
+          { key: 'colors.text', label: 'Text Color', type: 'color' },
+          { key: 'colors.text_muted', label: 'Muted Text', type: 'color' },
+          { key: 'colors.accent', label: 'Accent Color', type: 'color' },
+          { key: 'colors.success', label: 'Success Color', type: 'color' },
+          { key: 'colors.error', label: 'Error Color', type: 'color' },
+        ],
+        
+        typography: [
+          { key: 'typography.font_heading', label: 'Heading Font', type: 'select', options: ['Anton', 'Playfair Display', 'Oswald', 'Bebas Neue'] },
+          { key: 'typography.font_body', label: 'Body Font', type: 'select', options: ['Inter, sans-serif', 'Roboto, sans-serif', 'Open Sans, sans-serif'] },
+          { key: 'typography.font_mono', label: 'Monospace Font', type: 'text' },
+          { key: 'typography.size_h1', label: 'H1 Size', type: 'text', placeholder: 'clamp(3rem, 8vw, 6rem)' },
+          { key: 'typography.size_h2', label: 'H2 Size', type: 'text', placeholder: 'clamp(2rem, 5vw, 4rem)' },
+          { key: 'typography.weight_heading', label: 'Heading Weight', type: 'select', options: ['300', '400', '500', '600', '700'] },
+          { key: 'typography.tracking_heading', label: 'Heading Tracking', type: 'text', placeholder: '-0.02em' },
+        ],
+        
+        layout: [
+          { key: 'layout.container_max_width', label: 'Max Width', type: 'text', placeholder: '1536px' },
+          { key: 'layout.section_padding', label: 'Section Padding', type: 'text', placeholder: '3rem' },
+          { key: 'layout.grid_gap', label: 'Grid Gap', type: 'text', placeholder: '1.5rem' },
+          { key: 'layout.border_radius', label: 'Border Radius', type: 'text', placeholder: '0px' },
+          { key: 'layout.hero_height', label: 'Hero Height', type: 'text', placeholder: '100vh' },
+        ],
+        
+        branding: [
+          { key: 'branding.site_name', label: 'Site Name', type: 'text' },
+          { key: 'branding.tagline', label: 'Tagline', type: 'text' },
+          { key: 'branding.logo_url', label: 'Logo URL', type: 'text' },
+          { key: 'branding.favicon_url', label: 'Favicon URL', type: 'text' },
+        ],
+        
+        footer: [
+          { key: 'footer.text_left', label: 'Left Text', type: 'textarea', rows: 3 },
+          { key: 'footer.text_center', label: 'Center Text', type: 'textarea', rows: 3 },
+          { key: 'footer.lettering_text', label: 'Giant Lettering', type: 'text' },
+          { key: 'footer.show_social', label: 'Show Social Icons', type: 'checkbox' },
+          { key: 'footer.social_instagram', label: 'Instagram URL', type: 'text' },
+          { key: 'footer.social_twitter', label: 'Twitter URL', type: 'text' },
+          { key: 'footer.social_youtube', label: 'YouTube URL', type: 'text' },
+        ],
+      };
+
+      const sectionControls = controls[currentSection] || [];
+      const descriptions: any = {
+        colors: 'Global color palette',
+        typography: 'Fonts and text sizes',
+        layout: 'Spacing and dimensions',
+        branding: 'Logo and site identity',
+        footer: 'Footer content and links',
+      };
+
+      document.getElementById('section-description')!.textContent = descriptions[currentSection];
+
+      container.innerHTML = sectionControls.map((control: any) => {
+        const value = themeData[control.key]?.value || '';
+        
+        if (control.type === 'color') {
+          return `
+            <div class="control-group">
+              <label>${control.label}</label>
+              <div class="color-input-wrapper">
+                <input type="color" 
+                       data-key="${control.key}" 
+                       value="${value}" 
+                       class="color-picker" />
+                <input type="text" 
+                       data-key="${control.key}" 
+                       value="${value}" 
+                       class="color-text" />
+              </div>
+            </div>
+          `;
+        } else if (control.type === 'select') {
+          return `
+            <div class="control-group">
+              <label>${control.label}</label>
+              <select data-key="${control.key}">
+                ${control.options.map((opt: string) => `
+                  <option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>
+                `).join('')}
+              </select>
+            </div>
+          `;
+        } else if (control.type === 'checkbox') {
+          return `
+            <div class="control-group">
+              <label>${control.label}</label>
+              <input type="checkbox" 
+                     data-key="${control.key}" 
+                     ${value ? 'checked' : ''} 
+                     class="mt-2" />
+            </div>
+          `;
+        } else if (control.type === 'textarea') {
+          return `
+            <div class="control-group">
+              <label>${control.label}</label>
+              <textarea data-key="${control.key}" 
+                        rows="${control.rows || 3}"
+                        class="w-full">${value}</textarea>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="control-group">
+              <label>${control.label}</label>
+              <input type="${control.type}" 
+                     data-key="${control.key}" 
+                     value="${value}"
+                     placeholder="${control.placeholder || ''}"
+                     class="w-full" />
+            </div>
+          `;
+        }
+      }).join('');
+
+      // Adiciona event listeners
+      container.querySelectorAll('input, select, textarea').forEach((input: any) => {
+        input.addEventListener('change', (e: any) => {
+          const key = e.target.dataset.key;
+          const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+          
+          if (!themeData[key]) {
+            themeData[key] = {};
+          }
+          themeData[key].value = value;
+          hasChanges = true;
+          
+          // Atualiza preview se for cor
+          if (e.target.classList.contains('color-picker')) {
+            const textInput = input.parentElement?.querySelector('.color-text');
+            if (textInput) textInput.value = value;
+          }
+          if (e.target.classList.contains('color-text')) {
+            const colorInput = input.parentElement?.querySelector('.color-picker');
+            if (colorInput) colorInput.value = value;
+          }
+        });
+      });
+    }
+
+    // Salva alterações
+    document.getElementById('save-btn')?.addEventListener('click', async () => {
+      if (!hasChanges) return;
+      
+      const btn = document.getElementById('save-btn');
+      if (!btn) return;
+      
+      btn.classList.add('saving');
+      btn.textContent = 'Saving...';
+      
+      try {
+        const updates: any = {};
+        Object.entries(themeData).forEach(([key, value]: any) => {
+          updates[key] = value;
+        });
+        
+        const { error } = await supabase
+          .from('theme_settings')
+          .upsert(
+            Object.entries(updates).map(([key, value]: any) => ({
+              key,
+              value,
+              category: key.split('.')[0],
+              updated_at: new Date().toISOString(),
+            })),
+            { onConflict: 'key' }
+          );
+        
+        if (error) throw error;
+        
+        hasChanges = false;
+        btn.textContent = 'Saved!';
+        setTimeout(() => {
+          btn.textContent = 'Save Changes';
+          btn.classList.remove('saving');
+        }, 2000);
+        
+        // Atualiza preview
+        const iframe = document.getElementById('preview-frame') as HTMLIFrameElement;
+        if (iframe) {
+          iframe.src = iframe.src;
+        }
+        
+      } catch (err: any) {
+        console.error('Error saving:', err);
+        alert('Error saving: ' + err.message);
+        btn.classList.remove('saving');
+        btn.textContent = 'Save Changes';
+      }
+    });
+
+    // Seleção de seções
+    document.querySelectorAll('.section-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.section-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        currentSection = item.dataset.section!;
+        renderControls();
+      });
+    });
+
+    // Inicializa
+    loadThemeSettings();
+  </script>
 </AdminLayout>
