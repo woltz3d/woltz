@@ -395,7 +395,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
     
     .te-toast svg { width: 16px; height: 16px; color: #22c55e; }
-    
     .te-toast.error svg { color: #ef4444; }
   </style>
 
@@ -613,7 +612,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     let themeData = {};
     let hasChanges = false;
 
-    // Converte rgba() para hex (para o color picker)
     function rgbaToHex(rgba) {
       if (!rgba) return '#ffffff';
       if (rgba.startsWith('#')) return rgba;
@@ -628,6 +626,35 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       return '#ffffff';
     }
 
+    // Aplica CSS variables no iframe em tempo real
+    function updatePreviewCSS() {
+      const iframe = document.getElementById('preview-frame');
+      if (!iframe) return;
+      
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      if (!iframeDoc) return;
+      
+      // Cria ou atualiza style com CSS variables
+      let styleEl = iframeDoc.getElementById('te-live-styles');
+      if (!styleEl) {
+        styleEl = iframeDoc.createElement('style');
+        styleEl.id = 'te-live-styles';
+        iframeDoc.head.appendChild(styleEl);
+      }
+      
+      // Gera CSS com todas as variáveis
+      const cssVars = Object.entries(themeData).map(([key, data]) => {
+        const varName = '--color-' + key.replace('colors.', '').replace('.', '-');
+        return `${varName}: ${data.value}`;
+      }).join(';\n      ');
+      
+      styleEl.textContent = `
+        :root {
+          ${cssVars}
+        }
+      `;
+    }
+
     async function loadThemeSettings() {
       try {
         const { data, error } = await supabase.from('theme_settings').select('*');
@@ -639,6 +666,9 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         
         console.log('Loaded', Object.keys(themeData).length, 'settings');
         renderControls();
+        
+        // Aplica CSS inicial no iframe
+        setTimeout(updatePreviewCSS, 1000);
       } catch (err) {
         console.error('Error loading:', err);
       }
@@ -702,7 +732,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         }
       }).join('');
 
-      // Event listeners nos controles
       container.querySelectorAll('input, select, textarea').forEach((input) => {
         input.addEventListener('input', function() {
           const key = this.dataset.key;
@@ -712,7 +741,9 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           themeData[key].value = value;
           hasChanges = true;
           
-          // Sincroniza color picker com text input
+          // Atualiza preview em tempo real
+          updatePreviewCSS();
+          
           if (this.type === 'color') {
             const textInput = this.parentElement?.querySelector('.te-text-input');
             if (textInput) textInput.value = value;
@@ -765,13 +796,13 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         btn.textContent = 'Save';
         btn.classList.remove('saving');
         
-        showToast('Saved successfully');
+        showToast('Saved successfully - Reloading...');
         
-        // Atualiza preview
-        const iframe = document.getElementById('preview-frame');
-        if (iframe) {
-          iframe.src = iframe.src;
-        }
+        // Força reload completo do site
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+        
       } catch (err) {
         console.error('Error saving:', err);
         btn.textContent = 'Save';
@@ -780,9 +811,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       }
     }
 
-    // Event Listeners
     document.addEventListener('DOMContentLoaded', () => {
-      // Sidebar items
       document.querySelectorAll('.te-section-item').forEach(item => {
         item.addEventListener('click', function(e) {
           e.preventDefault();
@@ -799,27 +828,23 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         });
       });
 
-      // Open editor button
       document.getElementById('open-editor-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         const panel = document.getElementById('editor-panel');
         if (panel) panel.classList.add('open');
       });
 
-      // Close panel button
       document.getElementById('close-panel-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         const panel = document.getElementById('editor-panel');
         if (panel) panel.classList.remove('open');
       });
 
-      // Save button
       document.getElementById('save-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         saveChanges();
       });
 
-      // Device buttons
       document.querySelectorAll('.te-device-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -836,7 +861,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         });
       });
 
-      // Carrega configurações iniciais
+      // Aguarda iframe carregar
+      document.getElementById('preview-frame')?.addEventListener('load', () => {
+        setTimeout(updatePreviewCSS, 500);
+      });
+
       loadThemeSettings();
     });
   </script>
