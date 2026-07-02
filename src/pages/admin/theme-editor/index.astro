@@ -10,10 +10,10 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
   <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
   
   <style is:global>
-    /* Container principal */
+    /* Container principal - sidebar mais estreita */
     .theme-editor-wrapper {
       display: grid;
-      grid-template-columns: 260px 1fr;
+      grid-template-columns: 200px 1fr;
       height: calc(100vh - 73px);
       background: #0a0a0c;
       overflow: hidden;
@@ -21,7 +21,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
     
     /* Scrollbar global */
-    .theme-editor-wrapper ::-webkit-scrollbar { width: 6px; }
+    .theme-editor-wrapper ::-webkit-scrollbar { width: 5px; }
     .theme-editor-wrapper ::-webkit-scrollbar-track { background: transparent; }
     .theme-editor-wrapper ::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.15);
@@ -31,30 +31,31 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       background: rgba(255, 255, 255, 0.3);
     }
     
-    /* Sidebar Esquerda */
+    /* Sidebar Esquerda - MAIS ESTREITA */
     .te-sidebar-left {
       background: #111113;
       border-right: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      z-index: 10;
     }
     
     .te-sidebar-header {
-      padding: 1.5rem;
+      padding: 1rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       flex-shrink: 0;
     }
     
     .te-sidebar-header h2 {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       color: #fff;
       margin-bottom: 0.25rem;
     }
     
     .te-sidebar-header p {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: rgba(255, 255, 255, 0.4);
     }
     
@@ -67,9 +68,9 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     .te-section-item {
       display: flex;
       align-items: center;
-      gap: 0.875rem;
-      padding: 0.875rem 1rem;
-      border-radius: 8px;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s ease;
       margin-bottom: 2px;
@@ -79,8 +80,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     .te-section-item.active { background: rgba(255, 255, 255, 0.08); }
     
     .te-section-icon {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -90,8 +91,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
     
     .te-section-icon svg {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       stroke: rgba(255, 255, 255, 0.7);
     }
     
@@ -102,18 +103,18 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     .te-section-item.active .te-section-icon svg { stroke: #fff; }
     
     .te-section-info h3 {
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       font-weight: 500;
       color: #fff;
-      margin-bottom: 0.125rem;
+      margin-bottom: 0.1rem;
     }
     
     .te-section-info p {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: rgba(255, 255, 255, 0.4);
     }
     
-    /* Centro - Preview (OCUPA QUASE TUDO) */
+    /* Centro - Preview */
     .te-preview {
       background: #1a1a1e;
       position: relative;
@@ -131,6 +132,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       background: rgba(255, 255, 255, 0.03);
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       flex-shrink: 0;
+      z-index: 5;
     }
     
     .te-device-btn {
@@ -196,7 +198,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       position: absolute;
       top: 0;
       right: 0;
-      width: 340px;
+      width: 320px;
       height: 100%;
       background: #111113;
       border-left: 1px solid rgba(255, 255, 255, 0.06);
@@ -213,7 +215,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
     
     .te-editor-header {
-      padding: 1.25rem;
+      padding: 1rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
       align-items: center;
@@ -222,7 +224,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
     
     .te-editor-header h2 {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       color: #fff;
       margin-bottom: 0.125rem;
@@ -234,8 +236,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
     
     .te-close-panel {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -252,13 +254,13 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       color: #fff;
     }
     
-    .te-close-panel svg { width: 16px; height: 16px; }
+    .te-close-panel svg { width: 14px; height: 14px; }
     
     .te-save-btn {
       background: #fff;
       color: #000;
       border: none;
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 0.875rem;
       border-radius: 6px;
       font-size: 0.75rem;
       font-weight: 600;
@@ -267,14 +269,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       white-space: nowrap;
     }
     
-    .te-save-btn:hover {
-      background: rgba(255, 255, 255, 0.9);
-    }
-    
-    .te-save-btn.saving {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
+    .te-save-btn:hover { background: rgba(255, 255, 255, 0.9); }
+    .te-save-btn.saving { opacity: 0.7; cursor: not-allowed; }
     
     .te-controls {
       flex: 1;
@@ -282,27 +278,27 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       padding: 1rem;
     }
     
-    .te-control-group { margin-bottom: 1.25rem; }
+    .te-control-group { margin-bottom: 1rem; }
     
     .te-control-label {
       display: block;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: rgba(255, 255, 255, 0.5);
-      margin-bottom: 0.625rem;
+      margin-bottom: 0.5rem;
     }
     
     .te-color-row {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
     
     .te-color-input {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 6px;
       cursor: pointer;
@@ -351,7 +347,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     .te-checkbox-row {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
       cursor: pointer;
     }
     
@@ -376,15 +372,15 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
-      padding: 0.625rem 1rem;
-      border-radius: 8px;
+      padding: 0.5rem 0.875rem;
+      border-radius: 6px;
       font-size: 0.75rem;
       font-weight: 500;
       cursor: pointer;
       z-index: 50;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.375rem;
       transition: all 0.2s;
     }
     
@@ -404,10 +400,10 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.875rem 1.5rem;
-      border-radius: 10px;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
       color: #fff;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       z-index: 10000;
       opacity: 0;
       transition: all 0.3s ease;
@@ -421,15 +417,15 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       opacity: 1;
     }
     
-    .te-toast svg { width: 18px; height: 18px; color: #22c55e; }
+    .te-toast svg { width: 16px; height: 16px; color: #22c55e; }
   </style>
 
   <div class="theme-editor-wrapper">
-    <!-- Sidebar Esquerda -->
+    <!-- Sidebar Esquerda - MAIS ESTREITA -->
     <div class="te-sidebar-left">
       <div class="te-sidebar-header">
         <h2>Page Structure</h2>
-        <p>Select a section to edit</p>
+        <p>Select a section</p>
       </div>
       
       <div class="te-sections-list">
@@ -444,7 +440,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
           <div class="te-section-info">
             <h3>Colors</h3>
-            <p>Global color palette</p>
+            <p>Global palette</p>
           </div>
         </div>
         
@@ -458,7 +454,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
           <div class="te-section-info">
             <h3>Typography</h3>
-            <p>Fonts and text sizes</p>
+            <p>Fonts & sizes</p>
           </div>
         </div>
         
@@ -472,7 +468,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
           <div class="te-section-info">
             <h3>Layout</h3>
-            <p>Spacing and dimensions</p>
+            <p>Spacing</p>
           </div>
         </div>
         
@@ -486,7 +482,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
           <div class="te-section-info">
             <h3>Branding</h3>
-            <p>Logo and site identity</p>
+            <p>Logo & identity</p>
           </div>
         </div>
         
@@ -499,7 +495,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
           <div class="te-section-info">
             <h3>Footer</h3>
-            <p>Footer content and links</p>
+            <p>Content & links</p>
           </div>
         </div>
       </div>
@@ -541,7 +537,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
           </svg>
-          Edit Section
+          Edit
         </button>
         
         <!-- Painel de Edição Flutuante -->
@@ -575,7 +571,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
     </svg>
-    <span>Changes saved successfully</span>
+    <span>Saved</span>
   </div>
 
   <script type="module">
@@ -593,13 +589,13 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         { key: 'colors.primary', label: 'Primary Color', type: 'color' },
         { key: 'colors.secondary', label: 'Secondary Color', type: 'color' },
         { key: 'colors.background', label: 'Background Color', type: 'color' },
-        { key: 'colors.background_alt', label: 'Alternative Background', type: 'color' },
+        { key: 'colors.background_alt', label: 'Alt Background', type: 'color' },
         { key: 'colors.text', label: 'Text Color', type: 'color' },
-        { key: 'colors.text_muted', label: 'Muted Text Color', type: 'color' },
+        { key: 'colors.text_muted', label: 'Muted Text', type: 'color' },
         { key: 'colors.accent', label: 'Accent Color', type: 'color' },
-        { key: 'colors.success', label: 'Success Color', type: 'color' },
-        { key: 'colors.error', label: 'Error Color', type: 'color' },
-        { key: 'colors.warning', label: 'Warning Color', type: 'color' },
+        { key: 'colors.success', label: 'Success', type: 'color' },
+        { key: 'colors.error', label: 'Error', type: 'color' },
+        { key: 'colors.warning', label: 'Warning', type: 'color' },
       ],
       typography: [
         { key: 'typography.font_heading', label: 'Heading Font', type: 'select', options: ['Anton', 'Playfair Display', 'Oswald', 'Bebas Neue', 'Montserrat'] },
@@ -610,11 +606,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         { key: 'typography.size_body', label: 'Body Size', type: 'text', placeholder: '1rem' },
         { key: 'typography.weight_heading', label: 'Heading Weight', type: 'select', options: ['300', '400', '500', '600', '700', '800'] },
         { key: 'typography.weight_body', label: 'Body Weight', type: 'select', options: ['300', '400', '500', '600'] },
-        { key: 'typography.tracking_heading', label: 'Heading Letter Spacing', type: 'text', placeholder: '-0.02em' },
-        { key: 'typography.tracking_body', label: 'Body Letter Spacing', type: 'text', placeholder: '0.05em' },
+        { key: 'typography.tracking_heading', label: 'Heading Spacing', type: 'text', placeholder: '-0.02em' },
+        { key: 'typography.tracking_body', label: 'Body Spacing', type: 'text', placeholder: '0.05em' },
       ],
       layout: [
-        { key: 'layout.container_max_width', label: 'Max Container Width', type: 'text', placeholder: '1536px' },
+        { key: 'layout.container_max_width', label: 'Max Width', type: 'text', placeholder: '1536px' },
         { key: 'layout.section_padding', label: 'Section Padding', type: 'text', placeholder: '3rem' },
         { key: 'layout.grid_gap', label: 'Grid Gap', type: 'text', placeholder: '1.5rem' },
         { key: 'layout.border_radius', label: 'Border Radius', type: 'text', placeholder: '0px' },
@@ -627,9 +623,9 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         { key: 'branding.favicon_url', label: 'Favicon URL', type: 'text', placeholder: 'https://...' },
       ],
       footer: [
-        { key: 'footer.text_left', label: 'Left Column Text', type: 'textarea', rows: 3 },
-        { key: 'footer.text_center', label: 'Center Column Text', type: 'textarea', rows: 3 },
-        { key: 'footer.lettering_text', label: 'Giant Lettering Text', type: 'text', placeholder: 'WOLTZ PUFFERS' },
+        { key: 'footer.text_left', label: 'Left Text', type: 'textarea', rows: 3 },
+        { key: 'footer.text_center', label: 'Center Text', type: 'textarea', rows: 3 },
+        { key: 'footer.lettering_text', label: 'Giant Lettering', type: 'text', placeholder: 'WOLTZ PUFFERS' },
         { key: 'footer.show_social', label: 'Show Social Icons', type: 'checkbox' },
         { key: 'footer.social_instagram', label: 'Instagram URL', type: 'text', placeholder: 'https://instagram.com/...' },
         { key: 'footer.social_twitter', label: 'Twitter URL', type: 'text', placeholder: 'https://twitter.com/...' },
@@ -639,10 +635,10 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
     const sectionDescriptions: any = {
       colors: 'Global color palette',
-      typography: 'Fonts and text sizes',
-      layout: 'Spacing and dimensions',
-      branding: 'Logo and site identity',
-      footer: 'Footer content and links',
+      typography: 'Fonts and sizes',
+      layout: 'Spacing',
+      branding: 'Logo & identity',
+      footer: 'Content & links',
     };
 
     async function loadThemeSettings() {
@@ -755,7 +751,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         const toast = document.getElementById('te-toast');
         if (toast) {
           toast.classList.add('show');
-          setTimeout(() => toast.classList.remove('show'), 2500);
+          setTimeout(() => toast.classList.remove('show'), 2000);
         }
         
         const iframe = document.getElementById('preview-frame') as HTMLIFrameElement;
@@ -764,7 +760,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         console.error('Error saving:', err);
         btn.textContent = 'Save';
         btn.classList.remove('saving');
-        alert('Error saving: ' + err.message);
+        alert('Error: ' + err.message);
       }
     });
 
@@ -775,13 +771,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         currentSection = item.dataset.section!;
         renderControls();
         
-        // Abre o painel automaticamente ao clicar em uma seção
+        // Abre o painel automaticamente
         const panel = document.getElementById('editor-panel');
         if (panel) panel.classList.add('open');
       });
     });
 
-    // Abrir/fechar painel
     document.getElementById('open-editor-btn')?.addEventListener('click', () => {
       const panel = document.getElementById('editor-panel');
       if (panel) panel.classList.add('open');
@@ -792,7 +787,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       if (panel) panel.classList.remove('open');
     });
 
-    // Troca de dispositivo
     document.querySelectorAll('.te-device-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.te-device-btn').forEach(b => b.classList.remove('active'));
