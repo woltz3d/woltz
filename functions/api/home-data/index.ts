@@ -5,7 +5,7 @@ export const onRequestGet = async (context: any) => {
   try {
     const supabase = createClient(context.env.SUPABASE_URL, context.env.SUPABASE_ANON_KEY);
 
-    // 1. Busca TODAS as Coleções Published
+    // 1. Busca Coleções Published (para Hero e Sidebar)
     const { data: allCols, error: colError } = await supabase
       .from('collections')
       .select('*')
@@ -21,14 +21,13 @@ export const onRequestGet = async (context: any) => {
     const calculateCollectionData = async (col: any) => {
       const { data: prods } = await supabase
         .from('products')
-        .select('price_brl, price_usd, net_brl') // Adicionei net_brl aqui
+        .select('price_brl, price_usd, net_brl')
         .eq('collection_id', col.id)
         .eq('status', 'published');
       
       const count = prods?.length || 0;
       const totalBrl = prods?.reduce((s: number, p: any) => s + (parseFloat(p.price_brl)||0), 0) || 0;
       const totalUsd = prods?.reduce((s: number, p: any) => s + (parseFloat(p.price_usd)||0), 0) || 0;
-      // Estimativa de líquido: soma dos net_brl individuais ou cálculo reverso se não existir
       const estNet = prods?.reduce((s: number, p: any) => s + (parseFloat(p.net_brl)||0), 0) || 0;
       
       return {
@@ -41,16 +40,13 @@ export const onRequestGet = async (context: any) => {
     };
 
     if (allCols && allCols.length > 0) {
-      // Calcula dados da coleção destaque
       featuredCollection = await calculateCollectionData(allCols[0]);
-      
-      // Calcula dados das coleções laterais (próximas 2)
       for (let i = 1; i < Math.min(allCols.length, 3); i++) {
         sidebarCollections.push(await calculateCollectionData(allCols[i]));
       }
     }
 
-    // 2. Busca Produtos Recentes para o Grid
+    // 2. Busca Produtos Recentes (para Grid)
     const { data: recentProds, error: prodError } = await supabase
       .from('products')
       .select('*, collections(name)')
