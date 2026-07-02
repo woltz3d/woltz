@@ -171,38 +171,50 @@ const { title } = Astro.props;
         padding: 0 var(--section-padding);
       }
       
-      /* CURSOR CUSTOMIZADO */
+      /* CURSOR CUSTOMIZADO - BOLINHA PEQUENA + GROWTH NO HOVER */
       .custom-cursor {
         position: fixed;
-        width: 20px;
-        height: 20px;
-        border: 2px solid var(--color-primary);
+        width: 12px;
+        height: 12px;
+        background: white;
         border-radius: 50%;
         pointer-events: none;
         z-index: 9999;
-        transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
         transform: translate(-50%, -50%);
+        transition: width 0.25s cubic-bezier(0.23, 1, 0.32, 1), 
+                    height 0.25s cubic-bezier(0.23, 1, 0.32, 1), 
+                    background 0.2s ease,
+                    border 0.2s ease;
         mix-blend-mode: difference;
+        top: 0;
+        left: 0;
       }
       
       .custom-cursor.hover {
-        width: 50px;
-        height: 50px;
-        border-color: var(--color-accent);
-        background: rgba(255, 255, 255, 0.1);
+        width: 60px;
+        height: 60px;
+        background: transparent;
+        border: 2px solid white;
+      }
+      
+      /* Ponto interno que aparece só no hover */
+      .custom-cursor.hover::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 4px;
+        height: 4px;
+        background: white;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
       }
       
       /* Esconde cursor customizado em dispositivos touch */
       @media (hover: none) {
-        body {
-          cursor: auto;
-        }
-        button {
-          cursor: pointer;
-        }
-        .custom-cursor {
-          display: none;
-        }
+        body { cursor: auto; }
+        button { cursor: pointer; }
+        .custom-cursor { display: none; }
       }
     </style>
     
@@ -220,61 +232,75 @@ const { title } = Astro.props;
         const cursor = document.getElementById('custom-cursor');
         if (!cursor) return;
         
-        let mouseX = 0;
-        let mouseY = 0;
-        let cursorX = 0;
-        let cursorY = 0;
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+        let isHovering = false;
         
-        // Atualiza posição do mouse
+        // Atualiza posição do mouse instantaneamente
         document.addEventListener('mousemove', (e) => {
           mouseX = e.clientX;
           mouseY = e.clientY;
+          
+          // Se não estiver em hover, move instantaneamente (sem delay)
+          if (!isHovering) {
+            cursorX = mouseX;
+            cursorY = mouseY;
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+          }
         });
         
-        // Animação suave do cursor
+        // Animação suave só quando está em hover
         function animateCursor() {
-          const dx = mouseX - cursorX;
-          const dy = mouseY - cursorY;
-          
-          cursorX += dx * 0.15;
-          cursorY += dy * 0.15;
-          
-          cursor.style.left = cursorX + 'px';
-          cursor.style.top = cursorY + 'px';
+          if (isHovering) {
+            const dx = mouseX - cursorX;
+            const dy = mouseY - cursorY;
+            
+            cursorX += dx * 0.2;
+            cursorY += dy * 0.2;
+            
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+          }
           
           requestAnimationFrame(animateCursor);
         }
         
         animateCursor();
         
-        // Adiciona efeito hover em botões e links
-        const interactiveElements = document.querySelectorAll('a, button, .clickable, input, textarea');
-        
-        interactiveElements.forEach(el => {
-          el.addEventListener('mouseenter', () => {
-            cursor.classList.add('hover');
+        // Função para adicionar listeners em elementos interativos
+        function addHoverListeners(elements) {
+          elements.forEach(el => {
+            if (el.dataset.cursorBound) return; // Evita duplicar
+            el.dataset.cursorBound = 'true';
+            
+            el.addEventListener('mouseenter', () => {
+              isHovering = true;
+              cursor.classList.add('hover');
+            });
+            
+            el.addEventListener('mouseleave', () => {
+              isHovering = false;
+              cursor.classList.remove('hover');
+            });
           });
-          
-          el.addEventListener('mouseleave', () => {
-            cursor.classList.remove('hover');
-          });
-        });
+        }
         
-        // Observa mudanças no DOM (para elementos adicionados dinamicamente)
+        // Aplica nos elementos existentes
+        const interactiveSelectors = 'a, button, .clickable, input, textarea, [role="button"]';
+        addHoverListeners(document.querySelectorAll(interactiveSelectors));
+        
+        // Observa mudanças no DOM (para elementos dinâmicos como produtos carregados)
         const observer = new MutationObserver((mutations) => {
           mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
               if (node.nodeType === 1) {
-                const newInteractive = node.querySelectorAll('a, button, .clickable, input, textarea');
-                newInteractive.forEach(el => {
-                  el.addEventListener('mouseenter', () => {
-                    cursor.classList.add('hover');
-                  });
-                  
-                  el.addEventListener('mouseleave', () => {
-                    cursor.classList.remove('hover');
-                  });
-                });
+                if (node.matches && node.matches(interactiveSelectors)) {
+                  addHoverListeners([node]);
+                }
+                if (node.querySelectorAll) {
+                  addHoverListeners(node.querySelectorAll(interactiveSelectors));
+                }
               }
             });
           });
