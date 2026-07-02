@@ -9,55 +9,48 @@ let sidebarCollections = [];
 let gridProducts = [];
 
 try {
-  // 1. Busca a Coleção Mais Recente para o HERO
-  const { data: col } = await supabase
+  // 1. Busca TODAS as coleções published ordenadas por data (para Hero e Sidebar)
+  const { data: allCols } = await supabase
     .from('collections')
     .select('*')
     .eq('status', 'published')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
+    .order('created_at', { ascending: false });
 
-  if (col) {
-    // Calcula preço do pack e contagem
+  if (allCols && allCols.length > 0) {
+    // A primeira é a destaque principal
+    const mainCol = allCols[0];
+    
+    // Calcula preço do pack e contagem para a coleção destaque
     const { data: prods } = await supabase
       .from('products')
       .select('price_brl, price_usd')
-      .eq('collection_id', col.id)
+      .eq('collection_id', mainCol.id)
       .eq('status', 'published');
     
     const count = prods?.length || 0;
     const totalBrl = prods?.reduce((s, p) => s + (parseFloat(p.price_brl)||0), 0) || 0;
     const totalUsd = prods?.reduce((s, p) => s + (parseFloat(p.price_usd)||0), 0) || 0;
     
-    // Aplica desconto de pack (15% off)
     featuredCollection = {
-      ...col,
+      ...mainCol,
       product_count: count,
       pack_price_brl: (totalBrl * 0.85).toFixed(2),
       pack_price_usd: (totalUsd * 0.85).toFixed(2)
     };
+
+    // As próximas 2 vão para a sidebar lateral
+    sidebarCollections = allCols.slice(1, 3);
   }
 
-  // 2. Busca as 3 Coleções Anteriores para a SIDEBAR LATERAL
-  const { data: sideCols } = await supabase
-    .from('collections')
-    .select('id, name, image_url, description')
-    .eq('status', 'published')
-    .order('created_at', { ascending: false })
-    .range(1, 3); // Pula a primeira (que já está no hero) e pega as próximas 3
-  
-  sidebarCollections = sideCols || [];
-
-  // 3. Busca os Produtos Recentes para a GRADE EDITORIAL
-  // Pega os últimos 9 produtos published com imagem
+  // 2. Busca os Produtos Recentes para a GRADE EDITORIAL (Latest Drops)
+  // Pega os últimos produtos published com imagem
   const { data: recentProds } = await supabase
     .from('products')
     .select('*, collections(name)')
     .eq('status', 'published')
     .not('thumbnail_url', 'is', null)
     .order('created_at', { ascending: false })
-    .limit(9);
+    .limit(9); // Limite seguro, mas vamos renderizar apenas o que existir
   
   gridProducts = recentProds || [];
 
@@ -102,22 +95,12 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
           [ Series: {featuredCollection?.category || 'Latest Drop'} ] &nbsp;·&nbsp; [ Collection ]
         </div>
         
-        <!-- Título Dinâmico -->
+        <!-- Título Dinâmico (SEM TM) -->
         <h1 id="collection-title" class="font-['Anton'] text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-10 uppercase text-white transition-opacity duration-500">
-          {featuredCollection?.name || 'NEW<br/>ARRIVAL'}<span class="text-white/60 text-5xl md:text-6xl align-top">™</span>
+          {featuredCollection?.name || 'NEW<br/>ARRIVAL'}
         </h1>
         
         <div class="flex items-center gap-8 mb-5">
-          <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Size</span>
-          <div class="flex gap-6 text-xs tracking-[0.2em] font-light">
-            <span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable">S</span>
-            <span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable">M</span>
-            <span class="text-white cursor-pointer clickable">L</span>
-            <span class="text-white/30 hover:text-white transition-colors duration-300 cursor-pointer clickable">XL</span>
-          </div>
-        </div>
-        
-        <div class="flex items-center gap-8 mb-12">
           <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Sets</span>
           <!-- Quantidade de Sets Dinâmica -->
           <div id="collection-colors" class="flex gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500">
@@ -140,15 +123,24 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
         </div>
       </div>
 
-      <!-- SIDEBAR LATERAL: 3 Coleções Anteriores -->
+      <!-- SIDEBAR LATERAL: Coleção Atual + 2 Anteriores -->
       <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]">
         <div class="flex flex-col gap-4 w-full">
+          
+          <!-- Thumbnail 1: Coleção Destaque (Atual) -->
+          <div id="thumb-0" class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-100">
+            <img src={imgUrl(featuredCollection?.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-white/80 transition-all duration-500 pointer-events-none" alt={featuredCollection?.name} />
+            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+
+          <!-- Thumbnails 2 e 3: Coleções Anteriores -->
           {sidebarCollections.map((col, i) => (
-            <div id={`thumb-${i}`} class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-{i === 0 ? '100' : '60 hover:opacity-90'} {i !== 0 ? 'grayscale hover:grayscale-0' : ''}">
-              <img src={imgUrl(col.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-{i === 0 ? 'white/80' : 'transparent'} transition-all duration-500 pointer-events-none" alt={col.name} />
+            <div id={`thumb-${i+1}`} class="thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 opacity-60 hover:opacity-90 grayscale hover:grayscale-0">
+              <img src={imgUrl(col.image_url, 600)} class="w-full h-32 md:h-40 object-cover border border-transparent transition-all duration-500 pointer-events-none" alt={col.name} />
               <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
           ))}
+
         </div>
         <div class="text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-2 w-full flex justify-end" id="image-indicator">
           01 — 0{Math.max(1, sidebarCollections.length + 1)}
@@ -164,13 +156,14 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
   </main>
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 2: GRADE EDITORIAL                   -->
+  <!-- SEÇÃO 2: GRADE EDITORIAL (NEW COLLECTION)  -->
   <!-- ========================================== -->
   <section class="relative w-full bg-[#6b7c93] py-24 px-6 md:px-12 lg:px-20">
     
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
       <div class="flex-1">
-        <h2 class="font-['Anton'] text-6xl md:text-8xl uppercase text-white tracking-tight mb-6">LATEST DROPS</h2>
+        <!-- TÍTULO CORRIGIDO PARA NEW COLLECTION -->
+        <h2 class="font-['Anton'] text-6xl md:text-8xl uppercase text-white tracking-tight mb-6">NEW COLLECTION</h2>
         <div class="flex flex-wrap gap-x-16 gap-y-4 text-[10px] tracking-[0.2em] text-white/70 uppercase font-vcr">
           <div class="flex flex-col gap-1">
             <span>[ NEW ARRIVALS ]</span>
@@ -195,98 +188,113 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
       </button>
     </div>
 
-    <!-- GRID DINÂMICO DE PRODUTOS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+    <!-- GRID DINÂMICO: Card Grande da Coleção + Cards Estreitos dos Produtos -->
+    <div class="grid grid-cols-5 gap-4 md:gap-6 mb-16 md:mb-24">
+      
+      <!-- CARD GRANDE DA COLEÇÃO (Ocupa 2 colunas, altura maior) -->
+      {featuredCollection && (
+        <div class="col-span-2 relative group clickable h-[450px]">
+          <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
+            <img src={imgUrl(featuredCollection.image_url, 1200)} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={featuredCollection.name} />
+            <div class="absolute bottom-6 right-6 z-10 text-right">
+              <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">{featuredCollection.name.toUpperCase()}</h3>
+              <p class="text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-3 font-vcr">{featuredCollection.description ? featuredCollection.description.substring(0, 30) + '...' : 'PREMIUM COLLECTION'}</p>
+              <div class="flex items-center justify-end gap-3">
+                 <div class="text-right hidden md:block">
+                    <p class="text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Pack Price</p>
+                    <p class="text-lg font-light text-white drop-shadow-sm">$ {Number(featuredCollection.pack_price_usd).toFixed(2)}</p>
+                 </div>
+                 <button class="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <!-- CARDS ESTREITOS DOS PRODUTOS (Ocupam 1 coluna cada) -->
       {gridProducts.map((product) => (
-        <article class="group relative clickable flex flex-col h-[550px]">
+        <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
           <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
             <img src={imgUrl(product.thumbnail_url, 600)} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={product.name} />
           </div>
           <div class="mt-auto">
             <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">{product.name}</h4>
-            <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">{product.description ? product.description.substring(0, 30) + '...' : 'Premium Digital Set'}</p>
+            <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">{product.description ? product.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
             
-            <!-- Cores Dinâmicas -->
-            <div class="flex items-center justify-between">
+            <!-- Cores Dinâmicas (Máx 4 + Contador) -->
+            <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-1.5">
-                {product.colors && Array.isArray(product.colors) && product.colors.slice(0, 3).map(c => (
+                {product.colors && Array.isArray(product.colors) && product.colors.slice(0, 4).map(c => (
                   c.type === 'pattern' && c.url ? 
-                    `<span class="w-2 h-2 rounded-full overflow-hidden border border-white/50"><img src="${c.url}?width=10" /></span>` :
-                    `<span class="w-2 h-2 rounded-full shadow-sm" style="background:${c.hex}"></span>`
+                    `<span class="w-2 h-2 rounded-full overflow-hidden border border-white/50 inline-block"><img src="${c.url}?width=10" class="w-full h-full object-cover" /></span>` :
+                    `<span class="w-2 h-2 rounded-full shadow-sm inline-block" style="background:${c.hex}"></span>`
                 )).join('')}
-                {product.colors?.length > 3 && `<span class="text-[9px] text-white/70 font-vcr ml-1">+${product.colors.length - 3}</span>`}
+                {product.colors?.length > 4 && `<span class="text-[9px] text-white/70 font-vcr ml-1">+${product.colors.length - 4}</span>`}
               </div>
+            </div>
+
+            <!-- Botão Carrinho + Preço -->
+            <div class="flex items-center justify-between">
+              <button class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2">
+                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              </button>
               <p class="text-white text-xs font-light font-vcr">$ {Number(product.price_usd || 0).toFixed(2)}</p>
             </div>
           </div>
-        </article>
+        </div>
       ))}
+
     </div>
+
+    <!-- SEGUNDA FILEIRA (Só aparece se houver mais de 3 produtos além do card grande) -->
+    {gridProducts.length > 3 && (
+      <div class="grid grid-cols-5 gap-4 md:gap-6">
+        {gridProducts.slice(3).map((product) => (
+          <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
+            <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
+              <img src={imgUrl(product.thumbnail_url, 600)} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={product.name} />
+            </div>
+            <div class="mt-auto">
+              <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">{product.name}</h4>
+              <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">{product.description ? product.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+              
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1.5">
+                  {product.colors && Array.isArray(product.colors) && product.colors.slice(0, 4).map(c => (
+                    c.type === 'pattern' && c.url ? 
+                      `<span class="w-2 h-2 rounded-full overflow-hidden border border-white/50 inline-block"><img src="${c.url}?width=10" class="w-full h-full object-cover" /></span>` :
+                      `<span class="w-2 h-2 rounded-full shadow-sm inline-block" style="background:${c.hex}"></span>`
+                  )).join('')}
+                  {product.colors?.length > 4 && `<span class="text-[9px] text-white/70 font-vcr ml-1">+${product.colors.length - 4}</span>`}
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <button class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2">
+                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                </button>
+                <p class="text-white text-xs font-light font-vcr">$ {Number(product.price_usd || 0).toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
 
   </section>
 
   <!-- ========================================== -->
-  <!-- FOOTER: CONTEÚDO → LETREIRO → COOKIES     -->
+  <!-- FOOTER                                     -->
   <!-- ========================================== -->
   <footer class="relative w-full bg-[#6b7c93] pt-16 pb-12 px-6 md:px-12 lg:px-20 overflow-hidden flex flex-col">
     
-    <!-- CONTEÚDO PRINCIPAL (em cima) -->
     <div class="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-8">
       
-      <!-- Coluna 1: Código de Barras + Copyright + Endereço -->
       <div class="flex flex-col gap-6">
         <svg class="w-48 h-10 text-white/80" viewBox="0 0 200 40" fill="currentColor">
-          <rect x="0" y="0" width="2" height="40"/>
-          <rect x="4" y="0" width="1" height="40"/>
-          <rect x="7" y="0" width="3" height="40"/>
-          <rect x="12" y="0" width="1" height="40"/>
-          <rect x="15" y="0" width="2" height="40"/>
-          <rect x="19" y="0" width="4" height="40"/>
-          <rect x="25" y="0" width="1" height="40"/>
-          <rect x="28" y="0" width="2" height="40"/>
-          <rect x="32" y="0" width="3" height="40"/>
-          <rect x="37" y="0" width="1" height="40"/>
-          <rect x="40" y="0" width="2" height="40"/>
-          <rect x="44" y="0" width="1" height="40"/>
-          <rect x="47" y="0" width="3" height="40"/>
-          <rect x="52" y="0" width="2" height="40"/>
-          <rect x="56" y="0" width="1" height="40"/>
-          <rect x="59" y="0" width="4" height="40"/>
-          <rect x="65" y="0" width="1" height="40"/>
-          <rect x="68" y="0" width="2" height="40"/>
-          <rect x="72" y="0" width="1" height="40"/>
-          <rect x="75" y="0" width="3" height="40"/>
-          <rect x="80" y="0" width="2" height="40"/>
-          <rect x="84" y="0" width="1" height="40"/>
-          <rect x="87" y="0" width="2" height="40"/>
-          <rect x="91" y="0" width="3" height="40"/>
-          <rect x="96" y="0" width="1" height="40"/>
-          <rect x="99" y="0" width="2" height="40"/>
-          <rect x="103" y="0" width="4" height="40"/>
-          <rect x="109" y="0" width="1" height="40"/>
-          <rect x="112" y="0" width="2" height="40"/>
-          <rect x="116" y="0" width="1" height="40"/>
-          <rect x="119" y="0" width="3" height="40"/>
-          <rect x="124" y="0" width="2" height="40"/>
-          <rect x="128" y="0" width="1" height="40"/>
-          <rect x="131" y="0" width="2" height="40"/>
-          <rect x="135" y="0" width="3" height="40"/>
-          <rect x="140" y="0" width="1" height="40"/>
-          <rect x="143" y="0" width="2" height="40"/>
-          <rect x="147" y="0" width="1" height="40"/>
-          <rect x="150" y="0" width="4" height="40"/>
-          <rect x="156" y="0" width="1" height="40"/>
-          <rect x="159" y="0" width="2" height="40"/>
-          <rect x="163" y="0" width="3" height="40"/>
-          <rect x="168" y="0" width="1" height="40"/>
-          <rect x="171" y="0" width="2" height="40"/>
-          <rect x="175" y="0" width="1" height="40"/>
-          <rect x="178" y="0" width="3" height="40"/>
-          <rect x="183" y="0" width="2" height="40"/>
-          <rect x="187" y="0" width="1" height="40"/>
-          <rect x="190" y="0" width="2" height="40"/>
-          <rect x="194" y="0" width="3" height="40"/>
-          <rect x="199" y="0" width="1" height="40"/>
+          <rect x="0" y="0" width="2" height="40"/><rect x="4" y="0" width="1" height="40"/><rect x="7" y="0" width="3" height="40"/><rect x="12" y="0" width="1" height="40"/><rect x="15" y="0" width="2" height="40"/><rect x="19" y="0" width="4" height="40"/><rect x="25" y="0" width="1" height="40"/><rect x="28" y="0" width="2" height="40"/><rect x="32" y="0" width="3" height="40"/><rect x="37" y="0" width="1" height="40"/><rect x="40" y="0" width="2" height="40"/><rect x="44" y="0" width="1" height="40"/><rect x="47" y="0" width="3" height="40"/><rect x="52" y="0" width="2" height="40"/><rect x="56" y="0" width="1" height="40"/><rect x="59" y="0" width="4" height="40"/><rect x="65" y="0" width="1" height="40"/><rect x="68" y="0" width="2" height="40"/><rect x="72" y="0" width="1" height="40"/><rect x="75" y="0" width="3" height="40"/><rect x="80" y="0" width="2" height="40"/><rect x="84" y="0" width="1" height="40"/><rect x="87" y="0" width="2" height="40"/><rect x="91" y="0" width="3" height="40"/><rect x="96" y="0" width="1" height="40"/><rect x="99" y="0" width="2" height="40"/><rect x="103" y="0" width="4" height="40"/><rect x="109" y="0" width="1" height="40"/><rect x="112" y="0" width="2" height="40"/><rect x="116" y="0" width="1" height="40"/><rect x="119" y="0" width="3" height="40"/><rect x="124" y="0" width="2" height="40"/><rect x="128" y="0" width="1" height="40"/><rect x="131" y="0" width="2" height="40"/><rect x="135" y="0" width="3" height="40"/><rect x="140" y="0" width="1" height="40"/><rect x="143" y="0" width="2" height="40"/><rect x="147" y="0" width="1" height="40"/><rect x="150" y="0" width="4" height="40"/><rect x="156" y="0" width="1" height="40"/><rect x="159" y="0" width="2" height="40"/><rect x="163" y="0" width="3" height="40"/><rect x="168" y="0" width="1" height="40"/><rect x="171" y="0" width="2" height="40"/><rect x="175" y="0" width="1" height="40"/><rect x="178" y="0" width="3" height="40"/><rect x="183" y="0" width="2" height="40"/><rect x="187" y="0" width="1" height="40"/><rect x="190" y="0" width="2" height="40"/><rect x="194" y="0" width="3" height="40"/><rect x="199" y="0" width="1" height="40"/>
         </svg>
         
         <div class="font-vcr text-[10px] tracking-[0.15em] text-white/80 uppercase leading-relaxed">
@@ -301,7 +309,6 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
         </div>
       </div>
 
-      <!-- Coluna 2: Newsletter -->
       <div class="flex flex-col gap-4">
         <div class="font-vcr text-[10px] tracking-[0.2em] text-white/80 uppercase">
           <p>NEWSLETTER SIGN UP</p>
@@ -309,20 +316,13 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
         </div>
         
         <div class="relative mt-4 max-w-[280px]">
-          <input 
-            type="email" 
-            placeholder="EMAIL" 
-            class="w-full bg-transparent border-b border-white/40 pb-2 font-vcr text-[11px] tracking-[0.2em] text-white placeholder:text-white/40 focus:outline-none focus:border-white transition-colors uppercase"
-          />
+          <input type="email" placeholder="EMAIL" class="w-full bg-transparent border-b border-white/40 pb-2 font-vcr text-[11px] tracking-[0.2em] text-white placeholder:text-white/40 focus:outline-none focus:border-white transition-colors uppercase" />
           <button class="absolute right-0 bottom-2 text-white/60 hover:text-white transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-            </svg>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- Coluna 3: Menu de Navegação -->
       <div class="flex flex-col gap-3">
         <nav class="flex flex-col gap-2 font-vcr text-[10px] tracking-[0.2em] text-white/70 uppercase">
           <a href="/catalog" class="hover:text-white transition-colors duration-300">[ CATALOG ]</a>
@@ -333,39 +333,30 @@ const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
         </nav>
       </div>
 
-      <!-- Coluna 4: Logo + Redes Sociais -->
       <div class="flex flex-col items-start md:items-end gap-6">
         <div class="font-['Anton'] text-3xl tracking-[0.2em] text-white">WOLTZ</div>
         
         <div class="flex gap-4">
           <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-            </svg>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
           </a>
           <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-            </svg>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
           </a>
           <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-            </svg>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
           </a>
         </div>
       </div>
 
     </div>
 
-    <!-- LETREIRO GIGANTE "WOLTZ PUFFERS" (abaixo do conteúdo) -->
     <div class="relative w-full flex items-center justify-center py-12 md:py-16 overflow-hidden">
       <h2 class="font-['Anton'] text-[18vw] md:text-[15vw] leading-none text-white/[0.07] tracking-tight select-none whitespace-nowrap">
         WOLTZ PUFFERS
       </h2>
     </div>
 
-    <!-- LINHA DIVISÓRIA + COOKIES (no final) -->
     <div class="relative z-10 border-t border-white/20 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 font-vcr text-[9px] tracking-[0.2em] text-white/40 uppercase">
       <p>MADE WITH PRECISION IN BROOKLYN</p>
       <p>TERMS · PRIVACY · COOKIES</p>
