@@ -128,6 +128,7 @@ const { title } = Astro.props;
         color: var(--color-text);
         background-color: var(--color-background);
         line-height: 1.6;
+        cursor: none; /* Esconde o cursor padrão */
       }
       
       h1, h2, h3, h4, h5, h6 {
@@ -152,7 +153,7 @@ const { title } = Astro.props;
       }
       
       button {
-        cursor: pointer;
+        cursor: none; /* Botões também sem cursor padrão */
         border: none;
         background: none;
         font-family: inherit;
@@ -169,11 +170,121 @@ const { title } = Astro.props;
         margin: 0 auto;
         padding: 0 var(--section-padding);
       }
+      
+      /* CURSOR CUSTOMIZADO */
+      .custom-cursor {
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--color-primary);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
+        transform: translate(-50%, -50%);
+        mix-blend-mode: difference;
+      }
+      
+      .custom-cursor.hover {
+        width: 50px;
+        height: 50px;
+        border-color: var(--color-accent);
+        background: rgba(255, 255, 255, 0.1);
+      }
+      
+      /* Esconde cursor customizado em dispositivos touch */
+      @media (hover: none) {
+        body {
+          cursor: auto;
+        }
+        button {
+          cursor: pointer;
+        }
+        .custom-cursor {
+          display: none;
+        }
+      }
     </style>
     
     <slot name="head" />
   </head>
   <body>
+    <!-- Cursor Customizado -->
+    <div class="custom-cursor" id="custom-cursor"></div>
+    
     <slot />
+    
+    <!-- Script do Cursor -->
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        const cursor = document.getElementById('custom-cursor');
+        if (!cursor) return;
+        
+        let mouseX = 0;
+        let mouseY = 0;
+        let cursorX = 0;
+        let cursorY = 0;
+        
+        // Atualiza posição do mouse
+        document.addEventListener('mousemove', (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        });
+        
+        // Animação suave do cursor
+        function animateCursor() {
+          const dx = mouseX - cursorX;
+          const dy = mouseY - cursorY;
+          
+          cursorX += dx * 0.15;
+          cursorY += dy * 0.15;
+          
+          cursor.style.left = cursorX + 'px';
+          cursor.style.top = cursorY + 'px';
+          
+          requestAnimationFrame(animateCursor);
+        }
+        
+        animateCursor();
+        
+        // Adiciona efeito hover em botões e links
+        const interactiveElements = document.querySelectorAll('a, button, .clickable, input, textarea');
+        
+        interactiveElements.forEach(el => {
+          el.addEventListener('mouseenter', () => {
+            cursor.classList.add('hover');
+          });
+          
+          el.addEventListener('mouseleave', () => {
+            cursor.classList.remove('hover');
+          });
+        });
+        
+        // Observa mudanças no DOM (para elementos adicionados dinamicamente)
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === 1) {
+                const newInteractive = node.querySelectorAll('a, button, .clickable, input, textarea');
+                newInteractive.forEach(el => {
+                  el.addEventListener('mouseenter', () => {
+                    cursor.classList.add('hover');
+                  });
+                  
+                  el.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('hover');
+                  });
+                });
+              }
+            });
+          });
+        });
+        
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      });
+    </script>
   </body>
 </html>
