@@ -1,6 +1,5 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
-import { supabase } from '../../../lib/supabase';
 
 const SUPABASE_URL = import.meta.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
@@ -10,171 +9,524 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
   
   <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
   
-  <style>
-    .editor-container {
+  <style is:global>
+    /* Reset do container principal do admin */
+    .theme-editor-wrapper {
       display: grid;
-      grid-template-columns: 300px 1fr 350px;
-      height: calc(100vh - 80px);
-      gap: 1px;
-      background: rgba(255,255,255,0.1);
+      grid-template-columns: 280px 1fr 380px;
+      height: calc(100vh - 73px);
+      background: #0a0a0c;
+      overflow: hidden;
     }
     
-    .sidebar-left, .sidebar-right {
+    /* Scrollbar global customizada */
+    .theme-editor-wrapper ::-webkit-scrollbar {
+      width: 6px;
+    }
+    .theme-editor-wrapper ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .theme-editor-wrapper ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+    .theme-editor-wrapper ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Sidebar Esquerda - Page Structure */
+    .te-sidebar-left {
       background: #111113;
-      overflow-y: auto;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
     
-    .preview-frame {
+    .te-sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    .te-sidebar-header h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.25rem;
+      letter-spacing: -0.01em;
+    }
+    
+    .te-sidebar-header p {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .te-sections-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+    
+    .te-section-item {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.875rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 2px;
+    }
+    
+    .te-section-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+    
+    .te-section-item.active {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    
+    .te-section-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+    }
+    
+    .te-section-icon svg {
+      width: 16px;
+      height: 16px;
+      stroke: rgba(255, 255, 255, 0.7);
+    }
+    
+    .te-section-item.active .te-section-icon {
+      background: rgba(255, 255, 255, 0.12);
+    }
+    
+    .te-section-item.active .te-section-icon svg {
+      stroke: #fff;
+    }
+    
+    .te-section-info h3 {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #fff;
+      margin-bottom: 0.125rem;
+    }
+    
+    .te-section-info p {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Centro - Preview */
+    .te-preview {
       background: #1a1a1e;
       position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
     
-    .preview-frame iframe {
+    .te-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    .te-device-btn {
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    
+    .te-device-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+    
+    .te-device-btn.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .te-device-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+    
+    .te-preview-frame-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      overflow: hidden;
+    }
+    
+    .te-preview-frame {
       width: 100%;
       height: 100%;
       border: none;
+      border-radius: 8px;
+      background: #fff;
+      transition: all 0.3s ease;
     }
     
-    .section-item {
-      padding: 1rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      cursor: pointer;
-      transition: background 0.2s;
+    .te-preview-frame.tablet {
+      width: 768px;
+      max-width: 100%;
+      height: 100%;
     }
     
-    .section-item:hover, .section-item.active {
-      background: rgba(255,255,255,0.05);
+    .te-preview-frame.mobile {
+      width: 375px;
+      max-width: 100%;
+      height: 100%;
     }
     
-    .section-item h3 {
-      font-size: 0.9rem;
+    /* Sidebar Direita - Editor */
+    .te-sidebar-right {
+      background: #111113;
+      border-left: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .te-editor-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .te-editor-header h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
       margin-bottom: 0.25rem;
     }
     
-    .section-item p {
+    .te-editor-header p {
       font-size: 0.75rem;
-      color: rgba(255,255,255,0.5);
+      color: rgba(255, 255, 255, 0.4);
     }
     
-    .control-group {
-      padding: 1.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    
-    .control-group label {
-      display: block;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: rgba(255,255,255,0.6);
-      margin-bottom: 0.75rem;
-    }
-    
-    .color-input-wrapper {
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-    }
-    
-    input[type="color"] {
-      width: 50px;
-      height: 40px;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 6px;
-      cursor: pointer;
-      background: none;
-    }
-    
-    input[type="text"], input[type="number"], select, textarea {
-      flex: 1;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 6px;
-      padding: 0.5rem 0.75rem;
-      color: white;
-      font-size: 0.875rem;
-    }
-    
-    input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: rgba(255,255,255,0.3);
-    }
-    
-    .save-btn {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      background: white;
-      color: black;
-      padding: 0.75rem 2rem;
+    .te-save-btn {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 0.625rem 1.25rem;
       border-radius: 8px;
+      font-size: 0.8rem;
       font-weight: 600;
-      font-size: 0.875rem;
-      z-index: 100;
-      transition: transform 0.2s;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
     }
     
-    .save-btn:hover {
-      transform: translateY(-2px);
+    .te-save-btn:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(-1px);
     }
     
-    .save-btn.saving {
+    .te-save-btn.saving {
       opacity: 0.7;
       cursor: not-allowed;
+      transform: none;
+    }
+    
+    .te-controls {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    
+    .te-control-group {
+      margin-bottom: 1.25rem;
+    }
+    
+    .te-control-label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 0.625rem;
+    }
+    
+    .te-color-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .te-color-input {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      background: none;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    
+    .te-color-input::-webkit-color-swatch-wrapper {
+      padding: 2px;
+    }
+    
+    .te-color-input::-webkit-color-swatch {
+      border: none;
+      border-radius: 6px;
+    }
+    
+    .te-text-input, .te-select-input, .te-textarea-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 0.625rem 0.875rem;
+      color: #fff;
+      font-size: 0.85rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    
+    .te-text-input:focus, .te-select-input:focus, .te-textarea-input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    
+    .te-select-input {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+    }
+    
+    .te-select-input option {
+      background: #1a1a1e;
+      color: #fff;
+    }
+    
+    .te-textarea-input {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.5;
+    }
+    
+    .te-checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+    }
+    
+    .te-checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #fff;
+      cursor: pointer;
+    }
+    
+    .te-checkbox-row span {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    /* Toast de sucesso */
+    .te-toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.875rem 1.5rem;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.85rem;
+      z-index: 10000;
+      opacity: 0;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .te-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    
+    .te-toast svg {
+      width: 18px;
+      height: 18px;
+      color: #22c55e;
     }
   </style>
 
-  <div class="editor-container">
-    <!-- Sidebar Esquerda: Lista de Seções -->
-    <div class="sidebar-left">
-      <div class="p-6 border-b border-white/10">
-        <h2 class="text-lg font-semibold">Page Structure</h2>
-        <p class="text-xs text-white/50 mt-1">Select a section to edit</p>
+  <div class="theme-editor-wrapper">
+    <!-- Sidebar Esquerda: Page Structure -->
+    <div class="te-sidebar-left">
+      <div class="te-sidebar-header">
+        <h2>Page Structure</h2>
+        <p>Select a section to edit</p>
       </div>
       
-      <div id="sections-list">
-        <div class="section-item active" data-section="colors">
-          <h3>🎨 Colors</h3>
-          <p>Global color palette</p>
+      <div class="te-sections-list">
+        <div class="te-section-item active" data-section="colors">
+          <div class="te-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="13.5" cy="6.5" r="2.5"/>
+              <circle cx="19" cy="13" r="2.5"/>
+              <circle cx="6" cy="12" r="2.5"/>
+              <circle cx="10" cy="18" r="2.5"/>
+            </svg>
+          </div>
+          <div class="te-section-info">
+            <h3>Colors</h3>
+            <p>Global color palette</p>
+          </div>
         </div>
-        <div class="section-item" data-section="typography">
-          <h3>🔤 Typography</h3>
-          <p>Fonts and text sizes</p>
+        
+        <div class="te-section-item" data-section="typography">
+          <div class="te-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 7 4 4 20 4 20 7"/>
+              <line x1="12" y1="4" x2="12" y2="20"/>
+              <line x1="8" y1="20" x2="16" y2="20"/>
+            </svg>
+          </div>
+          <div class="te-section-info">
+            <h3>Typography</h3>
+            <p>Fonts and text sizes</p>
+          </div>
         </div>
-        <div class="section-item" data-section="layout">
-          <h3>📐 Layout</h3>
-          <p>Spacing and dimensions</p>
+        
+        <div class="te-section-item" data-section="layout">
+          <div class="te-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="9" y1="21" x2="9" y2="9"/>
+            </svg>
+          </div>
+          <div class="te-section-info">
+            <h3>Layout</h3>
+            <p>Spacing and dimensions</p>
+          </div>
         </div>
-        <div class="section-item" data-section="branding">
-          <h3>🏷️ Branding</h3>
-          <p>Logo and site identity</p>
+        
+        <div class="te-section-item" data-section="branding">
+          <div class="te-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div class="te-section-info">
+            <h3>Branding</h3>
+            <p>Logo and site identity</p>
+          </div>
         </div>
-        <div class="section-item" data-section="footer">
-          <h3>📄 Footer</h3>
-          <p>Footer content and links</p>
+        
+        <div class="te-section-item" data-section="footer">
+          <div class="te-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="3" y1="15" x2="21" y2="15"/>
+            </svg>
+          </div>
+          <div class="te-section-info">
+            <h3>Footer</h3>
+            <p>Footer content and links</p>
+          </div>
         </div>
       </div>
     </div>
     
     <!-- Centro: Preview -->
-    <div class="preview-frame">
-      <iframe id="preview-frame" src="/" sandbox="allow-same-origin allow-scripts"></iframe>
+    <div class="te-preview">
+      <div class="te-preview-header">
+        <button class="te-device-btn active" data-device="desktop">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          Desktop
+        </button>
+        <button class="te-device-btn" data-device="tablet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2" width="16" height="20" rx="2"/>
+            <line x1="12" y1="18" x2="12" y2="18"/>
+          </svg>
+          Tablet
+        </button>
+        <button class="te-device-btn" data-device="mobile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <line x1="12" y1="18" x2="12" y2="18"/>
+          </svg>
+          Mobile
+        </button>
+      </div>
+      
+      <div class="te-preview-frame-wrapper">
+        <iframe id="preview-frame" class="te-preview-frame" src="/" sandbox="allow-same-origin allow-scripts"></iframe>
+      </div>
     </div>
     
     <!-- Sidebar Direita: Editor -->
-    <div class="sidebar-right" id="editor-panel">
-      <div class="p-6 border-b border-white/10">
-        <h2 class="text-lg font-semibold">Edit Section</h2>
-        <p class="text-xs text-white/50 mt-1" id="section-description">Global color palette</p>
+    <div class="te-sidebar-right">
+      <div class="te-editor-header">
+        <div>
+          <h2>Edit Section</h2>
+          <p id="section-description">Global color palette</p>
+        </div>
+        <button id="save-btn" class="te-save-btn">Save Changes</button>
       </div>
       
-      <div id="controls-container">
-        <!-- Controles serão injetados via JS -->
+      <div class="te-controls" id="controls-container">
+        <!-- Controles injetados via JS -->
       </div>
     </div>
   </div>
 
-  <button id="save-btn" class="save-btn">Save Changes</button>
+  <!-- Toast de sucesso -->
+  <div id="te-toast" class="te-toast">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+    </svg>
+    <span>Changes saved successfully</span>
+  </div>
 
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -186,7 +538,69 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     let themeData: any = {};
     let hasChanges = false;
 
-    // Carrega configurações atuais
+    // Definição dos controles por seção
+    const sectionControls: any = {
+      colors: [
+        { key: 'colors.primary', label: 'Primary Color', type: 'color' },
+        { key: 'colors.secondary', label: 'Secondary Color', type: 'color' },
+        { key: 'colors.background', label: 'Background Color', type: 'color' },
+        { key: 'colors.background_alt', label: 'Alternative Background', type: 'color' },
+        { key: 'colors.text', label: 'Text Color', type: 'color' },
+        { key: 'colors.text_muted', label: 'Muted Text Color', type: 'color' },
+        { key: 'colors.accent', label: 'Accent Color', type: 'color' },
+        { key: 'colors.success', label: 'Success Color', type: 'color' },
+        { key: 'colors.error', label: 'Error Color', type: 'color' },
+        { key: 'colors.warning', label: 'Warning Color', type: 'color' },
+      ],
+      
+      typography: [
+        { key: 'typography.font_heading', label: 'Heading Font', type: 'select', options: ['Anton', 'Playfair Display', 'Oswald', 'Bebas Neue', 'Montserrat'] },
+        { key: 'typography.font_body', label: 'Body Font', type: 'select', options: ['Inter, sans-serif', 'Roboto, sans-serif', 'Open Sans, sans-serif', 'DM Sans, sans-serif'] },
+        { key: 'typography.font_mono', label: 'Monospace Font', type: 'text', placeholder: 'VCR OSD Mono, monospace' },
+        { key: 'typography.size_h1', label: 'H1 Size', type: 'text', placeholder: 'clamp(3rem, 8vw, 6rem)' },
+        { key: 'typography.size_h2', label: 'H2 Size', type: 'text', placeholder: 'clamp(2rem, 5vw, 4rem)' },
+        { key: 'typography.size_body', label: 'Body Size', type: 'text', placeholder: '1rem' },
+        { key: 'typography.weight_heading', label: 'Heading Weight', type: 'select', options: ['300', '400', '500', '600', '700', '800'] },
+        { key: 'typography.weight_body', label: 'Body Weight', type: 'select', options: ['300', '400', '500', '600'] },
+        { key: 'typography.tracking_heading', label: 'Heading Letter Spacing', type: 'text', placeholder: '-0.02em' },
+        { key: 'typography.tracking_body', label: 'Body Letter Spacing', type: 'text', placeholder: '0.05em' },
+      ],
+      
+      layout: [
+        { key: 'layout.container_max_width', label: 'Max Container Width', type: 'text', placeholder: '1536px' },
+        { key: 'layout.section_padding', label: 'Section Padding', type: 'text', placeholder: '3rem' },
+        { key: 'layout.grid_gap', label: 'Grid Gap', type: 'text', placeholder: '1.5rem' },
+        { key: 'layout.border_radius', label: 'Border Radius', type: 'text', placeholder: '0px' },
+        { key: 'layout.hero_height', label: 'Hero Height', type: 'text', placeholder: '100vh' },
+      ],
+      
+      branding: [
+        { key: 'branding.site_name', label: 'Site Name', type: 'text', placeholder: 'WOLTZ' },
+        { key: 'branding.tagline', label: 'Tagline', type: 'text', placeholder: 'Premium Digital Fashion' },
+        { key: 'branding.logo_url', label: 'Logo URL', type: 'text', placeholder: 'https://...' },
+        { key: 'branding.favicon_url', label: 'Favicon URL', type: 'text', placeholder: 'https://...' },
+      ],
+      
+      footer: [
+        { key: 'footer.text_left', label: 'Left Column Text', type: 'textarea', rows: 3 },
+        { key: 'footer.text_center', label: 'Center Column Text', type: 'textarea', rows: 3 },
+        { key: 'footer.lettering_text', label: 'Giant Lettering Text', type: 'text', placeholder: 'WOLTZ PUFFERS' },
+        { key: 'footer.show_social', label: 'Show Social Icons', type: 'checkbox' },
+        { key: 'footer.social_instagram', label: 'Instagram URL', type: 'text', placeholder: 'https://instagram.com/...' },
+        { key: 'footer.social_twitter', label: 'Twitter URL', type: 'text', placeholder: 'https://twitter.com/...' },
+        { key: 'footer.social_youtube', label: 'YouTube URL', type: 'text', placeholder: 'https://youtube.com/...' },
+      ],
+    };
+
+    const sectionDescriptions: any = {
+      colors: 'Global color palette',
+      typography: 'Fonts and text sizes',
+      layout: 'Spacing and dimensions',
+      branding: 'Logo and site identity',
+      footer: 'Footer content and links',
+    };
+
+    // Carrega configurações do banco
     async function loadThemeSettings() {
       try {
         const { data, error } = await supabase
@@ -205,95 +619,38 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       }
     }
 
-    // Renderiza controles baseados na seção atual
+    // Renderiza controles da seção atual
     function renderControls() {
       const container = document.getElementById('controls-container');
       if (!container) return;
 
-      const controls: any = {
-        colors: [
-          { key: 'colors.primary', label: 'Primary Color', type: 'color' },
-          { key: 'colors.secondary', label: 'Secondary Color', type: 'color' },
-          { key: 'colors.background', label: 'Background Color', type: 'color' },
-          { key: 'colors.background_alt', label: 'Alt Background', type: 'color' },
-          { key: 'colors.text', label: 'Text Color', type: 'color' },
-          { key: 'colors.text_muted', label: 'Muted Text', type: 'color' },
-          { key: 'colors.accent', label: 'Accent Color', type: 'color' },
-          { key: 'colors.success', label: 'Success Color', type: 'color' },
-          { key: 'colors.error', label: 'Error Color', type: 'color' },
-        ],
-        
-        typography: [
-          { key: 'typography.font_heading', label: 'Heading Font', type: 'select', options: ['Anton', 'Playfair Display', 'Oswald', 'Bebas Neue'] },
-          { key: 'typography.font_body', label: 'Body Font', type: 'select', options: ['Inter, sans-serif', 'Roboto, sans-serif', 'Open Sans, sans-serif'] },
-          { key: 'typography.font_mono', label: 'Monospace Font', type: 'text' },
-          { key: 'typography.size_h1', label: 'H1 Size', type: 'text', placeholder: 'clamp(3rem, 8vw, 6rem)' },
-          { key: 'typography.size_h2', label: 'H2 Size', type: 'text', placeholder: 'clamp(2rem, 5vw, 4rem)' },
-          { key: 'typography.weight_heading', label: 'Heading Weight', type: 'select', options: ['300', '400', '500', '600', '700'] },
-          { key: 'typography.tracking_heading', label: 'Heading Tracking', type: 'text', placeholder: '-0.02em' },
-        ],
-        
-        layout: [
-          { key: 'layout.container_max_width', label: 'Max Width', type: 'text', placeholder: '1536px' },
-          { key: 'layout.section_padding', label: 'Section Padding', type: 'text', placeholder: '3rem' },
-          { key: 'layout.grid_gap', label: 'Grid Gap', type: 'text', placeholder: '1.5rem' },
-          { key: 'layout.border_radius', label: 'Border Radius', type: 'text', placeholder: '0px' },
-          { key: 'layout.hero_height', label: 'Hero Height', type: 'text', placeholder: '100vh' },
-        ],
-        
-        branding: [
-          { key: 'branding.site_name', label: 'Site Name', type: 'text' },
-          { key: 'branding.tagline', label: 'Tagline', type: 'text' },
-          { key: 'branding.logo_url', label: 'Logo URL', type: 'text' },
-          { key: 'branding.favicon_url', label: 'Favicon URL', type: 'text' },
-        ],
-        
-        footer: [
-          { key: 'footer.text_left', label: 'Left Text', type: 'textarea', rows: 3 },
-          { key: 'footer.text_center', label: 'Center Text', type: 'textarea', rows: 3 },
-          { key: 'footer.lettering_text', label: 'Giant Lettering', type: 'text' },
-          { key: 'footer.show_social', label: 'Show Social Icons', type: 'checkbox' },
-          { key: 'footer.social_instagram', label: 'Instagram URL', type: 'text' },
-          { key: 'footer.social_twitter', label: 'Twitter URL', type: 'text' },
-          { key: 'footer.social_youtube', label: 'YouTube URL', type: 'text' },
-        ],
-      };
+      const controls = sectionControls[currentSection] || [];
+      document.getElementById('section-description')!.textContent = sectionDescriptions[currentSection];
 
-      const sectionControls = controls[currentSection] || [];
-      const descriptions: any = {
-        colors: 'Global color palette',
-        typography: 'Fonts and text sizes',
-        layout: 'Spacing and dimensions',
-        branding: 'Logo and site identity',
-        footer: 'Footer content and links',
-      };
-
-      document.getElementById('section-description')!.textContent = descriptions[currentSection];
-
-      container.innerHTML = sectionControls.map((control: any) => {
-        const value = themeData[control.key]?.value || '';
+      container.innerHTML = controls.map((control: any) => {
+        const value = themeData[control.key]?.value ?? '';
         
         if (control.type === 'color') {
           return `
-            <div class="control-group">
-              <label>${control.label}</label>
-              <div class="color-input-wrapper">
+            <div class="te-control-group">
+              <label class="te-control-label">${control.label}</label>
+              <div class="te-color-row">
                 <input type="color" 
+                       class="te-color-input" 
                        data-key="${control.key}" 
-                       value="${value}" 
-                       class="color-picker" />
+                       value="${value || '#ffffff'}" />
                 <input type="text" 
+                       class="te-text-input" 
                        data-key="${control.key}" 
-                       value="${value}" 
-                       class="color-text" />
+                       value="${value || '#ffffff'}" />
               </div>
             </div>
           `;
         } else if (control.type === 'select') {
           return `
-            <div class="control-group">
-              <label>${control.label}</label>
-              <select data-key="${control.key}">
+            <div class="te-control-group">
+              <label class="te-control-label">${control.label}</label>
+              <select class="te-select-input" data-key="${control.key}">
                 ${control.options.map((opt: string) => `
                   <option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>
                 `).join('')}
@@ -302,32 +659,34 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           `;
         } else if (control.type === 'checkbox') {
           return `
-            <div class="control-group">
-              <label>${control.label}</label>
-              <input type="checkbox" 
-                     data-key="${control.key}" 
-                     ${value ? 'checked' : ''} 
-                     class="mt-2" />
+            <div class="te-control-group">
+              <label class="te-control-label">${control.label}</label>
+              <label class="te-checkbox-row">
+                <input type="checkbox" 
+                       data-key="${control.key}" 
+                       ${value ? 'checked' : ''} />
+                <span>Enabled</span>
+              </label>
             </div>
           `;
         } else if (control.type === 'textarea') {
           return `
-            <div class="control-group">
-              <label>${control.label}</label>
-              <textarea data-key="${control.key}" 
-                        rows="${control.rows || 3}"
-                        class="w-full">${value}</textarea>
+            <div class="te-control-group">
+              <label class="te-control-label">${control.label}</label>
+              <textarea class="te-textarea-input" 
+                        data-key="${control.key}" 
+                        rows="${control.rows || 3}">${value}</textarea>
             </div>
           `;
         } else {
           return `
-            <div class="control-group">
-              <label>${control.label}</label>
+            <div class="te-control-group">
+              <label class="te-control-label">${control.label}</label>
               <input type="${control.type}" 
+                     class="te-text-input" 
                      data-key="${control.key}" 
                      value="${value}"
-                     placeholder="${control.placeholder || ''}"
-                     class="w-full" />
+                     placeholder="${control.placeholder || ''}" />
             </div>
           `;
         }
@@ -335,23 +694,23 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
       // Adiciona event listeners
       container.querySelectorAll('input, select, textarea').forEach((input: any) => {
-        input.addEventListener('change', (e: any) => {
+        input.addEventListener('input', (e: any) => {
           const key = e.target.dataset.key;
           const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
           
           if (!themeData[key]) {
-            themeData[key] = {};
+            themeData[key] = { value: '', label: key };
           }
           themeData[key].value = value;
           hasChanges = true;
           
-          // Atualiza preview se for cor
-          if (e.target.classList.contains('color-picker')) {
-            const textInput = input.parentElement?.querySelector('.color-text');
+          // Sincroniza color picker com text input
+          if (e.target.type === 'color') {
+            const textInput = input.parentElement?.querySelector('.te-text-input');
             if (textInput) textInput.value = value;
           }
-          if (e.target.classList.contains('color-text')) {
-            const colorInput = input.parentElement?.querySelector('.color-picker');
+          if (e.target.type === 'text' && input.previousElementSibling?.type === 'color') {
+            const colorInput = input.parentElement?.querySelector('.te-color-input');
             if (colorInput) colorInput.value = value;
           }
         });
@@ -369,31 +728,29 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       btn.textContent = 'Saving...';
       
       try {
-        const updates: any = {};
-        Object.entries(themeData).forEach(([key, value]: any) => {
-          updates[key] = value;
-        });
+        const updates = Object.entries(themeData).map(([key, value]: any) => ({
+          key,
+          value,
+          category: key.split('.')[0],
+          updated_at: new Date().toISOString(),
+        }));
         
         const { error } = await supabase
           .from('theme_settings')
-          .upsert(
-            Object.entries(updates).map(([key, value]: any) => ({
-              key,
-              value,
-              category: key.split('.')[0],
-              updated_at: new Date().toISOString(),
-            })),
-            { onConflict: 'key' }
-          );
+          .upsert(updates, { onConflict: 'key' });
         
         if (error) throw error;
         
         hasChanges = false;
-        btn.textContent = 'Saved!';
-        setTimeout(() => {
-          btn.textContent = 'Save Changes';
-          btn.classList.remove('saving');
-        }, 2000);
+        btn.textContent = 'Save Changes';
+        btn.classList.remove('saving');
+        
+        // Mostra toast
+        const toast = document.getElementById('te-toast');
+        if (toast) {
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 2500);
+        }
         
         // Atualiza preview
         const iframe = document.getElementById('preview-frame') as HTMLIFrameElement;
@@ -403,19 +760,35 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         
       } catch (err: any) {
         console.error('Error saving:', err);
-        alert('Error saving: ' + err.message);
-        btn.classList.remove('saving');
         btn.textContent = 'Save Changes';
+        btn.classList.remove('saving');
+        alert('Error saving: ' + err.message);
       }
     });
 
     // Seleção de seções
-    document.querySelectorAll('.section-item').forEach(item => {
+    document.querySelectorAll('.te-section-item').forEach(item => {
       item.addEventListener('click', () => {
-        document.querySelectorAll('.section-item').forEach(i => i.classList.remove('active'));
+        document.querySelectorAll('.te-section-item').forEach(i => i.classList.remove('active'));
         item.classList.add('active');
         currentSection = item.dataset.section!;
         renderControls();
+      });
+    });
+
+    // Troca de dispositivo no preview
+    document.querySelectorAll('.te-device-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.te-device-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const iframe = document.getElementById('preview-frame') as HTMLIFrameElement;
+        if (iframe) {
+          iframe.className = 'te-preview-frame';
+          const device = btn.dataset.device;
+          if (device === 'tablet') iframe.classList.add('tablet');
+          if (device === 'mobile') iframe.classList.add('mobile');
+        }
       });
     });
 
