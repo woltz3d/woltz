@@ -5,7 +5,7 @@ export const onRequestGet = async (context: any) => {
   try {
     const supabase = createClient(context.env.SUPABASE_URL, context.env.SUPABASE_ANON_KEY);
 
-    // 1. Busca Coleções Published (para Hero e Sidebar)
+    // 1. Busca TODAS as Coleções Published ordenadas por data
     const { data: allCols, error: colError } = await supabase
       .from('collections')
       .select('*')
@@ -40,30 +40,39 @@ export const onRequestGet = async (context: any) => {
     };
 
     if (allCols && allCols.length > 0) {
+      // Calcula dados da coleção destaque (a mais recente)
       featuredCollection = await calculateCollectionData(allCols[0]);
+      
+      // Calcula dados das coleções laterais (próximas 2)
       for (let i = 1; i < Math.min(allCols.length, 3); i++) {
         sidebarCollections.push(await calculateCollectionData(allCols[i]));
       }
     }
 
-    // 2. Busca Produtos Recentes (para Grid)
-    const { data: recentProds, error: prodError } = await supabase
-      .from('products')
-      .select('*, collections(name)')
-      .eq('status', 'published')
-      .not('thumbnail_url', 'is', null)
-      .order('created_at', { ascending: false })
-      .limit(9);
+    // 2. Busca Produtos APENAS da Coleção Mais Recente (NEW COLLECTION)
+    // Se não houver coleção destaque, retorna array vazio
+    let gridProducts: any[] = [];
+    
+    if (featuredCollection) {
+      const { data: recentProds, error: prodError } = await supabase
+        .from('products')
+        .select('*, collections(name)')
+        .eq('collection_id', featuredCollection.id) // FILTRO CRUCIAL AQUI
+        .eq('status', 'published')
+        .not('thumbnail_url', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(9);
 
-    if (prodError) throw prodError;
-
-    // Remove duplicatas por nome
-    const seenNames = new Set();
-    const gridProducts = (recentProds || []).filter((p: any) => {
-      if (seenNames.has(p.name)) return false;
-      seenNames.add(p.name);
-      return true;
-    }).slice(0, 9);
+      if (!prodError && recentProds) {
+        // Remove duplicatas por nome (caso existam variantes)
+        const seenNames = new Set();
+        gridProducts = recentProds.filter((p: any) => {
+          if (seenNames.has(p.name)) return false;
+          seenNames.add(p.name);
+          return true;
+        });
+      }
+    }
 
     return new Response(JSON.stringify({
       success: true,
