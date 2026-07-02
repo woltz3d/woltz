@@ -11,8 +11,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
   <style is:global>
     select, option { background-color: #111113 !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; }
     select:focus { border-color: rgba(255,255,255,0.3) !important; outline: none !important; }
-    .file-upload-zone { border: 2px dashed rgba(255,255,255,0.2); transition: all 0.3s ease; }
-    .file-upload-zone:hover, .file-upload-zone.dragover { border-color: white; background-color: rgba(255,255,255,0.05); }
+    .file-upload-zone { border: 2px dashed rgba(255,255,255,0.2); transition: all 0.3s ease; cursor: pointer; }
+    .file-upload-zone:hover { border-color: white; background-color: rgba(255,255,255,0.05); }
     .upload-progress { height: 3px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
   </style>
 
@@ -39,7 +39,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     </div>
   </div>
 
-  <!-- DRAWER (Mesmo código anterior de criação/edição) -->
+  <!-- DRAWER DE CRIAÇÃO/EDIÇÃO (Mantido igual ao anterior) -->
   <div id="collectionDrawer" class="fixed inset-0 z-50 translate-x-full transition-transform duration-300">
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="window.closeDrawer()"></div>
     <div class="absolute right-0 top-0 h-full w-[600px] bg-[#111113] border-l border-white/5 overflow-y-auto">
@@ -76,27 +76,25 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           <h3 class="text-sm font-medium text-white border-b border-white/10 pb-2">Media</h3>
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Featured Image</label>
-            <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="featuredDropZone">
+            <div class="file-upload-zone rounded-lg p-6 text-center relative h-32 flex flex-col items-center justify-center" id="featuredDropZone">
               <input type="file" id="featuredFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <div id="featuredPreview" class="hidden mb-3"><img src="" alt="Preview" class="max-h-32 mx-auto rounded-lg object-cover"></div>
-              <div id="featuredPlaceholder">
-                <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                <p class="text-sm text-white/60">Click or drag image here</p>
+              <div id="featuredPreview" class="hidden absolute inset-0 p-2"><img src="" class="w-full h-full object-cover rounded"></div>
+              <div id="featuredPlaceholder" class="text-center pointer-events-none">
+                <svg class="w-8 h-8 text-white/40 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <p class="text-xs text-white/50">Click to upload featured image</p>
               </div>
-              <div id="featuredProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading...</p></div>
             </div>
             <input type="hidden" name="image_url" id="featuredUrlInput">
           </div>
           <div>
             <label class="block text-xs text-white/60 uppercase tracking-wider mb-2">Banner Image</label>
-            <div class="file-upload-zone rounded-lg p-6 text-center cursor-pointer relative" id="bannerDropZone">
+            <div class="file-upload-zone rounded-lg p-6 text-center relative h-32 flex flex-col items-center justify-center" id="bannerDropZone">
               <input type="file" id="bannerFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <div id="bannerPreview" class="hidden mb-3"><img src="" alt="Preview" class="max-h-32 mx-auto rounded-lg object-cover w-full"></div>
-              <div id="bannerPlaceholder">
-                <svg class="w-10 h-10 text-white/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                <p class="text-sm text-white/60">Click or drag banner here</p>
+              <div id="bannerPreview" class="hidden absolute inset-0 p-2"><img src="" class="w-full h-full object-cover rounded"></div>
+              <div id="bannerPlaceholder" class="text-center pointer-events-none">
+                <svg class="w-8 h-8 text-white/40 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <p class="text-xs text-white/50">Click to upload banner image</p>
               </div>
-              <div id="bannerProgress" class="hidden mt-3"><div class="upload-progress rounded-full" style="width: 0%"></div><p class="text-xs text-white/40 mt-1">Uploading...</p></div>
             </div>
             <input type="hidden" name="banner_url" id="bannerUrlInput">
           </div>
@@ -151,8 +149,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       categorySelect.innerHTML = '<option value="">Select a category</option>';
       categoriesList.forEach(cat => {
         const opt = document.createElement('option');
-        opt.value = cat;
-        opt.innerText = cat;
+        opt.value = cat; opt.innerText = cat;
         categorySelect.appendChild(opt);
       });
       if(categoriesList.includes(currentVal)) categorySelect.value = currentVal;
@@ -160,18 +157,14 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
 
     newCatToggle.addEventListener('click', () => {
-      newCatWrapper.classList.remove('hidden');
-      newCatToggle.classList.add('hidden');
-      categorySelect.classList.add('hidden');
-      deleteCatBtn.classList.add('hidden');
+      newCatWrapper.classList.remove('hidden'); newCatToggle.classList.add('hidden');
+      categorySelect.classList.add('hidden'); deleteCatBtn.classList.add('hidden');
       newCatInput.focus();
     });
 
     document.getElementById('cancelNewCategoryBtn')?.addEventListener('click', () => {
-      newCatWrapper.classList.add('hidden');
-      newCatToggle.classList.remove('hidden');
-      categorySelect.classList.remove('hidden');
-      newCatInput.value = '';
+      newCatWrapper.classList.add('hidden'); newCatToggle.classList.remove('hidden');
+      categorySelect.classList.remove('hidden'); newCatInput.value = '';
       renderCategoryOptions();
     });
 
@@ -184,10 +177,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         categorySelect.value = val;
         deleteCatBtn.classList.remove('hidden');
       }
-      newCatWrapper.classList.add('hidden');
-      newCatToggle.classList.remove('hidden');
-      categorySelect.classList.remove('hidden');
-      newCatInput.value = '';
+      newCatWrapper.classList.add('hidden'); newCatToggle.classList.remove('hidden');
+      categorySelect.classList.remove('hidden'); newCatInput.value = '';
     });
 
     categorySelect.addEventListener('change', () => deleteCatBtn.classList.toggle('hidden', !categorySelect.value));
@@ -201,21 +192,20 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       renderCategoryOptions();
     });
 
-    // --- UPLOAD DE IMAGENS ---
+    // --- UPLOADS ---
     async function uploadToSupabase(file, bucket = 'woltz-images') {
       const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
-      const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
+      const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600' });
       if (error) throw error;
-      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fileName);
-      return urlData.publicUrl;
+      const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
+      return data.publicUrl;
     }
 
-    function setupUpload(inputId, dropZoneId, previewId, placeholderId, progressId, urlInputId, setUploadingFlag) {
+    function setupUpload(inputId, dropZoneId, previewId, placeholderId, urlInputId, setUploadingFlag) {
       const input = document.getElementById(inputId);
       const dropZone = document.getElementById(dropZoneId);
       const preview = document.getElementById(previewId);
       const placeholder = document.getElementById(placeholderId);
-      const progress = document.getElementById(progressId);
       const urlInput = document.getElementById(urlInputId);
 
       input?.addEventListener('change', async (e) => {
@@ -232,30 +222,20 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 
         try {
           setUploadingFlag(true);
-          progress.classList.remove('hidden');
-          progress.querySelector('.upload-progress').style.width = '30%';
-          
           const url = await uploadToSupabase(file);
-          progress.querySelector('.upload-progress').style.width = '100%';
-          setTimeout(() => { progress.classList.add('hidden'); progress.querySelector('.upload-progress').style.width = '0%'; }, 500);
-          
           urlInput.value = url;
-        } catch(err) {
-          alert('Upload failed: ' + err.message);
-          progress.classList.add('hidden');
-        } finally { setUploadingFlag(false); }
+        } catch(err) { alert('Upload failed: ' + err.message); }
+        finally { setUploadingFlag(false); }
       });
-
-      ['dragenter', 'dragover'].forEach(evt => dropZone?.addEventListener(evt, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }));
-      ['dragleave', 'drop'].forEach(evt => dropZone?.addEventListener(evt, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); }));
     }
 
-    setupUpload('featuredFileInput', 'featuredDropZone', 'featuredPreview', 'featuredPlaceholder', 'featuredProgress', 'featuredUrlInput', (v) => uploadingFeatured = v);
-    setupUpload('bannerFileInput', 'bannerDropZone', 'bannerPreview', 'bannerPlaceholder', 'bannerProgress', 'bannerUrlInput', (v) => uploadingBanner = v);
+    setupUpload('featuredFileInput', 'featuredDropZone', 'featuredPreview', 'featuredPlaceholder', 'featuredUrlInput', (v) => uploadingFeatured = v);
+    setupUpload('bannerFileInput', 'bannerDropZone', 'bannerPreview', 'bannerPlaceholder', 'bannerUrlInput', (v) => uploadingBanner = v);
 
-    // --- CRUD COLLECTIONS COM CÁLCULOS ---
+    // --- CRUD COLLECTIONS COM CÁLCULOS EM TEMPO REAL ---
     async function loadCollections() {
       try {
+        // Busca coleções básicas
         const res = await fetch('/api/collections');
         if(!res.ok) throw new Error('Failed');
         const result = await res.json();
@@ -266,6 +246,28 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           return;
         }
 
+        // Para cada coleção, busca produtos para calcular totais
+        const enrichedCollections = await Promise.all(collections.map(async (col) => {
+          const { data: products } = await supabase
+            .from('products')
+            .select('price_brl, price_usd, net_brl')
+            .eq('collection_id', col.id)
+            .eq('status', 'published');
+
+          const count = products?.length || 0;
+          const totalBrl = products?.reduce((sum, p) => sum + (parseFloat(p.price_brl) || 0), 0) || 0;
+          const totalUsd = products?.reduce((sum, p) => sum + (parseFloat(p.price_usd) || 0), 0) || 0;
+          const estNet = products?.reduce((sum, p) => sum + (parseFloat(p.net_brl) || 0), 0) || 0;
+
+          return {
+            ...col,
+            product_count: count,
+            pack_price_brl: (totalBrl * 0.85).toFixed(2),
+            pack_price_usd: (totalUsd * 0.85).toFixed(2),
+            estimated_net_brl: estNet.toFixed(2)
+          };
+        }));
+
         let html = `<table class="w-full"><thead class="bg-white/5"><tr>
           <th class="text-left text-xs text-white/40 uppercase py-4 px-6">Collection</th>
           <th class="text-center text-xs text-white/40 uppercase py-4 px-6">Products</th>
@@ -275,7 +277,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           <th class="text-right text-xs text-white/40 uppercase py-4 px-6">Actions</th>
         </tr></thead><tbody class="divide-y divide-white/5">`;
 
-        collections.forEach(c => {
+        enrichedCollections.forEach(c => {
           const statusClass = c.status === 'published' ? 'text-green-400' : 'text-yellow-400';
           const imgUrl = c.image_url 
             ? `<img src="${c.image_url}?width=100&quality=80" class="w-10 h-10 rounded object-cover bg-white/5">`
@@ -293,7 +295,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
             <td class="py-4 px-6 text-sm text-green-400 font-mono">R$ ${Number(c.estimated_net_brl || 0).toFixed(2).replace('.', ',')}</td>
             <td class="py-4 px-6 text-sm capitalize ${statusClass}">${c.status}</td>
             <td class="py-4 px-6 text-right space-x-1">
-              <button onclick="window.viewProducts('${c.id}', '${c.name}')" class="p-2 text-blue-400 hover:text-blue-300 inline-block" title="View Products in this Collection">
+              <button onclick="window.viewProducts('${c.id}', '${c.name}')" class="p-2 text-blue-400 hover:text-blue-300 inline-block" title="View Products">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
               </button>
               <button onclick='window.editCollection(${safeJson})' class="p-2 text-white/40 hover:text-blue-400 inline-block" title="Edit"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
@@ -316,21 +318,15 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       document.getElementById('submitBtn').innerText = 'Create Collection';
       form.reset();
       document.getElementById('collectionId').value = '';
-      featuredPreview.classList.add('hidden');
-      featuredPlaceholder.classList.remove('hidden');
-      featuredUrlInput.value = '';
-      bannerPreview.classList.add('hidden');
-      bannerPlaceholder.classList.remove('hidden');
-      bannerUrlInput.value = '';
+      featuredPreview.classList.add('hidden'); featuredPlaceholder.classList.remove('hidden'); featuredUrlInput.value = '';
+      bannerPreview.classList.add('hidden'); bannerPlaceholder.classList.remove('hidden'); bannerUrlInput.value = '';
       deleteCatBtn.classList.add('hidden');
       drawer.classList.remove('translate-x-full');
     };
 
     window.closeDrawer = () => {
       drawer.classList.add('translate-x-full');
-      newCatWrapper.classList.add('hidden');
-      newCatToggle.classList.remove('hidden');
-      categorySelect.classList.remove('hidden');
+      newCatWrapper.classList.add('hidden'); newCatToggle.classList.remove('hidden'); categorySelect.classList.remove('hidden');
     };
 
     window.editCollection = (c) => {
@@ -339,32 +335,25 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       document.getElementById('submitBtn').innerText = 'Save Changes';
       
       document.getElementById('collectionId').value = c.id;
-      form.name.value = c.name;
-      form.slug.value = c.slug;
-      form.description.value = c.description || '';
-      form.category.value = c.category || '';
-      form.status.value = c.status;
+      form.name.value = c.name; form.slug.value = c.slug; form.description.value = c.description || '';
+      form.category.value = c.category || ''; form.status.value = c.status;
       
       if(c.image_url) {
         featuredUrlInput.value = c.image_url;
         featuredPreview.querySelector('img').src = c.image_url;
-        featuredPreview.classList.remove('hidden');
-        featuredPlaceholder.classList.add('hidden');
+        featuredPreview.classList.remove('hidden'); featuredPlaceholder.classList.add('hidden');
       } else {
         featuredUrlInput.value = '';
-        featuredPreview.classList.add('hidden');
-        featuredPlaceholder.classList.remove('hidden');
+        featuredPreview.classList.add('hidden'); featuredPlaceholder.classList.remove('hidden');
       }
       
       if(c.banner_url) {
         bannerUrlInput.value = c.banner_url;
         bannerPreview.querySelector('img').src = c.banner_url;
-        bannerPreview.classList.remove('hidden');
-        bannerPlaceholder.classList.add('hidden');
+        bannerPreview.classList.remove('hidden'); bannerPlaceholder.classList.add('hidden');
       } else {
         bannerUrlInput.value = '';
-        bannerPreview.classList.add('hidden');
-        bannerPlaceholder.classList.remove('hidden');
+        bannerPreview.classList.add('hidden'); bannerPlaceholder.classList.remove('hidden');
       }
       
       deleteCatBtn.classList.toggle('hidden', !c.category);
@@ -376,32 +365,24 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       try {
         const res = await fetch(`/api/collections?id=${id}`, { method: 'DELETE' });
         if(!res.ok) throw new Error('Delete failed');
-        alert('Deleted!');
-        loadCollections();
+        alert('Deleted!'); loadCollections();
       } catch(e) { alert('Error: ' + e.message); }
     };
 
-    // ATALHO: Ver produtos da coleção
     window.viewProducts = (collectionId, collectionName) => {
-      // Redireciona para página de produtos com filtro
       window.location.href = `/admin/products/?collection=${collectionId}&name=${encodeURIComponent(collectionName)}`;
     };
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if(uploadingFeatured || uploadingBanner) {
-        alert('Please wait for uploads to finish!');
-        return;
-      }
+      if(uploadingFeatured || uploadingBanner) { alert('Please wait for uploads!'); return; }
       
       const originalText = submitBtn.innerText;
-      submitBtn.innerText = 'Saving...';
-      submitBtn.disabled = true;
+      submitBtn.innerText = 'Saving...'; submitBtn.disabled = true;
 
       const fd = new FormData(form);
       const data = {};
       fd.forEach((v,k) => data[k] = v);
-      
       Object.keys(data).forEach(key => { if(data[key] === "") data[key] = null; });
 
       const id = document.getElementById('collectionId').value;
@@ -420,8 +401,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         }
       } catch(err) { alert('Connection error'); }
       finally {
-        submitBtn.innerText = originalText;
-        submitBtn.disabled = false;
+        submitBtn.innerText = originalText; submitBtn.disabled = false;
       }
     });
 
@@ -430,9 +410,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     
     document.getElementById('searchInput')?.addEventListener('input', (e) => {
       const term = e.target.value.toLowerCase();
-      document.querySelectorAll('tbody tr').forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
-      });
+      document.querySelectorAll('tbody tr').forEach(row => row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none');
     });
   </script>
 </AdminLayout>
