@@ -557,79 +557,50 @@ import '../styles/global.css';
                   <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
                 </div>
                 <div class="mt-auto">
-                  <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5Entendi perfeitamente o problema, Gloria. O erro no console `Could not establish connection` e o fato de nada mudar indicam duas coisas:
+                  <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5" style="color: var(--collection-product-name);">${p.name}</h4>
+                  <p class="text-[9px] tracking-wider uppercase mb-2 font-vcr" style="color: var(--collection-product-desc);">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                  <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
+                  <div class="flex items-center justify-between">
+                    <button class="add-to-cart-btn w-8 h-8 rounded-full border flex items-center justify-center transition-all backdrop-blur-sm group-hover:border-white mr-2" 
+                      style="border-color: rgba(255,255,255,0.3); color: var(--collection-cart-icon);"
+                      onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
+                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </button>
+                    <p class="text-xs font-light font-vcr" style="color: var(--collection-price);">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          gridHtml += `</div>`;
+        }
+        gridContainer.innerHTML = gridHtml;
 
-1.  **O Preview (iframe) está bloqueado:** Por segurança, navegadores modernos bloqueiam scripts dentro de iframes que tentam acessar o banco de dados ou modificar estilos de fora se não estiverem configurados corretamente.
-2.  **O Site Real não atualiza:** O Astro é "estático". Quando você muda algo no banco, o site não sabe disso até que a página seja recarregada *do servidor*. Como estamos usando um iframe, ele fica com uma versão "velha" em cache.
+        window.addProductToCart = function(id, name, price, thumbnail) { Cart.add({ id, name, price_usd: price, thumbnail_url: thumbnail }); };
+        window.addPackFromCard = function(id, name, price, thumbnail) { Cart.add({ id: 'pack-' + id, name: name + ' (Pack)', price_usd: price, thumbnail_url: thumbnail, isPack: true }); };
 
-Vou resolver isso agora com uma abordagem **100% funcional**:
-*   **Preview Ao Vivo:** Em vez de tentar injetar CSS via JS (que falha no iframe), vamos fazer o preview recarregar automaticamente a cada alteração. É instantâneo e garantido.
-*   **Site Real:** Garantir que o Layout busque os dados frescos sempre.
-*   **Cores:** Substituir TODAS as cores hardcoded do `index.astro` pelas variáveis CSS.
+        document.getElementById('cart-btn')?.addEventListener('click', () => Cart.openPreview());
+        document.getElementById('close-cart-preview')?.addEventListener('click', () => Cart.closePreview());
+        document.getElementById('cart-preview-overlay')?.addEventListener('click', () => Cart.closePreview());
+        document.getElementById('view-full-cart')?.addEventListener('click', () => { Cart.closePreview(); setTimeout(() => Cart.openModal(), 300); });
+        document.getElementById('close-cart-modal')?.addEventListener('click', () => Cart.closeModal());
+        document.getElementById('cart-modal-overlay')?.addEventListener('click', () => Cart.closeModal());
+        document.getElementById('modal-apply-coupon')?.addEventListener('click', () => {
+          const input = document.getElementById('modal-coupon-input'); const msgEl = document.getElementById('modal-coupon-message');
+          if (!input || !msgEl) return;
+          const result = Cart.applyCoupon(input.value);
+          msgEl.textContent = result.message; msgEl.classList.remove('hidden');
+          msgEl.style.color = result.success ? 'var(--color-success)' : 'var(--color-error)';
+          if (result.success) { input.value = ''; Cart.updateUI(); }
+        });
+        document.getElementById('modal-checkout-btn')?.addEventListener('click', () => { alert('Stripe checkout integration coming next!'); });
+        document.getElementById('filters-btn')?.addEventListener('click', () => { alert('Filters coming soon!'); });
 
-Aqui estão os códigos completos e corrigidos.
+      } catch (err) {
+        console.error('Homepage Load Error:', err);
+        document.getElementById('dynamic-grid').innerHTML = '<p class="text-red-400">Error loading content. Please refresh.</p>';
+      }
+    });
+  </script>
 
----
-
-### 1️⃣ SQL - GARANTIR QUE AS CONFIGURAÇÕES EXISTEM
-Execute este SQL no Supabase para garantir que a tabela e as políticas estão perfeitas para leitura/escrita pública (necessário para o editor funcionar).
-
-```sql
--- Limpa tudo para começar do zero limpo
-DROP TABLE IF EXISTS theme_settings CASCADE;
-
-CREATE TABLE theme_settings (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  key TEXT UNIQUE NOT NULL,
-  value JSONB NOT NULL,
-  category TEXT NOT NULL,
-  label TEXT,
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX idx_theme_settings_key ON theme_settings(key);
-CREATE INDEX idx_theme_settings_category ON theme_settings(category);
-
-ALTER TABLE theme_settings ENABLE ROW LEVEL SECURITY;
-
--- Políticas abertas para o Theme Editor funcionar
-CREATE POLICY "theme_settings_select" ON theme_settings FOR SELECT TO anon, authenticated USING (true);
-CREATE POLICY "theme_settings_insert" ON theme_settings FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "theme_settings_update" ON theme_settings FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "theme_settings_delete" ON theme_settings FOR DELETE TO anon, authenticated USING (true);
-
--- Insere os valores padrão (WOLTZ Original)
-INSERT INTO theme_settings (key, value, category, label) VALUES
-('header.bg_color', '{"value": "transparent", "label": "Header Background"}'::jsonb, 'header', 'Header Background'),
-('header.text_color', '{"value": "#ffffff", "label": "Header Text"}'::jsonb, 'header', 'Header Text Color'),
-('hero.title_color', '{"value": "#ffffff", "label": "Hero Title"}'::jsonb, 'hero', 'Hero Title Color'),
-('hero.subtitle_color', '{"value": "rgba(255,255,255,0.4)", "label": "Hero Subtitle"}'::jsonb, 'hero', 'Hero Subtitle Color'),
-('hero.label_color', '{"value": "rgba(255,255,255,0.4)", "label": "Hero Labels"}'::jsonb, 'hero', 'Hero Labels Color'),
-('hero.price_color', '{"value": "#ffffff", "label": "Hero Price"}'::jsonb, 'hero', 'Hero Price Color'),
-('collection.bg_color', '{"value": "#6b7c93", "label": "Collection Background"}'::jsonb, 'collection', 'New Collection BG'),
-('collection.title_color', '{"value": "#ffffff", "label": "Collection Title"}'::jsonb, 'collection', 'Collection Title Color'),
-('collection.card_bg', '{"value": "#5f7085", "label": "Card Background"}'::jsonb, 'collection', 'Product Card BG'),
-('collection.product_name_color', '{"value": "#ffffff", "label": "Product Name"}'::jsonb, 'collection', 'Product Name Color'),
-('collection.product_desc_color', '{"value": "rgba(255,255,255,0.6)", "label": "Product Desc"}'::jsonb, 'collection', 'Product Description Color'),
-('collection.price_color', '{"value": "#ffffff", "label": "Product Price"}'::jsonb, 'collection', 'Product Price Color'),
-('collection.cart_icon_color', '{"value": "rgba(255,255,255,0.5)", "label": "Cart Icon"}'::jsonb, 'collection', 'Add to Cart Icon'),
-('collection.filters_btn_bg', '{"value": "transparent", "label": "Filters Button BG"}'::jsonb, 'collection', 'Filters Button BG'),
-('collection.filters_btn_border', '{"value": "rgba(255,255,255,0.3)", "label": "Filters Button Border"}'::jsonb, 'collection', 'Filters Button Border'),
-('collection.filters_btn_text', '{"value": "#ffffff", "label": "Filters Button Text"}'::jsonb, 'collection', 'Filters Button Text'),
-('footer.bg_color', '{"value": "#6b7c93", "label": "Footer Background"}'::jsonb, 'footer', 'Footer Background'),
-('footer.text_color', '{"value": "rgba(255,255,255,0.8)", "label": "Footer Text"}'::jsonb, 'footer', 'Footer Text Color'),
-('footer.muted_text', '{"value": "rgba(255,255,255,0.4)", "label": "Footer Muted"}'::jsonb, 'footer', 'Footer Muted Text'),
-('footer.lettering_color', '{"value": "rgba(255,255,255,0.07)", "label": "Footer Lettering"}'::jsonb, 'footer', 'Giant Lettering Color'),
-('footer.border_color', '{"value": "rgba(255,255,255,0.2)", "label": "Footer Border"}'::jsonb, 'footer', 'Footer Border Color'),
-('footer.social_icon_bg', '{"value": "transparent", "label": "Social Icon BG"}'::jsonb, 'footer', 'Social Icons BG'),
-('footer.social_icon_border', '{"value": "rgba(255,255,255,0.3)", "label": "Social Icon Border"}'::jsonb, 'footer', 'Social Icons Border'),
-('footer.social_icon_color', '{"value": "#ffffff", "label": "Social Icon Color"}'::jsonb, 'footer', 'Social Icons Color'),
-('footer.newsletter_input_bg', '{"value": "transparent", "label": "Newsletter Input BG"}'::jsonb, 'footer', 'Newsletter Input BG'),
-('footer.newsletter_input_border', '{"value": "rgba(255,255,255,0.4)", "label": "Newsletter Input Border"}'::jsonb, 'footer', 'Newsletter Input Border'),
-('global.cursor_color', '{"value": "#ffffff", "label": "Cursor Color"}'::jsonb, 'global', 'Custom Cursor Color'),
-('global.toast_bg', '{"value": "rgba(0,0,0,0.6)", "label": "Toast Background"}'::jsonb, 'global', 'Toast Notification BG'),
-('global.toast_text', '{"value": "#ffffff", "label": "Toast Text"}'::jsonb, 'global', 'Toast Notification Text'),
-('typography.font_heading', '{"value": "Anton", "label": "Heading Font"}'::jsonb, 'typography', 'Heading Font'),
-('typography.font_body', '{"value": "Inter, sans-serif", "label": "Body Font"}'::jsonb, 'typography', 'Body Font'),
-('typography.font_mono', '{"value": "VCR OSD Mono, monospace", "label": "Monospace Font"}'::jsonb, 'typography', 'Monospace Font')
-ON CONFLICT (key) DO NOTHING;
+</Layout>
