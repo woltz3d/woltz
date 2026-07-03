@@ -575,7 +575,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     const configEl = document.getElementById('app-config');
     const supabase = createClient(configEl.dataset.supabaseUrl, configEl.dataset.supabaseKey);
 
-    // Configurações por seção do site
     const sectionControls = {
       header: [
         { key: 'header.bg_color', label: 'Background Color', type: 'color' },
@@ -847,7 +846,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       btn.classList.add('saving');
       
       try {
-        // Deleta todas as configurações atuais
         const { error } = await supabase
           .from('theme_settings')
           .delete()
@@ -857,7 +855,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         
         showToast('Reset successful - Reloading with defaults...');
         
-        // Recarrega para aplicar os valores padrão do SQL INSERT
         setTimeout(() => {
           window.location.reload();
         }, 1500);
@@ -870,7 +867,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Sidebar items
       document.querySelectorAll('.te-section-item').forEach(item => {
         item.addEventListener('click', function(e) {
           e.preventDefault();
@@ -887,33 +883,28 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         });
       });
 
-      // Open editor button
       document.getElementById('open-editor-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         const panel = document.getElementById('editor-panel');
         if (panel) panel.classList.add('open');
       });
 
-      // Close panel button
       document.getElementById('close-panel-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         const panel = document.getElementById('editor-panel');
         if (panel) panel.classList.remove('open');
       });
 
-      // Save button
       document.getElementById('save-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         saveChanges();
       });
 
-      // Reset button
       document.getElementById('reset-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         resetToDefaults();
       });
 
-      // Device buttons
       document.querySelectorAll('.te-device-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -930,12 +921,10 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         });
       });
 
-      // Iframe load
       document.getElementById('preview-frame')?.addEventListener('load', () => {
         setTimeout(updatePreviewCSS, 500);
       });
 
-      // Load initial settings
       loadThemeSettings();
     });
   </script>
