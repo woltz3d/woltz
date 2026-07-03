@@ -1,68 +1,89 @@
 ---
 import { supabase } from '../lib/supabase';
 
-// Busca configurações do tema
+// 1. BUSCA AS CONFIGURAÇÕES DO BANCO DE DADOS
 let themeSettings: any = {};
 try {
   const { data, error } = await supabase
     .from('theme_settings')
-    .select('*')
-    .order('updated_at', { ascending: false });
+    .select('*');
   
-  if (error) throw error;
-  
-  const latestSettings = new Map();
-  data?.forEach((row: any) => {
-    if (!latestSettings.has(row.key)) {
-      latestSettings.set(row.key, row.value);
-    }
-  });
-  
-  themeSettings = Object.fromEntries(latestSettings);
+  if (!error && data) {
+    data.forEach((row: any) => {
+      // Extrai apenas o valor da string JSON "{ value: '#fff' }"
+      try {
+        const parsed = typeof row.value === 'string' ? JSON.parse(row.value) : row.value;
+        themeSettings[row.key] = parsed.value || parsed;
+      } catch (e) {
+        themeSettings[row.key] = row.value;
+      }
+    });
+  }
 } catch (e) {
-  console.error('Failed to load theme settings:', e);
+  console.error('Erro ao carregar tema:', e);
 }
 
-// Extrai valores com fallbacks
+// 2. DEFINE OS VALORES PADRÃO E EXTRAI VARIÁVEIS POR SEÇÃO
 const colors = {
-  primary: themeSettings['colors.primary']?.value || '#ffffff',
-  secondary: themeSettings['colors.secondary']?.value || '#6b7c93',
-  background: themeSettings['colors.background']?.value || '#121214',
-  backgroundAlt: themeSettings['colors.background_alt']?.value || '#111113',
-  text: themeSettings['colors.text']?.value || '#ffffff',
-  textMuted: themeSettings['colors.text_muted']?.value || 'rgba(255,255,255,0.4)',
-  accent: themeSettings['colors.accent']?.value || '#a8b5c6',
-  success: themeSettings['colors.success']?.value || '#22c55e',
-  error: themeSettings['colors.error']?.value || '#ef4444',
-  warning: themeSettings['colors.warning']?.value || '#f59e0b',
+  primary: themeSettings['colors.primary'] || '#ffffff',
+  secondary: themeSettings['colors.secondary'] || '#6b7c93',
+  background: themeSettings['colors.background'] || '#121214',
+  surface: themeSettings['colors.surface'] || '#1a1a1e',
+  text: themeSettings['colors.text'] || '#ffffff',
+  textMuted: themeSettings['colors.text_muted'] || 'rgba(255,255,255,0.4)',
+  accent: themeSettings['colors.accent'] || '#a8b5c6',
+  success: themeSettings['colors.success'] || '#22c55e',
+  error: themeSettings['colors.error'] || '#ef4444',
+};
+
+const header = {
+  bg: themeSettings['header.bg_color'] || 'transparent',
+  text: themeSettings['header.text_color'] || colors.text,
+};
+
+const hero = {
+  title: themeSettings['hero.title_color'] || colors.text,
+  subtitle: themeSettings['hero.subtitle_color'] || colors.textMuted,
+  label: themeSettings['hero.label_color'] || colors.textMuted,
+  price: themeSettings['hero.price_color'] || colors.text,
+};
+
+const collection = {
+  bg: themeSettings['collection.bg_color'] || '#6b7c93',
+  title: themeSettings['collection.title_color'] || colors.text,
+  cardBg: themeSettings['collection.card_bg'] || '#5f7085',
+  productName: themeSettings['collection.product_name_color'] || colors.text,
+  productDesc: themeSettings['collection.product_desc_color'] || colors.textMuted,
+  price: themeSettings['collection.price_color'] || colors.text,
+  cartIcon: themeSettings['collection.cart_icon_color'] || colors.textMuted,
+  filtersBtnBg: themeSettings['collection.filters_btn_bg'] || 'transparent',
+  filtersBtnBorder: themeSettings['collection.filters_btn_border'] || 'rgba(255,255,255,0.3)',
+  filtersBtnText: themeSettings['collection.filters_btn_text'] || colors.text,
+};
+
+const footer = {
+  bg: themeSettings['footer.bg_color'] || '#6b7c93',
+  text: themeSettings['footer.text_color'] || colors.text,
+  muted: themeSettings['footer.muted_text'] || colors.textMuted,
+  lettering: themeSettings['footer.lettering_color'] || 'rgba(255,255,255,0.07)',
+  border: themeSettings['footer.border_color'] || 'rgba(255,255,255,0.2)',
+  socialBg: themeSettings['footer.social_icon_bg'] || 'transparent',
+  socialBorder: themeSettings['footer.social_icon_border'] || 'rgba(255,255,255,0.3)',
+  socialColor: themeSettings['footer.social_icon_color'] || colors.text,
+  newsletterBg: themeSettings['footer.newsletter_input_bg'] || 'transparent',
+  newsletterBorder: themeSettings['footer.newsletter_input_border'] || 'rgba(255,255,255,0.4)',
+};
+
+const global = {
+  cursor: themeSettings['global.cursor_color'] || colors.text,
+  toastBg: themeSettings['global.toast_bg'] || 'rgba(0,0,0,0.8)',
+  toastText: themeSettings['global.toast_text'] || colors.text,
 };
 
 const typography = {
-  fontHeading: themeSettings['typography.font_heading']?.value || 'Anton',
-  fontBody: themeSettings['typography.font_body']?.value || 'Inter, sans-serif',
-  fontMono: themeSettings['typography.font_mono']?.value || 'VCR OSD Mono, monospace',
-  sizeH1: themeSettings['typography.size_h1']?.value || 'clamp(3rem, 8vw, 6rem)',
-  sizeH2: themeSettings['typography.size_h2']?.value || 'clamp(2rem, 5vw, 4rem)',
-  sizeBody: themeSettings['typography.size_body']?.value || '1rem',
-  weightHeading: themeSettings['typography.weight_heading']?.value || '400',
-  weightBody: themeSettings['typography.weight_body']?.value || '400',
-  trackingHeading: themeSettings['typography.tracking_heading']?.value || '-0.02em',
-  trackingBody: themeSettings['typography.tracking_body']?.value || '0.05em',
-};
-
-const layout = {
-  containerMaxWidth: themeSettings['layout.container_max_width']?.value || '1536px',
-  sectionPadding: themeSettings['layout.section_padding']?.value || '3rem',
-  gridGap: themeSettings['layout.grid_gap']?.value || '1.5rem',
-  borderRadius: themeSettings['layout.border_radius']?.value || '0px',
-  heroHeight: themeSettings['layout.hero_height']?.value || '100vh',
-};
-
-const branding = {
-  siteName: themeSettings['branding.site_name']?.value || 'WOLTZ',
-  logoUrl: themeSettings['branding.logo_url']?.value || '',
-  faviconUrl: themeSettings['branding.favicon_url']?.value || '',
-  tagline: themeSettings['branding.tagline']?.value || '',
+  heading: themeSettings['typography.font_heading'] || 'Anton',
+  body: themeSettings['typography.font_body'] || 'Inter, sans-serif',
+  mono: themeSettings['typography.font_mono'] || 'VCR OSD Mono, monospace',
 };
 
 interface Props {
@@ -76,174 +97,134 @@ const { title } = Astro.props;
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={branding.tagline || "WOLTZ - Premium Digital Fashion"} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
-    
-    {branding.faviconUrl && <link rel="icon" href={branding.faviconUrl} />}
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap" rel="stylesheet" />
     
-    <!-- CSS Variables do Tema -->
+    <!-- INJEÇÃO DAS VARIÁVEIS CSS NO :ROOT -->
     <style is:global>
       :root {
+        /* CORES GERAIS */
         --color-primary: {colors.primary};
         --color-secondary: {colors.secondary};
         --color-background: {colors.background};
-        --color-background-alt: {colors.backgroundAlt};
+        --color-surface: {colors.surface};
         --color-text: {colors.text};
         --color-text-muted: {colors.textMuted};
         --color-accent: {colors.accent};
-        --color-success: {colors.success};
-        --color-error: {colors.error};
-        --color-warning: {colors.warning};
         
-        --font-heading: {typography.fontHeading};
-        --font-body: {typography.fontBody};
-        --font-mono: {typography.fontMono};
-        --size-h1: {typography.sizeH1};
-        --size-h2: {typography.sizeH2};
-        --size-body: {typography.sizeBody};
-        --weight-heading: {typography.weightHeading};
-        --weight-body: {typography.weightBody};
-        --tracking-heading: {typography.trackingHeading};
-        --tracking-body: {typography.trackingBody};
+        /* HEADER */
+        --header-bg: {header.bg};
+        --header-text: {header.text};
         
-        --container-max-width: {layout.containerMaxWidth};
-        --section-padding: {layout.sectionPadding};
-        --grid-gap: {layout.gridGap};
-        --border-radius: {layout.borderRadius};
-        --hero-height: {layout.heroHeight};
+        /* HERO */
+        --hero-title: {hero.title};
+        --hero-subtitle: {hero.subtitle};
+        --hero-label: {hero.label};
+        --hero-price: {hero.price};
+        
+        /* COLLECTION */
+        --collection-bg: {collection.bg};
+        --collection-title: {collection.title};
+        --collection-card-bg: {collection.cardBg};
+        --collection-product-name: {collection.productName};
+        --collection-product-desc: {collection.productDesc};
+        --collection-price: {collection.price};
+        --collection-cart-icon: {collection.cartIcon};
+        --collection-filters-bg: {collection.filtersBtnBg};
+        --collection-filters-border: {collection.filtersBtnBorder};
+        --collection-filters-text: {collection.filtersBtnText};
+        
+        /* FOOTER */
+        --footer-bg: {footer.bg};
+        --footer-text: {footer.text};
+        --footer-muted: {footer.muted};
+        --footer-lettering: {footer.lettering};
+        --footer-border: {footer.border};
+        --footer-social-bg: {footer.socialBg};
+        --footer-social-border: {footer.socialBorder};
+        --footer-social-color: {footer.socialColor};
+        --footer-newsletter-bg: {footer.newsletterBg};
+        --footer-newsletter-border: {footer.newsletterBorder};
+        
+        /* GLOBAL UI */
+        --cursor-color: {global.cursor};
+        --toast-bg: {global.toastBg};
+        --toast-text: {global.toastText};
+        
+        /* TYPOGRAPHY */
+        --font-heading: '{typography.heading}';
+        --font-body: '{typography.body}';
+        --font-mono: '{typography.mono}';
       }
       
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      
-      html, body {
-        background-color: var(--color-background);
-        color: var(--color-text);
-      }
+      /* RESET BÁSICO E APLICAÇÃO DAS FONTES */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
       
       body {
         font-family: var(--font-body);
-        font-size: var(--size-body);
-        font-weight: var(--weight-body);
-        letter-spacing: var(--tracking-body);
-        line-height: 1.6;
+        background-color: var(--color-background);
+        color: var(--color-text);
         cursor: none !important;
       }
       
       h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-heading);
-        font-weight: var(--weight-heading);
-        letter-spacing: var(--tracking-heading);
-        line-height: 1.1;
         text-transform: uppercase;
         color: var(--color-text);
       }
       
-      h1 { font-size: var(--size-h1); }
-      h2 { font-size: var(--size-h2); }
-      
-      p { color: var(--color-text); }
-      
-      a {
-        color: var(--color-primary);
-        text-decoration: none;
-        transition: opacity 0.3s ease;
-      }
-      
-      a:hover { opacity: 0.7; }
+      a { color: inherit; text-decoration: none; }
       
       button {
         cursor: none;
         border: none;
         background: none;
         font-family: inherit;
-        color: var(--color-text);
+        color: inherit;
       }
       
-      img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-      }
+      img { max-width: 100%; height: auto; display: block; }
       
-      .container {
-        max-width: var(--container-max-width);
-        margin: 0 auto;
-        padding: 0 var(--section-padding);
-      }
-      
+      /* CURSOR CUSTOMIZADO */
       #custom-cursor {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 24px;
-        height: 24px;
-        border: 1.5px solid var(--color-primary);
+        top: 0; left: 0;
+        width: 24px; height: 24px;
+        border: 1.5px solid var(--cursor-color);
         border-radius: 50%;
         pointer-events: none;
-        z-index: 2147483647;
+        z-index: 99999;
         transform: translate(-50%, -50%);
-        transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
-        opacity: 1 !important;
-        visibility: visible !important;
-      }
-
-      #custom-cursor.active {
-        width: 50px;
-        height: 50px;
-        background-color: var(--color-primary);
-        opacity: 0.3;
+        transition: width 0.2s, height 0.2s, background-color 0.2s;
       }
       
+      #custom-cursor.active {
+        width: 50px; height: 50px;
+        background-color: var(--cursor-color);
+        opacity: 0.2;
+      }
+      
+      /* TOAST NOTIFICATION */
       #cart-toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
+        position: fixed; bottom: 2rem; left: 50%;
         transform: translateX(-50%) translateY(100px);
-        background: var(--color-background-alt);
+        background: var(--toast-bg);
         backdrop-filter: blur(10px);
-        border: 1px solid var(--color-text-muted);
-        padding: 1rem 2rem;
-        border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        z-index: 10000;
-        opacity: 0;
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 1rem 2rem; border-radius: 12px;
+        z-index: 10000; opacity: 0;
         transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        min-width: 300px;
-        max-width: 500px;
+        display: flex; align-items: center; gap: 0.75rem;
       }
-
-      #cart-toast.show {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
-
-      #cart-toast-message {
-        color: var(--color-text);
-        font-size: 0.875rem;
-        font-weight: 400;
-        letter-spacing: 0.02em;
-        flex: 1;
-      }
-
-      #cart-toast svg {
-        width: 20px;
-        height: 20px;
-        color: var(--color-success);
-        flex-shrink: 0;
-      }
+      
+      #cart-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+      #cart-toast-message { color: var(--toast-text); font-size: 0.875rem; }
+      #cart-toast svg { width: 20px; height: 20px; color: var(--color-success); }
       
       @media (hover: none) and (pointer: coarse) {
         body { cursor: auto !important; }
@@ -254,6 +235,7 @@ const { title } = Astro.props;
     <slot name="head" />
   </head>
   <body>
+    <!-- ELEMENTOS GLOBAIS FIXOS -->
     <div id="custom-cursor"></div>
     
     <div id="cart-toast">
@@ -265,19 +247,16 @@ const { title } = Astro.props;
     
     <slot />
     
+    <!-- SCRIPT DO CURSOR (GLOBAL) -->
     <script is:inline>
       document.addEventListener('DOMContentLoaded', () => {
         const cursor = document.getElementById('custom-cursor');
         if (!cursor) return;
 
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let cursorX = mouseX;
-        let cursorY = mouseY;
+        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
 
         document.addEventListener('mousemove', (e) => {
-          mouseX = e.clientX;
-          mouseY = e.clientY;
+          mouseX = e.clientX; mouseY = e.clientY;
         });
 
         function animate() {
@@ -289,38 +268,23 @@ const { title } = Astro.props;
         }
         animate();
 
-        const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input');
-        clickables.forEach(el => {
+        const addHover = (el) => {
           el.addEventListener('mouseenter', () => cursor.classList.add('active'));
           el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-        });
+        };
+
+        document.querySelectorAll('a, button, .clickable, input').forEach(addHover);
         
-        cursor.style.display = 'block';
-        
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
+        new MutationObserver((mutations) => {
+          mutations.forEach((m) => {
+            m.addedNodes.forEach((node) => {
               if (node.nodeType === 1) {
-                if (node.matches && node.matches('a, button, [onclick], .clickable, input')) {
-                  node.addEventListener('mouseenter', () => cursor.classList.add('active'));
-                  node.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-                }
-                if (node.querySelectorAll) {
-                  const newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input');
-                  newClickables.forEach(el => {
-                    el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-                    el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-                  });
-                }
+                if (node.matches && node.matches('a, button, .clickable, input')) addHover(node);
+                if (node.querySelectorAll) node.querySelectorAll('a, button, .clickable, input').forEach(addHover);
               }
             });
           });
-        });
-        
-        observer.observe(document.body, {
-          childList: true,
-          subtree: true
-        });
+        }).observe(document.body, { childList: true, subtree: true });
       });
     </script>
   </body>
