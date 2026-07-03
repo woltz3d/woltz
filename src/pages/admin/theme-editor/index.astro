@@ -420,65 +420,50 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
   <div class="theme-editor-wrapper">
     <div class="te-sidebar-left">
       <div class="te-sidebar-header">
-        <h2>Page Structure</h2>
-        <p>Select a section</p>
+        <h2>Site Sections</h2>
+        <p>Select section to edit</p>
       </div>
       
       <div class="te-sections-list" id="sections-list">
-        <div class="te-section-item active" data-section="colors">
-          <div class="te-section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="13.5" cy="6.5" r="2.5"/>
-              <circle cx="19" cy="13" r="2.5"/>
-              <circle cx="6" cy="12" r="2.5"/>
-              <circle cx="10" cy="18" r="2.5"/>
-            </svg>
-          </div>
-          <div class="te-section-info">
-            <h3>Colors</h3>
-            <p>Global palette</p>
-          </div>
-        </div>
-        
-        <div class="te-section-item" data-section="typography">
-          <div class="te-section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="4 7 4 4 20 4 20 7"/>
-              <line x1="12" y1="4" x2="12" y2="20"/>
-              <line x1="8" y1="20" x2="16" y2="20"/>
-            </svg>
-          </div>
-          <div class="te-section-info">
-            <h3>Typography</h3>
-            <p>Fonts & sizes</p>
-          </div>
-        </div>
-        
-        <div class="te-section-item" data-section="layout">
+        <div class="te-section-item active" data-section="header">
           <div class="te-section-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2"/>
               <line x1="3" y1="9" x2="21" y2="9"/>
-              <line x1="9" y1="21" x2="9" y2="9"/>
             </svg>
           </div>
           <div class="te-section-info">
-            <h3>Layout</h3>
-            <p>Spacing</p>
+            <h3>Header</h3>
+            <p>Logo, menu, icons</p>
           </div>
         </div>
         
-        <div class="te-section-item" data-section="branding">
+        <div class="te-section-item" data-section="hero">
           <div class="te-section-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5"/>
-              <path d="M2 12l10 5 10-5"/>
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
             </svg>
           </div>
           <div class="te-section-info">
-            <h3>Branding</h3>
-            <p>Logo & identity</p>
+            <h3>Hero Section</h3>
+            <p>Collection showcase</p>
+          </div>
+        </div>
+        
+        <div class="te-section-item" data-section="collection">
+          <div class="te-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </div>
+          <div class="te-section-info">
+            <h3>New Collection</h3>
+            <p>Products grid</p>
           </div>
         </div>
         
@@ -491,7 +476,21 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           </div>
           <div class="te-section-info">
             <h3>Footer</h3>
-            <p>Content & links</p>
+            <p>Bottom content</p>
+          </div>
+        </div>
+        
+        <div class="te-section-item" data-section="global">
+          <div class="te-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </div>
+          <div class="te-section-info">
+            <h3>Global</h3>
+            <p>Cursor, toast</p>
           </div>
         </div>
       </div>
@@ -538,7 +537,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           <div class="te-editor-header">
             <div>
               <h2>Edit Section</h2>
-              <p id="section-description">Global color palette</p>
+              <p id="section-description">Header settings</p>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center;">
               <button id="reset-btn" class="te-reset-btn" type="button" title="Reset to defaults">
@@ -576,64 +575,75 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     const configEl = document.getElementById('app-config');
     const supabase = createClient(configEl.dataset.supabaseUrl, configEl.dataset.supabaseKey);
 
+    // Configurações por seção do site
     const sectionControls = {
-      colors: [
-        { key: 'colors.primary', label: 'Primary Color', type: 'color' },
-        { key: 'colors.secondary', label: 'Secondary Color', type: 'color' },
-        { key: 'colors.background', label: 'Background Color', type: 'color' },
-        { key: 'colors.background_alt', label: 'Alt Background', type: 'color' },
-        { key: 'colors.text', label: 'Text Color', type: 'color' },
-        { key: 'colors.text_muted', label: 'Muted Text', type: 'color' },
-        { key: 'colors.accent', label: 'Accent Color', type: 'color' },
-        { key: 'colors.success', label: 'Success', type: 'color' },
-        { key: 'colors.error', label: 'Error', type: 'color' },
-        { key: 'colors.warning', label: 'Warning', type: 'color' },
+      header: [
+        { key: 'header.bg_color', label: 'Background Color', type: 'color' },
+        { key: 'header.text_color', label: 'Text Color', type: 'color' },
+        { key: 'header.logo_text', label: 'Logo Text', type: 'text', placeholder: 'WOLTZ' },
+        { key: 'header.menu_items', label: 'Menu Items', type: 'text', placeholder: '[ CATALOG ],[ PUFFERS ]' },
+        { key: 'header.show_search', label: 'Show Search Icon', type: 'checkbox' },
+        { key: 'header.show_cart', label: 'Show Cart Icon', type: 'checkbox' },
       ],
-      typography: [
+      
+      hero: [
+        { key: 'hero.title_color', label: 'Title Color', type: 'color' },
+        { key: 'hero.subtitle_color', label: 'Subtitle Color', type: 'color' },
+        { key: 'hero.label_color', label: 'Labels Color', type: 'color' },
+        { key: 'hero.price_color', label: 'Price Color', type: 'color' },
+        { key: 'hero.overlay_opacity', label: 'Image Overlay Opacity', type: 'text', placeholder: '0.6' },
+      ],
+      
+      collection: [
+        { key: 'collection.bg_color', label: 'Section Background', type: 'color' },
+        { key: 'collection.title_color', label: '"NEW COLLECTION" Title', type: 'color' },
+        { key: 'collection.card_bg', label: 'Product Card BG', type: 'color' },
+        { key: 'collection.product_name_color', label: 'Product Name Color', type: 'color' },
+        { key: 'collection.product_desc_color', label: 'Description Color', type: 'color' },
+        { key: 'collection.price_color', label: 'Price Color', type: 'color' },
+        { key: 'collection.cart_icon_color', label: 'Cart Icon Color', type: 'color' },
+        { key: 'collection.filters_btn_bg', label: 'Filters Button BG', type: 'color' },
+        { key: 'collection.filters_btn_border', label: 'Filters Button Border', type: 'color' },
+        { key: 'collection.filters_btn_text', label: 'Filters Button Text', type: 'color' },
+      ],
+      
+      footer: [
+        { key: 'footer.bg_color', label: 'Footer Background', type: 'color' },
+        { key: 'footer.text_color', label: 'Text Color', type: 'color' },
+        { key: 'footer.muted_text', label: 'Muted Text', type: 'color' },
+        { key: 'footer.lettering_color', label: 'Giant Lettering Color', type: 'color' },
+        { key: 'footer.border_color', label: 'Border/Divider Color', type: 'color' },
+        { key: 'footer.social_icon_bg', label: 'Social Icons BG', type: 'color' },
+        { key: 'footer.social_icon_border', label: 'Social Icons Border', type: 'color' },
+        { key: 'footer.social_icon_color', label: 'Social Icons Color', type: 'color' },
+        { key: 'footer.newsletter_input_bg', label: 'Newsletter Input BG', type: 'color' },
+        { key: 'footer.newsletter_input_border', label: 'Newsletter Input Border', type: 'color' },
+        { key: 'footer.left_text', label: 'Left Column Text', type: 'textarea', rows: 3 },
+        { key: 'footer.center_text', label: 'Center Column Text', type: 'textarea', rows: 3 },
+        { key: 'footer.lettering_text', label: 'Giant Lettering Text', type: 'text', placeholder: 'WOLTZ PUFFERS' },
+        { key: 'footer.bottom_left', label: 'Bottom Left Text', type: 'text', placeholder: 'MADE WITH PRECISION...' },
+        { key: 'footer.bottom_right', label: 'Bottom Right Text', type: 'text', placeholder: 'TERMS · PRIVACY...' },
+      ],
+      
+      global: [
+        { key: 'global.cursor_color', label: 'Custom Cursor Color', type: 'color' },
+        { key: 'global.toast_bg', label: 'Toast Notification BG', type: 'color' },
+        { key: 'global.toast_text', label: 'Toast Text Color', type: 'color' },
         { key: 'typography.font_heading', label: 'Heading Font', type: 'select', options: ['Anton', 'Playfair Display', 'Oswald', 'Bebas Neue', 'Montserrat'] },
         { key: 'typography.font_body', label: 'Body Font', type: 'select', options: ['Inter, sans-serif', 'Roboto, sans-serif', 'Open Sans, sans-serif', 'DM Sans, sans-serif'] },
         { key: 'typography.font_mono', label: 'Monospace Font', type: 'text', placeholder: 'VCR OSD Mono, monospace' },
-        { key: 'typography.size_h1', label: 'H1 Size', type: 'text', placeholder: 'clamp(3rem, 8vw, 6rem)' },
-        { key: 'typography.size_h2', label: 'H2 Size', type: 'text', placeholder: 'clamp(2rem, 5vw, 4rem)' },
-        { key: 'typography.size_body', label: 'Body Size', type: 'text', placeholder: '1rem' },
-        { key: 'typography.weight_heading', label: 'Heading Weight', type: 'select', options: ['300', '400', '500', '600', '700', '800'] },
-        { key: 'typography.weight_body', label: 'Body Weight', type: 'select', options: ['300', '400', '500', '600'] },
-        { key: 'typography.tracking_heading', label: 'Heading Spacing', type: 'text', placeholder: '-0.02em' },
-        { key: 'typography.tracking_body', label: 'Body Spacing', type: 'text', placeholder: '0.05em' },
-      ],
-      layout: [
-        { key: 'layout.container_max_width', label: 'Max Width', type: 'text', placeholder: '1536px' },
-        { key: 'layout.section_padding', label: 'Section Padding', type: 'text', placeholder: '3rem' },
-        { key: 'layout.grid_gap', label: 'Grid Gap', type: 'text', placeholder: '1.5rem' },
-        { key: 'layout.border_radius', label: 'Border Radius', type: 'text', placeholder: '0px' },
-        { key: 'layout.hero_height', label: 'Hero Height', type: 'text', placeholder: '100vh' },
-      ],
-      branding: [
-        { key: 'branding.site_name', label: 'Site Name', type: 'text', placeholder: 'WOLTZ' },
-        { key: 'branding.tagline', label: 'Tagline', type: 'text', placeholder: 'Premium Digital Fashion' },
-        { key: 'branding.logo_url', label: 'Logo URL', type: 'text', placeholder: 'https://...' },
-        { key: 'branding.favicon_url', label: 'Favicon URL', type: 'text', placeholder: 'https://...' },
-      ],
-      footer: [
-        { key: 'footer.text_left', label: 'Left Text', type: 'textarea', rows: 3 },
-        { key: 'footer.text_center', label: 'Center Text', type: 'textarea', rows: 3 },
-        { key: 'footer.lettering_text', label: 'Giant Lettering', type: 'text', placeholder: 'WOLTZ PUFFERS' },
-        { key: 'footer.show_social', label: 'Show Social Icons', type: 'checkbox' },
-        { key: 'footer.social_instagram', label: 'Instagram URL', type: 'text', placeholder: 'https://instagram.com/...' },
-        { key: 'footer.social_twitter', label: 'Twitter URL', type: 'text', placeholder: 'https://twitter.com/...' },
-        { key: 'footer.social_youtube', label: 'YouTube URL', type: 'text', placeholder: 'https://youtube.com/...' },
       ],
     };
 
     const sectionDescriptions = {
-      colors: 'Global color palette',
-      typography: 'Fonts and sizes',
-      layout: 'Spacing',
-      branding: 'Logo & identity',
-      footer: 'Content & links',
+      header: 'Header / Navigation bar',
+      hero: 'Hero section / Collection showcase',
+      collection: 'New Collection / Products grid',
+      footer: 'Footer / Bottom content',
+      global: 'Global settings / Typography',
     };
 
-    let currentSection = 'colors';
+    let currentSection = 'header';
     let themeData = {};
     let hasChanges = false;
 
@@ -666,15 +676,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       }
       
       const cssVars = Object.entries(themeData).map(([key, data]) => {
-        const varName = '--color-' + key.replace('colors.', '').replace('.', '-');
+        const varName = '--' + key.replace(/\./g, '-');
         return `${varName}: ${data.value}`;
       }).join(';\n      ');
       
-      styleEl.textContent = `
-        :root {
-          ${cssVars}
-        }
-      `;
+      styleEl.textContent = `:root { ${cssVars} }`;
     }
 
     async function loadThemeSettings() {
@@ -831,7 +837,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
 
     async function resetToDefaults() {
-      if (!confirm('Reset all theme settings to default? This cannot be undone.')) {
+      if (!confirm('Reset ALL theme settings to default? This cannot be undone.')) {
         return;
       }
       
@@ -841,6 +847,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       btn.classList.add('saving');
       
       try {
+        // Deleta todas as configurações atuais
         const { error } = await supabase
           .from('theme_settings')
           .delete()
@@ -848,8 +855,9 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         
         if (error) throw error;
         
-        showToast('Reset successful - Reloading...');
+        showToast('Reset successful - Reloading with defaults...');
         
+        // Recarrega para aplicar os valores padrão do SQL INSERT
         setTimeout(() => {
           window.location.reload();
         }, 1500);
@@ -862,6 +870,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Sidebar items
       document.querySelectorAll('.te-section-item').forEach(item => {
         item.addEventListener('click', function(e) {
           e.preventDefault();
@@ -878,28 +887,33 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         });
       });
 
+      // Open editor button
       document.getElementById('open-editor-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         const panel = document.getElementById('editor-panel');
         if (panel) panel.classList.add('open');
       });
 
+      // Close panel button
       document.getElementById('close-panel-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         const panel = document.getElementById('editor-panel');
         if (panel) panel.classList.remove('open');
       });
 
+      // Save button
       document.getElementById('save-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         saveChanges();
       });
 
+      // Reset button
       document.getElementById('reset-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         resetToDefaults();
       });
 
+      // Device buttons
       document.querySelectorAll('.te-device-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -916,10 +930,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         });
       });
 
+      // Iframe load
       document.getElementById('preview-frame')?.addEventListener('load', () => {
         setTimeout(updatePreviewCSS, 500);
       });
 
+      // Load initial settings
       loadThemeSettings();
     });
   </script>
