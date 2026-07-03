@@ -251,6 +251,25 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     .te-save-btn:hover { background: rgba(255, 255, 255, 0.9); }
     .te-save-btn.saving { opacity: 0.7; cursor: not-allowed; }
     
+    .te-reset-btn {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .te-reset-btn:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+    
     .te-controls {
       flex: 1;
       overflow-y: auto;
@@ -522,6 +541,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
               <p id="section-description">Global color palette</p>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button id="reset-btn" class="te-reset-btn" type="button" title="Reset to defaults">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                  <path d="M3 3v5h5"/>
+                </svg>
+              </button>
               <button id="save-btn" class="te-save-btn" type="button">Save</button>
               <button class="te-close-panel" id="close-panel-btn" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -626,7 +651,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       return '#ffffff';
     }
 
-    // Aplica CSS variables no iframe em tempo real
     function updatePreviewCSS() {
       const iframe = document.getElementById('preview-frame');
       if (!iframe) return;
@@ -634,7 +658,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
       if (!iframeDoc) return;
       
-      // Cria ou atualiza style com CSS variables
       let styleEl = iframeDoc.getElementById('te-live-styles');
       if (!styleEl) {
         styleEl = iframeDoc.createElement('style');
@@ -642,7 +665,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         iframeDoc.head.appendChild(styleEl);
       }
       
-      // Gera CSS com todas as variáveis
       const cssVars = Object.entries(themeData).map(([key, data]) => {
         const varName = '--color-' + key.replace('colors.', '').replace('.', '-');
         return `${varName}: ${data.value}`;
@@ -667,7 +689,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         console.log('Loaded', Object.keys(themeData).length, 'settings');
         renderControls();
         
-        // Aplica CSS inicial no iframe
         setTimeout(updatePreviewCSS, 1000);
       } catch (err) {
         console.error('Error loading:', err);
@@ -741,7 +762,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           themeData[key].value = value;
           hasChanges = true;
           
-          // Atualiza preview em tempo real
           updatePreviewCSS();
           
           if (this.type === 'color') {
@@ -798,7 +818,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         
         showToast('Saved successfully - Reloading...');
         
-        // Força reload completo do site
         setTimeout(() => {
           window.location.reload();
         }, 1500);
@@ -808,6 +827,37 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         btn.textContent = 'Save';
         btn.classList.remove('saving');
         showToast('Error: ' + err.message, true);
+      }
+    }
+
+    async function resetToDefaults() {
+      if (!confirm('Reset all theme settings to default? This cannot be undone.')) {
+        return;
+      }
+      
+      const btn = document.getElementById('reset-btn');
+      if (!btn) return;
+      
+      btn.classList.add('saving');
+      
+      try {
+        const { error } = await supabase
+          .from('theme_settings')
+          .delete()
+          .neq('id', '00000000-0000-0000-0000-000000000000');
+        
+        if (error) throw error;
+        
+        showToast('Reset successful - Reloading...');
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+        
+      } catch (err) {
+        console.error('Error resetting:', err);
+        showToast('Error resetting: ' + err.message, true);
+        btn.classList.remove('saving');
       }
     }
 
@@ -845,6 +895,11 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         saveChanges();
       });
 
+      document.getElementById('reset-btn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetToDefaults();
+      });
+
       document.querySelectorAll('.te-device-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -861,7 +916,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         });
       });
 
-      // Aguarda iframe carregar
       document.getElementById('preview-frame')?.addEventListener('load', () => {
         setTimeout(updatePreviewCSS, 500);
       });
