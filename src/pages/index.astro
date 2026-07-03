@@ -11,12 +11,11 @@ import '../styles/global.css';
   <main class="relative w-full h-screen overflow-hidden" id="hero-section" style="background-color: var(--color-background);">
     <div class="absolute inset-0 z-0">
       <img id="hero-main-img" src="" alt="" class="w-full h-full object-cover transition-all duration-1000 ease-out opacity-0" />
-      <!-- Overlay usa a cor de fundo com opacidade dinâmica se necessário, ou gradiente padrão -->
       <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-black/50 to-transparent"></div>
     </div>
 
     <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 md:px-16 py-8" style="background: transparent;">
-      <div class="text-lg font-light tracking-[0.5em]" style="color: var(--color-text);">WOLTZ</div>
+      <div class="text-lg font-light tracking-[0.5em]" style="color: var(--header-text);">WOLTZ</div>
       <nav class="hidden md:flex gap-10 text-[10px] tracking-[0.3em] uppercase font-light" style="color: var(--color-text-muted);">
         <a href="/catalog" class="hover:text-white transition-colors duration-500 clickable">[ Catalog ]</a>
         <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Puffers ]</a>
@@ -26,7 +25,6 @@ import '../styles/global.css';
       <div class="flex gap-5" style="color: var(--color-text-muted);">
         <button class="hover:text-white transition-colors duration-500 clickable"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
         
-        <!-- ÍCONE DO CARRINHO -->
         <button id="cart-btn" class="relative hover:text-white transition-colors duration-500 clickable">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
@@ -55,7 +53,6 @@ import '../styles/global.css';
         </div>
         
         <div class="flex items-center gap-8">
-          <!-- BOTÃO GRANDE DO HERO -->
           <button id="add-pack-hero-btn" class="group relative w-24 h-24 flex items-center justify-center clickable" onclick="window.addCurrentPack()">
             <svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full"><polygon points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30" fill="none" stroke="rgba(168,181,196,0.4)" stroke-width="1" class="transition-all duration-700 group-hover:stroke-white group-hover:stroke-[1.5]"/></svg>
             <svg class="w-6 h-6 text-white/70 group-hover:text-white transition-all duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
@@ -111,7 +108,6 @@ import '../styles/global.css';
     
     <div class="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-8">
       
-      <!-- Coluna 1: Barcode e Info -->
       <div class="flex flex-col gap-6">
         <svg class="w-48 h-10" viewBox="0 0 200 40" style="fill: var(--footer-text);">
           <rect x="0" y="0" width="2" height="40"/><rect x="4" y="0" width="1" height="40"/><rect x="7" y="0" width="3" height="40"/><rect x="12" y="0" width="1" height="40"/><rect x="15" y="0" width="2" height="40"/><rect x="19" y="0" width="4" height="40"/><rect x="25" y="0" width="1" height="40"/><rect x="28" y="0" width="2" height="40"/><rect x="32" y="0" width="3" height="40"/><rect x="37" y="0" width="1" height="40"/><rect x="40" y="0" width="2" height="40"/><rect x="44" y="0" width="1" height="40"/><rect x="47" y="0" width="3" height="40"/><rect x="52" y="0" width="2" height="40"/><rect x="56" y="0" width="1" height="40"/><rect x="59" y="0" width="4" height="40"/><rect x="65" y="0" width="1" height="40"/><rect x="68" y="0" width="2" height="40"/><rect x="72" y="0" width="1" height="40"/><rect x="75" y="0" width="3" height="40"/><rect x="80" y="0" width="2" height="40"/><rect x="84" y="0" width="1" height="40"/><rect x="87" y="0" width="2" height="40"/><rect x="91" y="0" width="3" height="40"/><rect x="96" y="0" width="1" height="40"/><rect x="99" y="0" width="2" height="40"/><rect x="103" y="0" width="4" height="40"/><rect x="109" y="0" width="1" height="40"/><rect x="112" y="0" width="2" height="40"/><rect x="116" y="0" width="1" height="40"/><rect x="119" y="0" width="3" height="40"/><rect x="124" y="0" width="2" height="40"/><rect x="128" y="0" width="1" height="40"/><rect x="131" y="0" width="2" height="40"/><rect x="135" y="0" width="3" height="40"/><rect x="140" y="0" width="1" height="40"/><rect x="143" y="0" width="2" height="40"/><rect x="147" y="0" width="1" height="40"/><rect x="150" y="0" width="4" height="40"/><rect x="156" y="0" width="1" height="40"/><rect x="159" y="0" width="2" height="40"/><rect x="163" y="0" width="3" height="40"/><rect x="168" y="0" width="1" height="40"/><rect x="171" y="0" width="2" height="40"/><rect x="175" y="0" width="1" height="40"/><rect x="178" y="0" width="3" height="40"/><rect x="183" y="0" width="2" height="40"/><rect x="187" y="0" width="1" height="40"/><rect x="190" y="0" width="2" height="40"/><rect x="194" y="0" width="3" height="40"/><rect x="199" y="0" width="1" height="40"/>
@@ -127,7 +123,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- Coluna 2: Newsletter -->
       <div class="flex flex-col gap-4">
         <div class="font-vcr text-[10px] tracking-[0.2em] uppercase" style="color: var(--footer-text);">
           <p>NEWSLETTER SIGN UP</p>
@@ -143,7 +138,6 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <!-- Coluna 3: Menu -->
       <div class="flex flex-col gap-3">
         <nav class="flex flex-col gap-2 font-vcr text-[10px] tracking-[0.2em] uppercase">
           <a href="/catalog" class="hover:text-white transition-colors duration-300" style="color: var(--footer-muted);">[ CATALOG ]</a>
@@ -154,7 +148,6 @@ import '../styles/global.css';
         </nav>
       </div>
 
-      <!-- Coluna 4: Logo e Social -->
       <div class="flex flex-col items-start md:items-end gap-6">
         <div class="font-['Anton'] text-3xl tracking-[0.2em]" style="color: var(--footer-text);">WOLTZ</div>
         
@@ -176,14 +169,12 @@ import '../styles/global.css';
 
     </div>
 
-    <!-- Letreiro Gigante -->
     <div class="relative w-full flex items-center justify-center py-12 md:py-16 overflow-hidden">
       <h2 class="font-['Anton'] text-[18vw] md:text-[15vw] leading-none tracking-tight select-none whitespace-nowrap" style="color: var(--footer-lettering);">
         WOLTZ PUFFERS
       </h2>
     </div>
 
-    <!-- Rodapé Inferior -->
     <div class="relative z-10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 font-vcr text-[9px] tracking-[0.2em] uppercase" style="color: var(--footer-muted); border-top: 1px solid var(--footer-border);">
       <p>MADE WITH PRECISION IN BROOKLYN</p>
       <p>TERMS · PRIVACY · COOKIES</p>
@@ -306,127 +297,64 @@ import '../styles/global.css';
     @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
     .font-vcr { font-family: 'VCR OSD Mono', monospace; }
     
-    /* Card assimétrico agora usa a variável de cor do card */
     .tech-card-asymmetric {
       clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
       background-color: var(--collection-card-bg); 
     }
     
-    /* Scrollbar customizada */
     #cart-modal-items::-webkit-scrollbar { width: 6px; }
     #cart-modal-items::-webkit-scrollbar-track { background: transparent; }
     #cart-modal-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
     #cart-modal-items::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
   </style>
 
-  <!-- SCRIPT PRINCIPAL -->
+  <!-- SCRIPT PRINCIPAL (MANTIDO IGUAL, APENAS ADAPTADO PARA VARIÁVEIS) -->
   <script is:inline>
-    // ============================================
-    // SISTEMA DE CARRINHO (localStorage)
-    // ============================================
     const Cart = {
-      items: [],
-      discount: 0,
-      couponCode: null,
-      
+      items: [], discount: 0, couponCode: null,
       init() {
         const saved = localStorage.getItem('woltz_cart');
-        if (saved) {
-          try { this.items = JSON.parse(saved); } catch(e) { this.items = []; }
-        }
+        if (saved) { try { this.items = JSON.parse(saved); } catch(e) { this.items = []; } }
         this.updateUI();
       },
-      
-      save() {
-        localStorage.setItem('woltz_cart', JSON.stringify(this.items));
-        this.updateUI();
-      },
-      
+      save() { localStorage.setItem('woltz_cart', JSON.stringify(this.items)); this.updateUI(); },
       add(product) {
         const existing = this.items.find(i => i.id === product.id);
-        if (existing) {
-          existing.qty += 1;
-        } else {
-          this.items.push({
-            id: product.id,
-            name: product.name,
-            price: parseFloat(product.price_usd) || 0,
-            thumbnail: product.thumbnail_url,
-            qty: 1,
-            isPack: product.isPack || false
-          });
-        }
-        this.save();
-        this.showToast(`${product.name} added to cart`);
+        if (existing) { existing.qty += 1; } 
+        else { this.items.push({ id: product.id, name: product.name, price: parseFloat(product.price_usd) || 0, thumbnail: product.thumbnail_url, qty: 1, isPack: product.isPack || false }); }
+        this.save(); this.showToast(`${product.name} added to cart`);
       },
-      
-      remove(productId) {
-        this.items = this.items.filter(i => i.id !== productId);
-        this.save();
-      },
-      
+      remove(productId) { this.items = this.items.filter(i => i.id !== productId); this.save(); },
       updateQty(productId, delta) {
         const item = this.items.find(i => i.id === productId);
-        if (item) {
-          item.qty += delta;
-          if (item.qty <= 0) {
-            this.remove(productId);
-            return;
-          }
-        }
+        if (item) { item.qty += delta; if (item.qty <= 0) { this.remove(productId); return; } }
         this.save();
       },
-
       applyCoupon(code) {
-        const coupons = {
-          'WELCOME10': 0.10,
-          'INFLUENCER15': 0.15,
-          'VIP20': 0.20
-        };
-        
+        const coupons = { 'WELCOME10': 0.10, 'INFLUENCER15': 0.15, 'VIP20': 0.20 };
         const upperCode = code.toUpperCase().trim();
-        if (coupons[upperCode]) {
-          this.discount = coupons[upperCode];
-          this.couponCode = upperCode;
-          return { success: true, message: `Coupon ${upperCode} applied! ${Math.round(this.discount*100)}% off` };
-        }
+        if (coupons[upperCode]) { this.discount = coupons[upperCode]; this.couponCode = upperCode; return { success: true, message: `Coupon ${upperCode} applied! ${Math.round(this.discount*100)}% off` }; }
         return { success: false, message: 'Invalid coupon code' };
       },
-      
-      getTotal() {
-        return this.items.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      },
-
+      getTotal() { return this.items.reduce((sum, i) => sum + (i.price * i.qty), 0); },
       getSubtotal() { return this.getTotal(); },
       getDiscount() { return this.getSubtotal() * this.discount; },
       getFinalTotal() { return this.getSubtotal() - this.getDiscount(); },
-      
-      getCount() {
-        return this.items.reduce((sum, i) => sum + i.qty, 0);
-      },
-      
+      getCount() { return this.items.reduce((sum, i) => sum + i.qty, 0); },
       updateUI() {
         const countEl = document.getElementById('cart-count');
         const count = this.getCount();
-        if (countEl) {
-          countEl.textContent = count;
-          countEl.style.opacity = count > 0 ? '1' : '0';
-        }
-        this.renderPreview();
-        this.renderModal();
+        if (countEl) { countEl.textContent = count; countEl.style.opacity = count > 0 ? '1' : '0'; }
+        this.renderPreview(); this.renderModal();
       },
-      
       renderPreview() {
         const container = document.getElementById('cart-preview-items');
         const totalEl = document.getElementById('cart-preview-total');
         if (!container) return;
-        
         if (this.items.length === 0) {
           container.innerHTML = '<p class="text-sm text-center py-8 font-vcr" style="color: var(--color-text-muted);">Your cart is empty</p>';
-          if (totalEl) totalEl.textContent = '$ 0.00';
-          return;
+          if (totalEl) totalEl.textContent = '$ 0.00'; return;
         }
-        
         container.innerHTML = this.items.map(item => `
           <div class="flex gap-4 items-center p-3 rounded-lg border transition-colors" style="background-color: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-color: rgba(255,255,255,0.2);">
             <img src="${item.thumbnail ? item.thumbnail + '?width=80&quality=80' : ''}" class="w-16 h-16 object-cover rounded-md border border-white/10" />
@@ -440,17 +368,9 @@ import '../styles/global.css';
             </button>
           </div>
         `).join('');
-        
         if (totalEl) totalEl.textContent = `$ ${this.getFinalTotal().toFixed(2)}`;
-        
-        container.querySelectorAll('.remove-item-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.dataset.remove;
-            this.remove(id);
-          });
-        });
+        container.querySelectorAll('.remove-item-btn').forEach(btn => { btn.addEventListener('click', (e) => { this.remove(e.currentTarget.dataset.remove); }); });
       },
-
       renderModal() {
         const container = document.getElementById('cart-modal-items');
         const subtotalEl = document.getElementById('modal-subtotal');
@@ -458,9 +378,7 @@ import '../styles/global.css';
         const discountRow = document.getElementById('modal-discount-row');
         const discountEl = document.getElementById('modal-discount');
         const checkoutBtn = document.getElementById('modal-checkout-btn');
-
         if (!container) return;
-
         if (this.items.length === 0) {
           container.innerHTML = '<p class="text-center py-12 font-vcr text-sm" style="color: var(--color-text-muted);">Your cart is empty</p>';
           if (subtotalEl) subtotalEl.textContent = '$ 0.00';
@@ -469,9 +387,7 @@ import '../styles/global.css';
           if (checkoutBtn) checkoutBtn.disabled = true;
           return;
         }
-
         if (checkoutBtn) checkoutBtn.disabled = false;
-
         container.innerHTML = '<div class="space-y-3">' + this.items.map(item => `
           <div class="rounded-xl p-4 flex gap-4 items-center transition-colors" style="background-color: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
             <img src="${item.thumbnail ? item.thumbnail + '?width=150&quality=80' : ''}" class="w-24 h-24 md:w-28 md:h-28 object-cover rounded-lg border border-white/10 flex-shrink-0" />
@@ -490,131 +406,52 @@ import '../styles/global.css';
             </div>
           </div>
         `).join('') + '</div>';
-
-        const subtotal = this.getSubtotal();
-        const discount = this.getDiscount();
-        const total = this.getFinalTotal();
-
+        const subtotal = this.getSubtotal(); const discount = this.getDiscount(); const total = this.getFinalTotal();
         if (subtotalEl) subtotalEl.textContent = `$ ${subtotal.toFixed(2)}`;
         if (totalEl) totalEl.textContent = `$ ${total.toFixed(2)}`;
-        
-        if (discount > 0) {
-          if (discountRow) discountRow.classList.remove('hidden');
-          if (discountEl) discountEl.textContent = `- $ ${discount.toFixed(2)}`;
-        } else {
-          if (discountRow) discountRow.classList.add('hidden');
-        }
-
-        container.querySelectorAll('.remove-btn').forEach(btn => {
-          btn.addEventListener('click', () => this.remove(btn.dataset.remove));
-        });
-        container.querySelectorAll('.qty-btn[data-inc]').forEach(btn => {
-          btn.addEventListener('click', () => this.updateQty(btn.dataset.inc, 1));
-        });
-        container.querySelectorAll('.qty-btn[data-dec]').forEach(btn => {
-          btn.addEventListener('click', () => this.updateQty(btn.dataset.dec, -1));
-        });
+        if (discount > 0) { if (discountRow) discountRow.classList.remove('hidden'); if (discountEl) discountEl.textContent = `- $ ${discount.toFixed(2)}`; } 
+        else { if (discountRow) discountRow.classList.add('hidden'); }
+        container.querySelectorAll('.remove-btn').forEach(btn => { btn.addEventListener('click', () => this.remove(btn.dataset.remove)); });
+        container.querySelectorAll('.qty-btn[data-inc]').forEach(btn => { btn.addEventListener('click', () => this.updateQty(btn.dataset.inc, 1)); });
+        container.querySelectorAll('.qty-btn[data-dec]').forEach(btn => { btn.addEventListener('click', () => this.updateQty(btn.dataset.dec, -1)); });
       },
-      
       showToast(message) {
-        const toast = document.getElementById('cart-toast');
-        const msgEl = document.getElementById('cart-toast-message');
+        const toast = document.getElementById('cart-toast'); const msgEl = document.getElementById('cart-toast-message');
         if (!toast || !msgEl) return;
-        
         msgEl.textContent = message;
-        toast.classList.remove('translate-y-20', 'opacity-0');
-        toast.classList.add('translate-y-0', 'opacity-100');
-        
-        setTimeout(() => {
-          toast.classList.add('translate-y-20', 'opacity-0');
-          toast.classList.remove('translate-y-0', 'opacity-100');
-        }, 2500);
+        toast.classList.remove('translate-y-20', 'opacity-0'); toast.classList.add('translate-y-0', 'opacity-100');
+        setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); toast.classList.remove('translate-y-0', 'opacity-100'); }, 2500);
       },
-      
-      openPreview() {
-        const preview = document.getElementById('cart-preview');
-        const panel = document.getElementById('cart-preview-panel');
-        if (preview && panel) {
-          preview.classList.remove('hidden');
-          setTimeout(() => panel.classList.remove('translate-x-full'), 10);
-        }
-      },
-      
-      closePreview() {
-        const preview = document.getElementById('cart-preview');
-        const panel = document.getElementById('cart-preview-panel');
-        if (preview && panel) {
-          panel.classList.add('translate-x-full');
-          setTimeout(() => preview.classList.add('hidden'), 500);
-        }
-      },
-
-      openModal() {
-        const modal = document.getElementById('cart-modal');
-        const panel = document.getElementById('cart-modal-panel');
-        if (modal && panel) {
-          modal.classList.remove('hidden');
-          setTimeout(() => {
-            panel.classList.remove('scale-95', 'opacity-0');
-            panel.classList.add('scale-100', 'opacity-100');
-          }, 10);
-        }
-      },
-
-      closeModal() {
-        const modal = document.getElementById('cart-modal');
-        const panel = document.getElementById('cart-modal-panel');
-        if (modal && panel) {
-          panel.classList.remove('scale-100', 'opacity-100');
-          panel.classList.add('scale-95', 'opacity-0');
-          setTimeout(() => modal.classList.add('hidden'), 500);
-        }
-      }
+      openPreview() { const preview = document.getElementById('cart-preview'); const panel = document.getElementById('cart-preview-panel'); if (preview && panel) { preview.classList.remove('hidden'); setTimeout(() => panel.classList.remove('translate-x-full'), 10); } },
+      closePreview() { const preview = document.getElementById('cart-preview'); const panel = document.getElementById('cart-preview-panel'); if (preview && panel) { panel.classList.add('translate-x-full'); setTimeout(() => preview.classList.add('hidden'), 500); } },
+      openModal() { const modal = document.getElementById('cart-modal'); const panel = document.getElementById('cart-modal-panel'); if (modal && panel) { modal.classList.remove('hidden'); setTimeout(() => { panel.classList.remove('scale-95', 'opacity-0'); panel.classList.add('scale-100', 'opacity-100'); }, 10); } },
+      closeModal() { const modal = document.getElementById('cart-modal'); const panel = document.getElementById('cart-modal-panel'); if (modal && panel) { panel.classList.remove('scale-100', 'opacity-100'); panel.classList.add('scale-95', 'opacity-0'); setTimeout(() => modal.classList.add('hidden'), 500); } }
     };
 
-    // ============================================
-    // VARIÁVEL GLOBAL PARA O PACK ATUAL
-    // ============================================
     let currentPackData = null;
+    window.addCurrentPack = function() { if (currentPackData) { Cart.add(currentPackData); } };
 
-    window.addCurrentPack = function() {
-      if (currentPackData) {
-        Cart.add(currentPackData);
-      }
-    };
-
-    // ============================================
-    // CARREGAR DADOS DA HOME
-    // ============================================
     document.addEventListener('DOMContentLoaded', async () => {
       Cart.init();
-      
       try {
         const res = await fetch('/api/home-data');
         if (!res.ok) throw new Error('Failed to load data');
         const data = await res.json();
-
         const { featuredCollection, sidebarCollections, gridProducts } = data;
         if (!featuredCollection) return;
 
         const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
-        
         const renderColors = (colors) => {
           if (!colors || !Array.isArray(colors) || colors.length === 0) return '';
           let html = '<div class="flex items-center gap-1.5">';
           colors.slice(0, 4).forEach(c => {
-            if (c.type === 'pattern' && c.url) {
-              html += `<span class="w-3 h-3 rounded-full overflow-hidden border border-white/70 inline-block shadow-sm"><img src="${c.url}?width=20" class="w-full h-full object-cover" /></span>`;
-            } else {
-              html += `<span class="w-3 h-3 rounded-full shadow-sm inline-block border border-white/30" style="background:${c.hex || '#ccc'}"></span>`;
-            }
+            if (c.type === 'pattern' && c.url) { html += `<span class="w-3 h-3 rounded-full overflow-hidden border border-white/70 inline-block shadow-sm"><img src="${c.url}?width=20" class="w-full h-full object-cover" /></span>`; } 
+            else { html += `<span class="w-3 h-3 rounded-full shadow-sm inline-block border border-white/30" style="background:${c.hex || '#ccc'}"></span>`; }
           });
           if (colors.length > 4) html += `<span class="text-[10px] ml-1 font-bold font-vcr" style="color: var(--color-text-muted);">+${colors.length - 4}</span>`;
-          html += '</div>';
-          return html;
+          html += '</div>'; return html;
         };
 
-        // --- HERO ---
         const mainImg = document.getElementById('hero-main-img');
         const seriesEl = document.getElementById('collection-series');
         const titleEl = document.getElementById('collection-title');
@@ -624,66 +461,29 @@ import '../styles/global.css';
         const sidebarContainer = document.getElementById('sidebar-thumbs');
 
         const allHeroData = [featuredCollection, ...sidebarCollections].map((col, i) => ({
-          index: i,
-          image: imgUrl(col.image_url, 2400),
-          thumbImage: imgUrl(col.image_url, 600),
-          series: `[ Series: ${col.category || 'Latest Drop'} ] · [ Collection ]`,
-          title: col.name,
-          sets: `${col.product_count || 0} Items`,
-          price: `$ ${Number(col.pack_price_usd || 0).toFixed(2)}`,
-          collectionId: col.id,
-          packPriceUsd: col.pack_price_usd,
-          collectionImage: col.image_url
+          index: i, image: imgUrl(col.image_url, 2400), thumbImage: imgUrl(col.image_url, 600),
+          series: `[ Series: ${col.category || 'Latest Drop'} ] · [ Collection ]`, title: col.name,
+          sets: `${col.product_count || 0} Items`, price: `$ ${Number(col.pack_price_usd || 0).toFixed(2)}`,
+          collectionId: col.id, packPriceUsd: col.pack_price_usd, collectionImage: col.image_url
         }));
 
         function updateHero(index) {
-          const d = allHeroData[index];
-          if (!d) return;
-
+          const d = allHeroData[index]; if (!d) return;
           [seriesEl, titleEl, setsEl, priceEl].forEach(el => el.style.opacity = '0');
-          mainImg.style.opacity = '0';
-          mainImg.style.filter = 'blur(15px) scale(1.05)';
-
+          mainImg.style.opacity = '0'; mainImg.style.filter = 'blur(15px) scale(1.05)';
           setTimeout(() => {
-            mainImg.src = d.image;
-            seriesEl.innerText = d.series;
-            titleEl.innerText = d.title;
+            mainImg.src = d.image; seriesEl.innerText = d.series; titleEl.innerText = d.title;
             setsEl.innerHTML = `<span class="cursor-pointer clickable" style="color: var(--color-text);">${d.sets}</span>`;
             priceEl.innerText = d.price;
-
-            currentPackData = {
-              id: 'pack-' + d.collectionId,
-              name: d.title + ' (Pack)',
-              price_usd: d.packPriceUsd,
-              thumbnail_url: d.collectionImage,
-              isPack: true
-            };
-
+            currentPackData = { id: 'pack-' + d.collectionId, name: d.title + ' (Pack)', price_usd: d.packPriceUsd, thumbnail_url: d.collectionImage, isPack: true };
             const thumbs = sidebarContainer.querySelectorAll('.thumb-item');
             thumbs.forEach((t, i) => {
               const img = t.querySelector('img');
-              if (i === index) {
-                t.classList.remove('opacity-60', 'grayscale');
-                t.classList.add('opacity-100');
-                img?.classList.remove('border-transparent');
-                img?.classList.add('border-white/80');
-              } else {
-                t.classList.remove('opacity-100');
-                t.classList.add('opacity-60', 'grayscale');
-                img?.classList.remove('border-white/80');
-                img?.classList.add('border-transparent');
-              }
+              if (i === index) { t.classList.remove('opacity-60', 'grayscale'); t.classList.add('opacity-100'); img?.classList.remove('border-transparent'); img?.classList.add('border-white/80'); } 
+              else { t.classList.remove('opacity-100'); t.classList.add('opacity-60', 'grayscale'); img?.classList.remove('border-white/80'); img?.classList.add('border-transparent'); }
             });
-
-            mainImg.onload = () => {
-              mainImg.style.opacity = '1';
-              mainImg.style.filter = 'blur(0px) scale(1)';
-            };
-            setTimeout(() => {
-              mainImg.style.opacity = '1';
-              mainImg.style.filter = 'blur(0px) scale(1)';
-            }, 500);
-
+            mainImg.onload = () => { mainImg.style.opacity = '1'; mainImg.style.filter = 'blur(0px) scale(1)'; };
+            setTimeout(() => { mainImg.style.opacity = '1'; mainImg.style.filter = 'blur(0px) scale(1)'; }, 500);
             [seriesEl, titleEl, setsEl, priceEl].forEach(el => el.style.opacity = '1');
             indicator.textContent = `0${index + 1} — 0${thumbs.length}`;
           }, 500);
@@ -695,19 +495,12 @@ import '../styles/global.css';
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
         `).join('');
-
-        sidebarContainer.querySelectorAll('.thumb-item').forEach((thumb, i) => {
-          thumb.addEventListener('click', () => updateHero(i));
-        });
-
+        sidebarContainer.querySelectorAll('.thumb-item').forEach((thumb, i) => { thumb.addEventListener('click', () => updateHero(i)); });
         updateHero(0);
 
-        // --- GRID: CARD GRANDE DA COLEÇÃO + PRODUTOS ---
         const gridContainer = document.getElementById('dynamic-grid');
-        
         let gridHtml = `<div class="grid grid-cols-5 gap-4 md:gap-6">`;
         
-        // Card Grande da Coleção
         gridHtml += `
           <div class="col-span-2 relative group clickable h-[550px]">
             <div class="relative w-full h-full overflow-hidden tech-card-asymmetric">
@@ -753,7 +546,6 @@ import '../styles/global.css';
             </div>
           `;
         });
-
         gridHtml += `</div>`;
 
         if (gridProducts.length > 3) {
@@ -782,54 +574,27 @@ import '../styles/global.css';
           });
           gridHtml += `</div>`;
         }
-
         gridContainer.innerHTML = gridHtml;
 
-        // --- FUNÇÕES GLOBAIS PARA ADD TO CART ---
-        window.addProductToCart = function(id, name, price, thumbnail) {
-          Cart.add({ id, name, price_usd: price, thumbnail_url: thumbnail });
-        };
+        window.addProductToCart = function(id, name, price, thumbnail) { Cart.add({ id, name, price_usd: price, thumbnail_url: thumbnail }); };
+        window.addPackFromCard = function(id, name, price, thumbnail) { Cart.add({ id: 'pack-' + id, name: name + ' (Pack)', price_usd: price, thumbnail_url: thumbnail, isPack: true }); };
 
-        window.addPackFromCard = function(id, name, price, thumbnail) {
-          Cart.add({ id: 'pack-' + id, name: name + ' (Pack)', price_usd: price, thumbnail_url: thumbnail, isPack: true });
-        };
-
-        // --- EVENTOS DO CARRINHO ---
         document.getElementById('cart-btn')?.addEventListener('click', () => Cart.openPreview());
         document.getElementById('close-cart-preview')?.addEventListener('click', () => Cart.closePreview());
         document.getElementById('cart-preview-overlay')?.addEventListener('click', () => Cart.closePreview());
-        
-        document.getElementById('view-full-cart')?.addEventListener('click', () => {
-          Cart.closePreview();
-          setTimeout(() => Cart.openModal(), 300);
-        });
-
+        document.getElementById('view-full-cart')?.addEventListener('click', () => { Cart.closePreview(); setTimeout(() => Cart.openModal(), 300); });
         document.getElementById('close-cart-modal')?.addEventListener('click', () => Cart.closeModal());
         document.getElementById('cart-modal-overlay')?.addEventListener('click', () => Cart.closeModal());
-
         document.getElementById('modal-apply-coupon')?.addEventListener('click', () => {
-          const input = document.getElementById('modal-coupon-input');
-          const msgEl = document.getElementById('modal-coupon-message');
+          const input = document.getElementById('modal-coupon-input'); const msgEl = document.getElementById('modal-coupon-message');
           if (!input || !msgEl) return;
-          
           const result = Cart.applyCoupon(input.value);
-          msgEl.textContent = result.message;
-          msgEl.classList.remove('hidden');
+          msgEl.textContent = result.message; msgEl.classList.remove('hidden');
           msgEl.style.color = result.success ? 'var(--color-success)' : 'var(--color-error)';
-          
-          if (result.success) {
-            input.value = '';
-            Cart.updateUI();
-          }
+          if (result.success) { input.value = ''; Cart.updateUI(); }
         });
-
-        document.getElementById('modal-checkout-btn')?.addEventListener('click', () => {
-          alert('Stripe checkout integration coming next!');
-        });
-
-        document.getElementById('filters-btn')?.addEventListener('click', () => {
-          alert('Filters coming soon!');
-        });
+        document.getElementById('modal-checkout-btn')?.addEventListener('click', () => { alert('Stripe checkout integration coming next!'); });
+        document.getElementById('filters-btn')?.addEventListener('click', () => { alert('Filters coming soon!'); });
 
       } catch (err) {
         console.error('Homepage Load Error:', err);
