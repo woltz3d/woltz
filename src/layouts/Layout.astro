@@ -1,7 +1,7 @@
 ---
 import { supabase } from '../lib/supabase';
 
-// Busca configurações do tema SEMPRE DO BANCO
+// Busca configurações do tema
 let themeSettings: any = {};
 try {
   const { data, error } = await supabase
@@ -19,7 +19,6 @@ try {
   });
   
   themeSettings = Object.fromEntries(latestSettings);
-  console.log('Layout loaded', Object.keys(themeSettings).length, 'theme settings');
 } catch (e) {
   console.error('Failed to load theme settings:', e);
 }
@@ -88,10 +87,9 @@ const { title } = Astro.props;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap" rel="stylesheet" />
     
-    <!-- CSS Variables do Tema + Cursor Original + Toast -->
+    <!-- CSS Variables do Tema -->
     <style is:global>
       :root {
-        /* Colors */
         --color-primary: {colors.primary};
         --color-secondary: {colors.secondary};
         --color-background: {colors.background};
@@ -103,7 +101,6 @@ const { title } = Astro.props;
         --color-error: {colors.error};
         --color-warning: {colors.warning};
         
-        /* Typography */
         --font-heading: {typography.fontHeading};
         --font-body: {typography.fontBody};
         --font-mono: {typography.fontMono};
@@ -115,7 +112,6 @@ const { title } = Astro.props;
         --tracking-heading: {typography.trackingHeading};
         --tracking-body: {typography.trackingBody};
         
-        /* Layout */
         --container-max-width: {layout.containerMaxWidth};
         --section-padding: {layout.sectionPadding};
         --grid-gap: {layout.gridGap};
@@ -129,12 +125,17 @@ const { title } = Astro.props;
         box-sizing: border-box;
       }
       
-      body {
-        margin: 0;
+      html, body {
         background-color: var(--color-background);
         color: var(--color-text);
+      }
+      
+      body {
         font-family: var(--font-body);
-        overflow-x: hidden;
+        font-size: var(--size-body);
+        font-weight: var(--weight-body);
+        letter-spacing: var(--tracking-body);
+        line-height: 1.6;
         cursor: none !important;
       }
       
@@ -144,26 +145,28 @@ const { title } = Astro.props;
         letter-spacing: var(--tracking-heading);
         line-height: 1.1;
         text-transform: uppercase;
+        color: var(--color-text);
       }
       
       h1 { font-size: var(--size-h1); }
       h2 { font-size: var(--size-h2); }
       
+      p { color: var(--color-text); }
+      
       a {
-        color: inherit;
+        color: var(--color-primary);
         text-decoration: none;
         transition: opacity 0.3s ease;
       }
       
-      a:hover {
-        opacity: 0.7;
-      }
+      a:hover { opacity: 0.7; }
       
       button {
         cursor: none;
         border: none;
         background: none;
         font-family: inherit;
+        color: var(--color-text);
       }
       
       img {
@@ -178,14 +181,13 @@ const { title } = Astro.props;
         padding: 0 var(--section-padding);
       }
       
-      /* CURSOR ORIGINAL WOLTZ */
       #custom-cursor {
         position: fixed;
         top: 0;
         left: 0;
         width: 24px;
         height: 24px;
-        border: 1.5px solid rgba(255, 255, 255, 0.8);
+        border: 1.5px solid var(--color-primary);
         border-radius: 50%;
         pointer-events: none;
         z-index: 2147483647;
@@ -193,25 +195,23 @@ const { title } = Astro.props;
         transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
         opacity: 1 !important;
         visibility: visible !important;
-        mix-blend-mode: normal;
       }
 
       #custom-cursor.active {
         width: 50px;
         height: 50px;
-        background-color: rgba(255, 255, 255, 0.15);
-        border-color: #fff;
+        background-color: var(--color-primary);
+        opacity: 0.3;
       }
       
-      /* TOAST NOTIFICATION */
       #cart-toast {
         position: fixed;
         bottom: 2rem;
         left: 50%;
         transform: translateX(-50%) translateY(100px);
-        background: rgba(0, 0, 0, 0.6);
+        background: var(--color-background-alt);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--color-text-muted);
         padding: 1rem 2rem;
         border-radius: 12px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -231,7 +231,7 @@ const { title } = Astro.props;
       }
 
       #cart-toast-message {
-        color: #ffffff;
+        color: var(--color-text);
         font-size: 0.875rem;
         font-weight: 400;
         letter-spacing: 0.02em;
@@ -241,11 +241,10 @@ const { title } = Astro.props;
       #cart-toast svg {
         width: 20px;
         height: 20px;
-        color: #22c55e;
+        color: var(--color-success);
         flex-shrink: 0;
       }
       
-      /* Esconde cursor em mobile/touch */
       @media (hover: none) and (pointer: coarse) {
         body { cursor: auto !important; }
         #custom-cursor { display: none !important; }
@@ -255,10 +254,8 @@ const { title } = Astro.props;
     <slot name="head" />
   </head>
   <body>
-    <!-- Elemento do cursor sempre presente -->
     <div id="custom-cursor"></div>
     
-    <!-- Toast Notification -->
     <div id="cart-toast">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -268,7 +265,6 @@ const { title } = Astro.props;
     
     <slot />
     
-    <!-- Script do Cursor Original -->
     <script is:inline>
       document.addEventListener('DOMContentLoaded', () => {
         const cursor = document.getElementById('custom-cursor');
