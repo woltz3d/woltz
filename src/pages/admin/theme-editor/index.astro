@@ -660,26 +660,14 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       return '#ffffff';
     }
 
-    function updatePreviewCSS() {
+    // Função para atualizar o preview recarregando o iframe
+    function refreshPreview() {
       const iframe = document.getElementById('preview-frame');
-      if (!iframe) return;
-      
-      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-      if (!iframeDoc) return;
-      
-      let styleEl = iframeDoc.getElementById('te-live-styles');
-      if (!styleEl) {
-        styleEl = iframeDoc.createElement('style');
-        styleEl.id = 'te-live-styles';
-        iframeDoc.head.appendChild(styleEl);
+      if (iframe) {
+        // Adiciona timestamp para evitar cache
+        const currentSrc = iframe.src.split('?')[0];
+        iframe.src = currentSrc + '?t=' + Date.now();
       }
-      
-      const cssVars = Object.entries(themeData).map(([key, data]) => {
-        const varName = '--' + key.replace(/\./g, '-');
-        return `${varName}: ${data.value}`;
-      }).join(';\n      ');
-      
-      styleEl.textContent = `:root { ${cssVars} }`;
     }
 
     async function loadThemeSettings() {
@@ -693,8 +681,6 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         
         console.log('Loaded', Object.keys(themeData).length, 'settings');
         renderControls();
-        
-        setTimeout(updatePreviewCSS, 1000);
       } catch (err) {
         console.error('Error loading:', err);
       }
@@ -767,7 +753,8 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
           themeData[key].value = value;
           hasChanges = true;
           
-          updatePreviewCSS();
+          // Atualiza preview em tempo real
+          refreshPreview();
           
           if (this.type === 'color') {
             const textInput = this.parentElement?.querySelector('.te-text-input');
@@ -823,6 +810,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         
         showToast('Saved successfully - Reloading...');
         
+        // Recarrega a página inteira para aplicar as mudanças no site real
         setTimeout(() => {
           window.location.reload();
         }, 1500);
@@ -846,6 +834,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
       btn.classList.add('saving');
       
       try {
+        // Deleta todas as configurações atuais
         const { error } = await supabase
           .from('theme_settings')
           .delete()
@@ -855,6 +844,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         
         showToast('Reset successful - Reloading with defaults...');
         
+        // Recarrega para aplicar os valores padrão do SQL INSERT
         setTimeout(() => {
           window.location.reload();
         }, 1500);
@@ -867,6 +857,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Sidebar items
       document.querySelectorAll('.te-section-item').forEach(item => {
         item.addEventListener('click', function(e) {
           e.preventDefault();
@@ -883,28 +874,33 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         });
       });
 
+      // Open editor button
       document.getElementById('open-editor-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         const panel = document.getElementById('editor-panel');
         if (panel) panel.classList.add('open');
       });
 
+      // Close panel button
       document.getElementById('close-panel-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         const panel = document.getElementById('editor-panel');
         if (panel) panel.classList.remove('open');
       });
 
+      // Save button
       document.getElementById('save-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         saveChanges();
       });
 
+      // Reset button
       document.getElementById('reset-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         resetToDefaults();
       });
 
+      // Device buttons
       document.querySelectorAll('.te-device-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -921,10 +917,12 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
         });
       });
 
+      // Iframe load
       document.getElementById('preview-frame')?.addEventListener('load', () => {
-        setTimeout(updatePreviewCSS, 500);
+        // Opcional: fazer algo após o iframe carregar
       });
 
+      // Load initial settings
       loadThemeSettings();
     });
   </script>
