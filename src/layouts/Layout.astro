@@ -21,6 +21,21 @@ const { title } = Astro.props;
     <style is:global>
       @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
       
+      :root {
+        --color-background: #121214;
+        --color-text: #ffffff;
+        --color-text-muted: rgba(255,255,255,0.4);
+        --color-primary: #ffffff;
+        --color-secondary: #6b7c93;
+        --color-background-alt: #111113;
+        --color-accent: #a8b5c6;
+        --color-success: #22c55e;
+        --color-error: #ef4444;
+        --font-heading: 'Anton', sans-serif;
+        --font-body: 'Inter', sans-serif;
+        --font-mono: 'VCR OSD Mono', monospace;
+      }
+      
       * {
         margin: 0;
         padding: 0;
@@ -28,13 +43,13 @@ const { title } = Astro.props;
       }
       
       body {
-        background-color: #121214;
-        color: #ffffff;
-        font-family: 'Inter', sans-serif;
+        background-color: var(--color-background);
+        color: var(--color-text);
+        font-family: var(--font-body);
         cursor: none !important;
       }
       
-      .font-vcr { font-family: 'VCR OSD Mono', monospace; }
+      .font-vcr { font-family: var(--font-mono); }
       
       #custom-cursor {
         position: fixed;
@@ -42,7 +57,7 @@ const { title } = Astro.props;
         left: 0;
         width: 24px;
         height: 24px;
-        border: 1.5px solid #ffffff;
+        border: 1.5px solid var(--color-primary);
         border-radius: 50%;
         pointer-events: none;
         z-index: 99999;
@@ -53,7 +68,8 @@ const { title } = Astro.props;
       #custom-cursor.active {
         width: 50px;
         height: 50px;
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: var(--color-primary);
+        opacity: 0.2;
       }
       
       @media (hover: none) and (pointer: coarse) {
