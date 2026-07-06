@@ -121,10 +121,12 @@ const { title } = Astro.props;
     
     <slot />
     
-    <!-- SCRIPT DO CURSOR -->
+    <!-- SCRIPT DO CURSOR CORRIGIDO -->
     <script>
       (function() {
         'use strict';
+        
+        console.log('🔍 Initializing cursor...');
         
         const cursor = document.getElementById('custom-cursor');
         if (!cursor) {
@@ -132,7 +134,7 @@ const { title } = Astro.props;
           return;
         }
         
-        console.log('✅ Cursor element found, initializing...');
+        console.log('✅ Cursor element found');
         
         // Garante visibilidade inicial
         cursor.style.display = 'block';
@@ -146,11 +148,12 @@ const { title } = Astro.props;
         let cursorX = 0;
         let cursorY = 0;
         
-        // Atualiza posição do mouse
+        // Atualiza posição do mouse - VERSÃO CORRIGIDA
         document.addEventListener('mousemove', function(e) {
           mouseX = e.clientX;
           mouseY = e.clientY;
-        }, { passive: true });
+          // console.log('📍 Mouse moved to:', mouseX, mouseY);
+        }, { passive: true, capture: true });
         
         // Animação suave
         function animate() {
@@ -161,6 +164,8 @@ const { title } = Astro.props;
           requestAnimationFrame(animate);
         }
         animate();
+        
+        console.log('✅ Cursor animation started');
         
         // Efeito hover em elementos clicáveis
         function addHoverEffect(el) {
@@ -176,6 +181,8 @@ const { title } = Astro.props;
         // Aplica em todos elementos clicáveis
         const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
         clickables.forEach(addHoverEffect);
+        
+        console.log('✅ Cursor initialized with', clickables.length, 'clickable elements');
         
         // Observer para elementos dinâmicos
         const observer = new MutationObserver(function(mutations) {
@@ -198,8 +205,6 @@ const { title } = Astro.props;
           childList: true,
           subtree: true
         });
-        
-        console.log('✅ Custom cursor initialized successfully!');
       })();
     </script>
   </body>
