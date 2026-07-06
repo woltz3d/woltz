@@ -41,6 +41,28 @@ const typography = {
   fontHeading: themeSettings['typography.font_heading']?.value || 'Anton',
   fontBody: themeSettings['typography.font_body']?.value || 'Inter, sans-serif',
   fontMono: themeSettings['typography.font_mono']?.value || 'VCR OSD Mono, monospace',
+  sizeH1: themeSettings['typography.size_h1']?.value || 'clamp(3rem, 8vw, 6rem)',
+  sizeH2: themeSettings['typography.size_h2']?.value || 'clamp(2rem, 5vw, 4rem)',
+  sizeBody: themeSettings['typography.size_body']?.value || '1rem',
+  weightHeading: themeSettings['typography.weight_heading']?.value || '400',
+  weightBody: themeSettings['typography.weight_body']?.value || '400',
+  trackingHeading: themeSettings['typography.tracking_heading']?.value || '-0.02em',
+  trackingBody: themeSettings['typography.tracking_body']?.value || '0.05em',
+};
+
+const layout = {
+  containerMaxWidth: themeSettings['layout.container_max_width']?.value || '1536px',
+  sectionPadding: themeSettings['layout.section_padding']?.value || '3rem',
+  gridGap: themeSettings['layout.grid_gap']?.value || '1.5rem',
+  borderRadius: themeSettings['layout.border_radius']?.value || '0px',
+  heroHeight: themeSettings['layout.hero_height']?.value || '100vh',
+};
+
+const branding = {
+  siteName: themeSettings['branding.site_name']?.value || 'WOLTZ',
+  logoUrl: themeSettings['branding.logo_url']?.value || '',
+  faviconUrl: themeSettings['branding.favicon_url']?.value || '',
+  tagline: themeSettings['branding.tagline']?.value || '',
 };
 
 interface Props {
@@ -54,62 +76,181 @@ const { title } = Astro.props;
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
+    <meta name="description" content={branding.tagline || "WOLTZ - Premium Digital Fashion"} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     
+    {branding.faviconUrl && <link rel="icon" href={branding.faviconUrl} />}
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap" rel="stylesheet" />
     
+    <!-- CSS Variables do Tema -->
     <style is:global>
+      :root {
+        --color-primary: {colors.primary};
+        --color-secondary: {colors.secondary};
+        --color-background: {colors.background};
+        --color-background-alt: {colors.backgroundAlt};
+        --color-text: {colors.text};
+        --color-text-muted: {colors.textMuted};
+        --color-accent: {colors.accent};
+        --color-success: {colors.success};
+        --color-error: {colors.error};
+        --color-warning: {colors.warning};
+        
+        --font-heading: {typography.fontHeading};
+        --font-body: {typography.fontBody};
+        --font-mono: {typography.fontMono};
+        --size-h1: {typography.sizeH1};
+        --size-h2: {typography.sizeH2};
+        --size-body: {typography.sizeBody};
+        --weight-heading: {typography.weightHeading};
+        --weight-body: {typography.weightBody};
+        --tracking-heading: {typography.trackingHeading};
+        --tracking-body: {typography.trackingBody};
+        
+        --container-max-width: {layout.containerMaxWidth};
+        --section-padding: {layout.sectionPadding};
+        --grid-gap: {layout.gridGap};
+        --border-radius: {layout.borderRadius};
+        --hero-height: {layout.heroHeight};
+      }
+      
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
       
-      body {
-        background-color: var(--color-background, #121214);
-        color: var(--color-text, #ffffff);
-        font-family: var(--font-body, 'Inter', sans-serif);
-        cursor: none !important;
-        overflow-x: hidden;
+      html, body {
+        background-color: var(--color-background);
+        color: var(--color-text);
       }
       
-      body * {
+      body {
+        font-family: var(--font-body);
+        font-size: var(--size-body);
+        font-weight: var(--weight-body);
+        letter-spacing: var(--tracking-body);
+        line-height: 1.6;
         cursor: none !important;
+      }
+      
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+        font-weight: var(--weight-heading);
+        letter-spacing: var(--tracking-heading);
+        line-height: 1.1;
+        text-transform: uppercase;
+        color: var(--color-text);
+      }
+      
+      h1 { font-size: var(--size-h1); }
+      h2 { font-size: var(--size-h2); }
+      
+      p { color: var(--color-text); }
+      
+      a {
+        color: var(--color-primary);
+        text-decoration: none;
+        transition: opacity 0.3s ease;
+      }
+      
+      a:hover { opacity: 0.7; }
+      
+      button {
+        cursor: none;
+        border: none;
+        background: none;
+        font-family: inherit;
+        color: var(--color-text);
+      }
+      
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      .container {
+        max-width: var(--container-max-width);
+        margin: 0 auto;
+        padding: 0 var(--section-padding);
       }
       
       /* CURSOR NORMAL - Bolinha pequena com borda */
       #custom-cursor {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 24px !important;
-        height: 24px !important;
-        border: 2px solid var(--color-primary, #ffffff) !important;
-        border-radius: 50% !important;
-        pointer-events: none !important;
-        z-index: 99999999 !important;
-        transform: translate(-50%, -50%) !important;
-        transition: all 0.2s ease !important;
-        background-color: transparent !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--color-primary);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 2147483647;
+        transform: translate(-50%, -50%);
+        transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
         opacity: 1 !important;
         visibility: visible !important;
-        display: block !important;
+        background-color: transparent;
       }
       
-      /* CURSOR ATIVO (HOVER) - Círculo maior com borda branca e fundo transparente */
+      /* CURSOR ATIVO (HOVER) - Círculo maior com borda branca e fundo sutil */
       #custom-cursor.active {
-        width: 50px !important;
-        height: 50px !important;
-        border: 2px solid #ffffff !important;
-        background-color: rgba(255, 255, 255, 0.15) !important;
-        opacity: 1 !important;
+        width: 50px;
+        height: 50px;
+        border: 2px solid #ffffff;
+        background-color: rgba(255, 255, 255, 0.15);
+      }
+      
+      /* TOAST NOTIFICATION */
+      #cart-toast {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--color-background-alt);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--color-text-muted);
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        z-index: 10000;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 300px;
+        max-width: 500px;
+      }
+
+      #cart-toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+
+      #cart-toast-message {
+        color: var(--color-text);
+        font-size: 0.875rem;
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        flex: 1;
+      }
+
+      #cart-toast svg {
+        width: 20px;
+        height: 20px;
+        color: var(--color-success);
+        flex-shrink: 0;
       }
       
       @media (hover: none) and (pointer: coarse) {
-        body, body * { cursor: auto !important; }
+        body { cursor: auto !important; }
         #custom-cursor { display: none !important; }
       }
     </style>
@@ -119,71 +260,72 @@ const { title } = Astro.props;
   <body>
     <div id="custom-cursor"></div>
     
+    <div id="cart-toast">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+      <span id="cart-toast-message">Added to cart</span>
+    </div>
+    
     <slot />
     
-    <script>
-      (function() {
-        'use strict';
-        
-        var cursor = document.getElementById('custom-cursor');
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        const cursor = document.getElementById('custom-cursor');
         if (!cursor) return;
-        
-        cursor.style.display = 'block';
-        cursor.style.opacity = '1';
-        cursor.style.visibility = 'visible';
-        cursor.style.left = '0px';
-        cursor.style.top = '0px';
-        
-        var posX = 0;
-        var posY = 0;
-        var cursorX = 0;
-        var cursorY = 0;
-        
-        window.onmousemove = function(e) {
-          posX = e.clientX;
-          posY = e.clientY;
-        };
-        
-        function moveCursor() {
-          cursorX += (posX - cursorX) * 0.15;
-          cursorY += (posY - cursorY) * 0.15;
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let cursorX = mouseX;
+        let cursorY = mouseY;
+
+        document.addEventListener('mousemove', (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        });
+
+        function animate() {
+          cursorX += (mouseX - cursorX) * 0.2;
+          cursorY += (mouseY - cursorY) * 0.2;
           cursor.style.left = cursorX + 'px';
           cursor.style.top = cursorY + 'px';
-          requestAnimationFrame(moveCursor);
+          requestAnimationFrame(animate);
         }
-        moveCursor();
+        animate();
+
+        const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input');
+        clickables.forEach(el => {
+          el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+          el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+        });
         
-        function addHover(el) {
-          if (!el) return;
-          el.onmouseenter = function() { cursor.className = 'active'; };
-          el.onmouseleave = function() { cursor.className = ''; };
-        }
+        cursor.style.display = 'block';
         
-        var clickables = document.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
-        for (var i = 0; i < clickables.length; i++) {
-          addHover(clickables[i]);
-        }
-        
-        var observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(m) {
-            m.addedNodes.forEach(function(node) {
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
               if (node.nodeType === 1) {
-                if (node.matches && node.matches('a, button, [onclick], .clickable, input, select, textarea')) {
-                  addHover(node);
+                if (node.matches && node.matches('a, button, [onclick], .clickable, input')) {
+                  node.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                  node.addEventListener('mouseleave', () => cursor.classList.remove('active'));
                 }
                 if (node.querySelectorAll) {
-                  var newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
-                  for (var i = 0; i < newClickables.length; i++) {
-                    addHover(newClickables[i]);
-                  }
+                  const newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input');
+                  newClickables.forEach(el => {
+                    el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                    el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+                  });
                 }
               }
             });
           });
         });
         
-        observer.observe(document.body, { childList: true, subtree: true });
-      })();
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      });
     </script>
   </body>
 </html>
