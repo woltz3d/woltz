@@ -4,6 +4,69 @@ interface Props {
 }
 
 const { title } = Astro.props;
+
+// Valores padrão hardcoded (sem dependência do banco)
+const colors = {
+  primary: '#ffffff',
+  secondary: '#6b7c93',
+  background: '#121214',
+  surface: '#1a1a1e',
+  text: '#ffffff',
+  textMuted: 'rgba(255,255,255,0.4)',
+  accent: '#a8b5c6',
+  success: '#22c55e',
+  error: '#ef4444',
+};
+
+const header = {
+  bg: 'transparent',
+  text: '#ffffff',
+};
+
+const hero = {
+  title: '#ffffff',
+  subtitle: 'rgba(255,255,255,0.4)',
+  label: 'rgba(255,255,255,0.4)',
+  price: '#ffffff',
+};
+
+const collection = {
+  bg: '#6b7c93',
+  title: '#ffffff',
+  cardBg: '#5f7085',
+  productName: '#ffffff',
+  productDesc: 'rgba(255,255,255,0.6)',
+  price: '#ffffff',
+  cartIcon: 'rgba(255,255,255,0.5)',
+  filtersBtnBg: 'transparent',
+  filtersBtnBorder: 'rgba(255,255,255,0.3)',
+  filtersBtnText: '#ffffff',
+};
+
+const footer = {
+  bg: '#6b7c93',
+  text: 'rgba(255,255,255,0.8)',
+  muted: 'rgba(255,255,255,0.4)',
+  lettering: 'rgba(255,255,255,0.07)',
+  border: 'rgba(255,255,255,0.2)',
+  socialBg: 'transparent',
+  socialBorder: 'rgba(255,255,255,0.3)',
+  socialColor: '#ffffff',
+  newsletterBg: 'transparent',
+  newsletterBorder: 'rgba(255,255,255,0.4)',
+};
+
+const global = {
+  cursor: '#ffffff',
+  toastBg: 'rgba(0,0,0,0.6)',
+  toastText: '#ffffff',
+};
+
+const typography = {
+  heading: 'Anton',
+  body: 'Inter, sans-serif',
+  mono: 'VCR OSD Mono, monospace',
+};
 ---
 
 <!doctype html>
@@ -18,31 +81,64 @@ const { title } = Astro.props;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap" rel="stylesheet" />
     
+    <!-- CSS Variables -->
     <style is:global>
-      @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
-      
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      :root {
+        --color-primary: {colors.primary};
+        --color-secondary: {colors.secondary};
+        --color-background: {colors.background};
+        --color-surface: {colors.surface};
+        --color-text: {colors.text};
+        --color-text-muted: {colors.textMuted};
+        --color-accent: {colors.accent};
+        --header-bg: {header.bg};
+        --header-text: {header.text};
+        --hero-title: {hero.title};
+        --hero-subtitle: {hero.subtitle};
+        --hero-label: {hero.label};
+        --hero-price: {hero.price};
+        --collection-bg: {collection.bg};
+        --collection-title: {collection.title};
+        --collection-card-bg: {collection.cardBg};
+        --collection-product-name: {collection.productName};
+        --collection-product-desc: {collection.productDesc};
+        --collection-price: {collection.price};
+        --collection-cart-icon: {collection.cartIcon};
+        --collection-filters-bg: {collection.filtersBtnBg};
+        --collection-filters-border: {collection.filtersBtnBorder};
+        --collection-filters-text: {collection.filtersBtnText};
+        --footer-bg: {footer.bg};
+        --footer-text: {footer.text};
+        --footer-muted: {footer.muted};
+        --footer-lettering: {footer.lettering};
+        --footer-border: {footer.border};
+        --footer-social-bg: {footer.socialBg};
+        --footer-social-border: {footer.socialBorder};
+        --footer-social-color: {footer.socialColor};
+        --footer-newsletter-bg: {footer.newsletterBg};
+        --footer-newsletter-border: {footer.newsletterBorder};
+        --cursor-color: {global.cursor};
+        --toast-bg: {global.toastBg};
+        --toast-text: {global.toastText};
+        --font-heading: '{typography.heading}';
+        --font-body: '{typography.body}';
+        --font-mono: '{typography.mono}';
       }
       
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      
       body {
-        background-color: #121214;
-        color: #ffffff;
-        font-family: 'Inter', sans-serif;
+        font-family: var(--font-body);
+        background-color: var(--color-background);
+        color: var(--color-text);
         cursor: none !important;
       }
       
-      .font-vcr { font-family: 'VCR OSD Mono', monospace; }
-      
       #custom-cursor {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 24px;
-        height: 24px;
-        border: 1.5px solid #ffffff;
+        top: 0; left: 0;
+        width: 24px; height: 24px;
+        border: 1.5px solid var(--cursor-color);
         border-radius: 50%;
         pointer-events: none;
         z-index: 99999;
@@ -51,9 +147,9 @@ const { title } = Astro.props;
       }
       
       #custom-cursor.active {
-        width: 50px;
-        height: 50px;
-        background-color: rgba(255, 255, 255, 0.2);
+        width: 50px; height: 50px;
+        background-color: var(--cursor-color);
+        opacity: 0.2;
       }
       
       @media (hover: none) and (pointer: coarse) {
@@ -66,23 +162,21 @@ const { title } = Astro.props;
   </head>
   <body>
     <div id="custom-cursor"></div>
+    <div id="cart-toast">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+      <span id="cart-toast-message">Added to cart</span>
+    </div>
+    
     <slot />
     
     <script is:inline>
       document.addEventListener('DOMContentLoaded', () => {
         const cursor = document.getElementById('custom-cursor');
         if (!cursor) return;
-
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let cursorX = mouseX;
-        let cursorY = mouseY;
-
-        document.addEventListener('mousemove', (e) => {
-          mouseX = e.clientX;
-          mouseY = e.clientY;
-        });
-
+        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
         function animate() {
           cursorX += (mouseX - cursorX) * 0.2;
           cursorY += (mouseY - cursorY) * 0.2;
@@ -91,13 +185,11 @@ const { title } = Astro.props;
           requestAnimationFrame(animate);
         }
         animate();
-
         const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input');
         clickables.forEach(el => {
           el.addEventListener('mouseenter', () => cursor.classList.add('active'));
           el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
         });
-        
         cursor.style.display = 'block';
       });
     </script>
