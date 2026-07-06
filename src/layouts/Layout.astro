@@ -4,69 +4,6 @@ interface Props {
 }
 
 const { title } = Astro.props;
-
-// Valores padrão hardcoded (sem dependência do banco)
-const colors = {
-  primary: '#ffffff',
-  secondary: '#6b7c93',
-  background: '#121214',
-  surface: '#1a1a1e',
-  text: '#ffffff',
-  textMuted: 'rgba(255,255,255,0.4)',
-  accent: '#a8b5c6',
-  success: '#22c55e',
-  error: '#ef4444',
-};
-
-const header = {
-  bg: 'transparent',
-  text: '#ffffff',
-};
-
-const hero = {
-  title: '#ffffff',
-  subtitle: 'rgba(255,255,255,0.4)',
-  label: 'rgba(255,255,255,0.4)',
-  price: '#ffffff',
-};
-
-const collection = {
-  bg: '#6b7c93',
-  title: '#ffffff',
-  cardBg: '#5f7085',
-  productName: '#ffffff',
-  productDesc: 'rgba(255,255,255,0.6)',
-  price: '#ffffff',
-  cartIcon: 'rgba(255,255,255,0.5)',
-  filtersBtnBg: 'transparent',
-  filtersBtnBorder: 'rgba(255,255,255,0.3)',
-  filtersBtnText: '#ffffff',
-};
-
-const footer = {
-  bg: '#6b7c93',
-  text: 'rgba(255,255,255,0.8)',
-  muted: 'rgba(255,255,255,0.4)',
-  lettering: 'rgba(255,255,255,0.07)',
-  border: 'rgba(255,255,255,0.2)',
-  socialBg: 'transparent',
-  socialBorder: 'rgba(255,255,255,0.3)',
-  socialColor: '#ffffff',
-  newsletterBg: 'transparent',
-  newsletterBorder: 'rgba(255,255,255,0.4)',
-};
-
-const global = {
-  cursor: '#ffffff',
-  toastBg: 'rgba(0,0,0,0.6)',
-  toastText: '#ffffff',
-};
-
-const typography = {
-  heading: 'Anton',
-  body: 'Inter, sans-serif',
-  mono: 'VCR OSD Mono, monospace',
-};
 ---
 
 <!doctype html>
@@ -81,58 +18,93 @@ const typography = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap" rel="stylesheet" />
     
-    <!-- CSS Variables -->
     <style is:global>
+      @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
+      
       :root {
-        --color-primary: {colors.primary};
-        --color-secondary: {colors.secondary};
-        --color-background: {colors.background};
-        --color-surface: {colors.surface};
-        --color-text: {colors.text};
-        --color-text-muted: {colors.textMuted};
-        --color-accent: {colors.accent};
-        --header-bg: {header.bg};
-        --header-text: {header.text};
-        --hero-title: {hero.title};
-        --hero-subtitle: {hero.subtitle};
-        --hero-label: {hero.label};
-        --hero-price: {hero.price};
-        --collection-bg: {collection.bg};
-        --collection-title: {collection.title};
-        --collection-card-bg: {collection.cardBg};
-        --collection-product-name: {collection.productName};
-        --collection-product-desc: {collection.productDesc};
-        --collection-price: {collection.price};
-        --collection-cart-icon: {collection.cartIcon};
-        --collection-filters-bg: {collection.filtersBtnBg};
-        --collection-filters-border: {collection.filtersBtnBorder};
-        --collection-filters-text: {collection.filtersBtnText};
-        --footer-bg: {footer.bg};
-        --footer-text: {footer.text};
-        --footer-muted: {footer.muted};
-        --footer-lettering: {footer.lettering};
-        --footer-border: {footer.border};
-        --footer-social-bg: {footer.socialBg};
-        --footer-social-border: {footer.socialBorder};
-        --footer-social-color: {footer.socialColor};
-        --footer-newsletter-bg: {footer.newsletterBg};
-        --footer-newsletter-border: {footer.newsletterBorder};
-        --cursor-color: {global.cursor};
-        --toast-bg: {global.toastBg};
-        --toast-text: {global.toastText};
-        --font-heading: '{typography.heading}';
-        --font-body: '{typography.body}';
-        --font-mono: '{typography.mono}';
+        /* VALORES PADRÃO HARDCODED */
+        --color-primary: #ffffff;
+        --color-secondary: #6b7c93;
+        --color-background: #121214;
+        --color-background-alt: #111113;
+        --color-text: #ffffff;
+        --color-text-muted: rgba(255,255,255,0.4);
+        --color-accent: #a8b5c6;
+        --color-success: #22c55e;
+        --color-error: #ef4444;
+        --color-warning: #f59e0b;
+        
+        --header-bg: transparent;
+        --header-text: #ffffff;
+        
+        --hero-title: #ffffff;
+        --hero-subtitle: rgba(255,255,255,0.4);
+        --hero-label: rgba(255,255,255,0.4);
+        --hero-price: #ffffff;
+        
+        --collection-bg: #6b7c93;
+        --collection-title: #ffffff;
+        --collection-card-bg: #5f7085;
+        --collection-product-name: #ffffff;
+        --collection-product-desc: rgba(255,255,255,0.6);
+        --collection-price: #ffffff;
+        --collection-cart-icon: rgba(255,255,255,0.5);
+        --collection-filters-bg: transparent;
+        --collection-filters-border: rgba(255,255,255,0.3);
+        --collection-filters-text: #ffffff;
+        
+        --footer-bg: #6b7c93;
+        --footer-text: rgba(255,255,255,0.8);
+        --footer-muted: rgba(255,255,255,0.4);
+        --footer-lettering: rgba(255,255,255,0.07);
+        --footer-border: rgba(255,255,255,0.2);
+        --footer-social-bg: transparent;
+        --footer-social-border: rgba(255,255,255,0.3);
+        --footer-social-color: #ffffff;
+        --footer-newsletter-bg: transparent;
+        --footer-newsletter-border: rgba(255,255,255,0.4);
+        
+        --cursor-color: #ffffff;
+        --toast-bg: rgba(0,0,0,0.8);
+        --toast-text: #ffffff;
+        
+        --font-heading: 'Anton', sans-serif;
+        --font-body: 'Inter', sans-serif;
+        --font-mono: 'VCR OSD Mono', monospace;
       }
       
       * { margin: 0; padding: 0; box-sizing: border-box; }
       
-      body {
-        font-family: var(--font-body);
+      html, body {
         background-color: var(--color-background);
         color: var(--color-text);
+      }
+      
+      body {
+        font-family: var(--font-body);
+        line-height: 1.6;
         cursor: none !important;
       }
+      
+      .font-vcr { font-family: var(--font-mono); }
+      
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+        text-transform: uppercase;
+        color: var(--color-text);
+      }
+      
+      a { color: inherit; text-decoration: none; }
+      
+      button {
+        cursor: none;
+        border: none;
+        background: none;
+        font-family: inherit;
+        color: inherit;
+      }
+      
+      img { max-width: 100%; height: auto; display: block; }
       
       #custom-cursor {
         position: fixed;
@@ -144,12 +116,45 @@ const typography = {
         z-index: 99999;
         transform: translate(-50%, -50%);
         transition: width 0.2s, height 0.2s, background-color 0.2s;
+        opacity: 1 !important;
       }
       
       #custom-cursor.active {
         width: 50px; height: 50px;
         background-color: var(--cursor-color);
-        opacity: 0.2;
+        opacity: 0.3;
+      }
+      
+      #cart-toast {
+        position: fixed;
+        bottom: 2rem; left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--toast-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        z-index: 10000;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      
+      #cart-toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+      
+      #cart-toast-message {
+        color: var(--toast-text);
+        font-size: 0.875rem;
+      }
+      
+      #cart-toast svg {
+        width: 20px; height: 20px;
+        color: var(--color-success);
       }
       
       @media (hover: none) and (pointer: coarse) {
@@ -162,6 +167,7 @@ const typography = {
   </head>
   <body>
     <div id="custom-cursor"></div>
+    
     <div id="cart-toast">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -171,26 +177,67 @@ const typography = {
     
     <slot />
     
+    <!-- SCRIPT DO CURSOR + CARREGAMENTO DE TEMA -->
     <script is:inline>
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener('DOMContentLoaded', async () => {
+        // 1. CURSOR CUSTOMIZADO
         const cursor = document.getElementById('custom-cursor');
-        if (!cursor) return;
-        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
-        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
-        function animate() {
-          cursorX += (mouseX - cursorX) * 0.2;
-          cursorY += (mouseY - cursorY) * 0.2;
-          cursor.style.left = cursorX + 'px';
-          cursor.style.top = cursorY + 'px';
-          requestAnimationFrame(animate);
+        if (cursor) {
+          let mouseX = window.innerWidth / 2;
+          let mouseY = window.innerHeight / 2;
+          let cursorX = mouseX;
+          let cursorY = mouseY;
+
+          document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+          });
+
+          function animate() {
+            cursorX += (mouseX - cursorX) * 0.2;
+            cursorY += (mouseY - cursorY) * 0.2;
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            requestAnimationFrame(animate);
+          }
+          animate();
+
+          const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input');
+          clickables.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+          });
+          
+          cursor.style.display = 'block';
         }
-        animate();
-        const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input');
-        clickables.forEach(el => {
-          el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-          el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-        });
-        cursor.style.display = 'block';
+
+        // 2. CARREGAR CONFIGURAÇÕES DO TEMA VIA JAVASCRIPT
+        try {
+          const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
+          const SUPABASE_ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+          
+          if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/theme_settings?select=*`, {
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+              }
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              
+              // Aplica as variáveis CSS dinamicamente
+              data.forEach(row => {
+                const value = typeof row.value === 'string' ? JSON.parse(row.value) : row.value;
+                const cssVarName = '--' + row.key.replace(/\./g, '-');
+                document.documentElement.style.setProperty(cssVarName, value.value || value);
+              });
+            }
+          }
+        } catch (err) {
+          console.log('Theme settings not loaded, using defaults');
+        }
       });
     </script>
   </body>
