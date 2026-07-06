@@ -1,81 +1,367 @@
 ---
 import { supabase } from '../lib/supabase';
 
-// Busca configurações do tema
-// Busca configurações do tema SEMPRE DO BANCO
+// Busca configurações do tema do banco
 let themeSettings: any = {};
 try {
-  const { data } = await supabase
   const { data, error } = await supabase
-   .from('theme_settings')
-    .select('*');
+    .from('theme_settings')
     .select('*')
     .order('updated_at', { ascending: false });
- 
+  
   if (error) throw error;
   
   const latestSettings = new Map();
- data?.forEach((row: any) => {
-    themeSettings[row.key] = row.value;
+  data?.forEach((row: any) => {
     if (!latestSettings.has(row.key)) {
       latestSettings.set(row.key, row.value);
     }
- });
+  });
   
   themeSettings = Object.fromEntries(latestSettings);
   console.log('Layout loaded', Object.keys(themeSettings).length, 'theme settings');
 } catch (e) {
- console.error('Failed to load theme settings:', e);
-}
-@@ -194,7 +203,7 @@
-border-color: #fff;
+  console.error('Failed to load theme settings:', e);
 }
 
-      /* TOAST NOTIFICATION - ESTILO TRANSPARENTE */
+// Extrai valores com fallbacks
+const colors = {
+  primary: themeSettings['colors.primary']?.value || '#ffffff',
+  secondary: themeSettings['colors.secondary']?.value || '#6b7c93',
+  background: themeSettings['colors.background']?.value || '#121214',
+  backgroundAlt: themeSettings['colors.background_alt']?.value || '#111113',
+  text: themeSettings['colors.text']?.value || '#ffffff',
+  textMuted: themeSettings['colors.text_muted']?.value || 'rgba(255,255,255,0.4)',
+  accent: themeSettings['colors.accent']?.value || '#a8b5c6',
+  success: themeSettings['colors.success']?.value || '#22c55e',
+  error: themeSettings['colors.error']?.value || '#ef4444',
+  warning: themeSettings['colors.warning']?.value || '#f59e0b',
+};
+
+const typography = {
+  fontHeading: themeSettings['typography.font_heading']?.value || 'Anton',
+  fontBody: themeSettings['typography.font_body']?.value || 'Inter, sans-serif',
+  fontMono: themeSettings['typography.font_mono']?.value || 'VCR OSD Mono, monospace',
+  sizeH1: themeSettings['typography.size_h1']?.value || 'clamp(3rem, 8vw, 6rem)',
+  sizeH2: themeSettings['typography.size_h2']?.value || 'clamp(2rem, 5vw, 4rem)',
+  sizeBody: themeSettings['typography.size_body']?.value || '1rem',
+  weightHeading: themeSettings['typography.weight_heading']?.value || '400',
+  weightBody: themeSettings['typography.weight_body']?.value || '400',
+  trackingHeading: themeSettings['typography.tracking_heading']?.value || '-0.02em',
+  trackingBody: themeSettings['typography.tracking_body']?.value || '0.05em',
+};
+
+const layout = {
+  containerMaxWidth: themeSettings['layout.container_max_width']?.value || '1536px',
+  sectionPadding: themeSettings['layout.section_padding']?.value || '3rem',
+  gridGap: themeSettings['layout.grid_gap']?.value || '1.5rem',
+  borderRadius: themeSettings['layout.border_radius']?.value || '0px',
+  heroHeight: themeSettings['layout.hero_height']?.value || '100vh',
+};
+
+const branding = {
+  siteName: themeSettings['branding.site_name']?.value || 'WOLTZ',
+  logoUrl: themeSettings['branding.logo_url']?.value || '',
+  faviconUrl: themeSettings['branding.favicon_url']?.value || '',
+  tagline: themeSettings['branding.tagline']?.value || '',
+};
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={branding.tagline || "WOLTZ - Premium Digital Fashion"} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>{title}</title>
+    
+    {branding.faviconUrl && <link rel="icon" href={branding.faviconUrl} />}
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap" rel="stylesheet" />
+    
+    <!-- CSS Variables do Tema -->
+    <style is:global>
+      :root {
+        /* Colors */
+        --color-primary: {colors.primary};
+        --color-secondary: {colors.secondary};
+        --color-background: {colors.background};
+        --color-background-alt: {colors.backgroundAlt};
+        --color-text: {colors.text};
+        --color-text-muted: {colors.textMuted};
+        --color-accent: {colors.accent};
+        --color-success: {colors.success};
+        --color-error: {colors.error};
+        --color-warning: {colors.warning};
+        
+        /* Typography */
+        --font-heading: {typography.fontHeading};
+        --font-body: {typography.fontBody};
+        --font-mono: {typography.fontMono};
+        --size-h1: {typography.sizeH1};
+        --size-h2: {typography.sizeH2};
+        --size-body: {typography.sizeBody};
+        --weight-heading: {typography.weightHeading};
+        --weight-body: {typography.weightBody};
+        --tracking-heading: {typography.trackingHeading};
+        --tracking-body: {typography.trackingBody};
+        
+        /* Layout */
+        --container-max-width: {layout.containerMaxWidth};
+        --section-padding: {layout.sectionPadding};
+        --grid-gap: {layout.gridGap};
+        --border-radius: {layout.borderRadius};
+        --hero-height: {layout.heroHeight};
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      html {
+        font-size: 16px;
+        -webkit-text-size-adjust: 100%;
+      }
+      
+      html, body {
+        background-color: var(--color-background);
+        color: var(--color-text);
+      }
+      
+      body {
+        font-family: var(--font-body);
+        font-size: var(--size-body);
+        font-weight: var(--weight-body);
+        letter-spacing: var(--tracking-body);
+        line-height: 1.6;
+        cursor: none !important;
+        overflow-x: hidden;
+        width: 100vw;
+        min-height: 100vh;
+      }
+      
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+        font-weight: var(--weight-heading);
+        letter-spacing: var(--tracking-heading);
+        line-height: 1.1;
+        text-transform: uppercase;
+        color: var(--color-text);
+      }
+      
+      h1 { font-size: var(--size-h1); }
+      h2 { font-size: var(--size-h2); }
+      
+      p { color: var(--color-text); }
+      
+      a {
+        color: var(--color-primary);
+        text-decoration: none;
+        transition: opacity 0.3s ease;
+      }
+      
+      a:hover { opacity: 0.7; }
+      
+      button {
+        cursor: none;
+        border: none;
+        background: none;
+        font-family: inherit;
+        color: var(--color-text);
+      }
+      
+      img, video, svg {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      .container {
+        max-width: var(--container-max-width);
+        margin: 0 auto;
+        padding: 0 var(--section-padding);
+      }
+      
+      /* CURSOR CUSTOMIZADO */
+      #custom-cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 24px;
+        height: 24px;
+        border: 1.5px solid var(--color-primary);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 2147483647;
+        transform: translate(-50%, -50%);
+        transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+        opacity: 1 !important;
+        visibility: visible !important;
+        display: block !important;
+      }
+
+      #custom-cursor.active {
+        width: 50px;
+        height: 50px;
+        background-color: var(--color-primary);
+        opacity: 0.3;
+      }
+      
       /* TOAST NOTIFICATION */
-#cart-toast {
-position: fixed;
-bottom: 2rem;
-@@ -284,42 +293,39 @@
-}
-animate();
+      #cart-toast {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--color-background-alt);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--color-text-muted);
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        z-index: 10000;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 300px;
+        max-width: 500px;
+      }
 
-        // Adiciona efeito hover em todos elementos clicáveis
-const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input');
-clickables.forEach(el => {
-el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-});
+      #cart-toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
 
-        // Garante que o cursor apareça
-cursor.style.display = 'block';
+      #cart-toast-message {
+        color: var(--color-text);
+        font-size: 0.875rem;
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        flex: 1;
+      }
 
-        // Observer para elementos dinâmicos (produtos carregados via JS)
-const observer = new MutationObserver((mutations) => {
-mutations.forEach((mutation) => {
-mutation.addedNodes.forEach((node) => {
-if (node.nodeType === 1) {
-if (node.matches && node.matches('a, button, [onclick], .clickable, input')) {
-node.addEventListener('mouseenter', () => cursor.classList.add('active'));
-node.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-}
-if (node.querySelectorAll) {
-const newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input');
-newClickables.forEach(el => {
-el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-});
-}
-}
-});
-});
-});
+      #cart-toast svg {
+        width: 20px;
+        height: 20px;
+        color: var(--color-success);
+        flex-shrink: 0;
+      }
+      
+      /* RESPONSIVIDADE */
+      @media (max-width: 768px) {
+        html { font-size: 14px; }
+      }
+      
+      @media (max-width: 480px) {
+        html { font-size: 13px; }
+      }
+      
+      /* DESATIVA CURSOR EM MOBILE/TOUCH */
+      @media (hover: none) and (pointer: coarse) {
+        body { cursor: auto !important; }
+        #custom-cursor { display: none !important; }
+      }
+    </style>
+    
+    <slot name="head" />
+  </head>
+  <body>
+    <!-- CURSOR CUSTOMIZADO -->
+    <div id="custom-cursor"></div>
+    
+    <!-- TOAST NOTIFICATION -->
+    <div id="cart-toast">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+      <span id="cart-toast-message">Added to cart</span>
+    </div>
+    
+    <slot />
+    
+    <!-- SCRIPT DO CURSOR -->
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        const cursor = document.getElementById('custom-cursor');
+        if (!cursor) {
+          console.error('❌ Cursor element not found!');
+          return;
+        }
 
-observer.observe(document.body, {
-childList: true,
-subtree: true
-});
-});
-</script>
-</body>
+        console.log('✅ Cursor initialized');
+
+        // Garante que o cursor esteja visível
+        cursor.style.display = 'block';
+        cursor.style.opacity = '1';
+        cursor.style.visibility = 'visible';
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let cursorX = mouseX;
+        let cursorY = mouseY;
+
+        // Atualiza posição do mouse
+        document.addEventListener('mousemove', (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        }, { passive: true });
+
+        // Animação suave do cursor
+        function animate() {
+          cursorX += (mouseX - cursorX) * 0.2;
+          cursorY += (mouseY - cursorY) * 0.2;
+          cursor.style.left = cursorX + 'px';
+          cursor.style.top = cursorY + 'px';
+          requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Adiciona efeito hover em elementos clicáveis
+        function addHoverEffect(el) {
+          if (!el) return;
+          el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+          el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+        }
+
+        // Seleciona todos os elementos clicáveis existentes
+        const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
+        clickables.forEach(addHoverEffect);
+
+        // Observer para elementos dinâmicos (adicionados via JS)
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === 1) {
+                if (node.matches && node.matches('a, button, [onclick], .clickable, input, select, textarea')) {
+                  addHoverEffect(node);
+                }
+                if (node.querySelectorAll) {
+                  const newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
+                  newClickables.forEach(addHoverEffect);
+                }
+              }
+            });
+          });
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      });
+    </script>
+  </body>
 </html>
