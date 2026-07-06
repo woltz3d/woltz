@@ -1,7 +1,7 @@
 ---
 import { supabase } from '../lib/supabase';
 
-// Busca configurações do tema do banco
+// Busca configurações do tema
 let themeSettings: any = {};
 try {
   const { data, error } = await supabase
@@ -23,7 +23,6 @@ try {
   console.error('Failed to load theme settings:', e);
 }
 
-// Extrai valores com fallbacks
 const colors = {
   primary: themeSettings['colors.primary']?.value || '#ffffff',
   secondary: themeSettings['colors.secondary']?.value || '#6b7c93',
@@ -31,16 +30,11 @@ const colors = {
   backgroundAlt: themeSettings['colors.background_alt']?.value || '#111113',
   text: themeSettings['colors.text']?.value || '#ffffff',
   textMuted: themeSettings['colors.text_muted']?.value || 'rgba(255,255,255,0.4)',
-  accent: themeSettings['colors.accent']?.value || '#a8b5c6',
-  success: themeSettings['colors.success']?.value || '#22c55e',
-  error: themeSettings['colors.error']?.value || '#ef4444',
-  warning: themeSettings['colors.warning']?.value || '#f59e0b',
 };
 
 const typography = {
   fontHeading: themeSettings['typography.font_heading']?.value || 'Anton',
   fontBody: themeSettings['typography.font_body']?.value || 'Inter, sans-serif',
-  fontMono: themeSettings['typography.font_mono']?.value || 'VCR OSD Mono, monospace',
 };
 
 interface Props {
@@ -57,48 +51,35 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap" rel="stylesheet" />
     
     <style is:global>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
       
       body {
         background-color: var(--color-background, #121214);
         color: var(--color-text, #ffffff);
         font-family: var(--font-body, 'Inter', sans-serif);
         cursor: none !important;
-        overflow-x: hidden;
       }
       
-      body * {
-        cursor: none !important;
-      }
+      body * { cursor: none !important; }
       
       #custom-cursor {
         position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
         width: 24px !important;
         height: 24px !important;
         border: 2px solid var(--color-primary, #ffffff) !important;
         border-radius: 50% !important;
         pointer-events: none !important;
-        z-index: 9999999 !important;
+        z-index: 99999999 !important;
         transform: translate(-50%, -50%) !important;
-        transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        display: block !important;
+        transition: width 0.2s, height 0.2s, background-color 0.2s !important;
         background-color: transparent !important;
       }
-
+      
       #custom-cursor.active {
         width: 50px !important;
         height: 50px !important;
@@ -106,9 +87,8 @@ const { title } = Astro.props;
         opacity: 0.3 !important;
       }
       
-      @media (hover: none) and (pointer: coarse) {
-        body { cursor: auto !important; }
-        body * { cursor: auto !important; }
+      @media (hover: none) {
+        body, body * { cursor: auto !important; }
         #custom-cursor { display: none !important; }
       }
     </style>
@@ -116,106 +96,75 @@ const { title } = Astro.props;
     <slot name="head" />
   </head>
   <body>
-    <!-- CURSOR CUSTOMIZADO -->
     <div id="custom-cursor"></div>
-    
     <slot />
     
-    <!-- SCRIPT DO CURSOR - VERSÃO CORRIGIDA -->
     <script>
       (function() {
-        'use strict';
-        
-        console.log('🎯 Cursor script starting...');
-        
-        const cursor = document.getElementById('custom-cursor');
-        if (!cursor) {
-          console.error('❌ Cursor element not found!');
-          return;
-        }
-        
-        console.log('✅ Cursor element found');
+        var cursor = document.getElementById('custom-cursor');
+        if (!cursor) return;
         
         // Garante visibilidade
         cursor.style.display = 'block';
-        cursor.style.opacity = '1';
         cursor.style.visibility = 'visible';
+        cursor.style.opacity = '1';
+        cursor.style.left = '0px';
+        cursor.style.top = '0px';
         
-        // Posições iniciais (centro da tela)
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let cursorX = mouseX;
-        let cursorY = mouseY;
+        var posX = 0;
+        var posY = 0;
+        var cursorX = 0;
+        var cursorY = 0;
         
-        // Atualiza posição inicial do cursor
-        cursor.style.left = mouseX + 'px';
-        cursor.style.top = mouseY + 'px';
+        // Captura movimento do mouse no WINDOW
+        window.onmousemove = function(e) {
+          posX = e.clientX;
+          posY = e.clientY;
+        };
         
-        console.log('📍 Initial position:', mouseX, mouseY);
-        
-        // Event listener no WINDOW (não no document!)
-        window.addEventListener('mousemove', function(e) {
-          mouseX = e.clientX;
-          mouseY = e.clientY;
-          // console.log('🖱️ Mouse moved to:', mouseX, mouseY);
-        }, { passive: true });
-        
-        // Animação suave
-        function animate() {
-          // Suavização (lerp)
-          cursorX += (mouseX - cursorX) * 0.15;
-          cursorY += (mouseY - cursorY) * 0.15;
-          
+        // Animação
+        function moveCursor() {
+          cursorX += (posX - cursorX) * 0.15;
+          cursorY += (posY - cursorY) * 0.15;
           cursor.style.left = cursorX + 'px';
           cursor.style.top = cursorY + 'px';
-          
-          requestAnimationFrame(animate);
+          requestAnimationFrame(moveCursor);
         }
+        moveCursor();
         
-        // Inicia animação
-        animate();
-        console.log('✅ Cursor animation started');
-        
-        // Efeito hover em elementos clicáveis
-        function addHoverEffect(el) {
+        // Efeito hover
+        function addHover(el) {
           if (!el) return;
-          el.addEventListener('mouseenter', function() {
-            cursor.classList.add('active');
-          });
-          el.addEventListener('mouseleave', function() {
-            cursor.classList.remove('active');
-          });
+          el.onmouseenter = function() { cursor.className = 'active'; };
+          el.onmouseleave = function() { cursor.className = ''; };
         }
         
         // Aplica em todos elementos clicáveis
-        const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
-        clickables.forEach(addHoverEffect);
-        
-        console.log('✅ Applied hover effects to', clickables.length, 'elements');
+        var clickables = document.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
+        for (var i = 0; i < clickables.length; i++) {
+          addHover(clickables[i]);
+        }
         
         // Observer para elementos dinâmicos
-        const observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            mutation.addedNodes.forEach(function(node) {
+        var observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(m) {
+            m.addedNodes.forEach(function(node) {
               if (node.nodeType === 1) {
                 if (node.matches && node.matches('a, button, [onclick], .clickable, input, select, textarea')) {
-                  addHoverEffect(node);
+                  addHover(node);
                 }
                 if (node.querySelectorAll) {
-                  const newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
-                  newClickables.forEach(addHoverEffect);
+                  var newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
+                  for (var i = 0; i < newClickables.length; i++) {
+                    addHover(newClickables[i]);
+                  }
                 }
               }
             });
           });
         });
         
-        observer.observe(document.body, {
-          childList: true,
-          subtree: true
-        });
-        
-        console.log('✅ Custom cursor fully initialized!');
+        observer.observe(document.body, { childList: true, subtree: true });
       })();
     </script>
   </body>
