@@ -624,25 +624,25 @@ import '../styles/global.css';
         updateHero(0);
 
         // ============================================
-        // GRID RESPONSIVO - LÓGICA CORRETA
+        // GRID RESPONSIVO - LÓGICA FINAL
         // ============================================
         const gridContainer = document.getElementById('dynamic-grid');
-        
+
         // Detecta largura da tela
         const w = window.innerWidth;
         let cols, cardH, featSpan, gap;
-        
-        if (w >= 1280) {
-          // Desktop grande: 5 colunas, coleção ocupa 2 (40%)
+
+        if (w >= 1440) {
+          // Desktop MUITO grande: 5 colunas, coleção ocupa 2 (40%)
           cols = 5;
           cardH = '550px';
-          featSpan = 2;  // Coleção ocupa 2 de 5 colunas
+          featSpan = 2;
           gap = '24px';
         } else if (w >= 1024) {
-          // Notebook: 4 colunas, coleção ocupa 1 (25%) - TODOS IGUAIS
+          // Notebook e Desktop normal: 4 colunas, TODOS IGUAIS (25%)
           cols = 4;
           cardH = '500px';
-          featSpan = 1;  // Coleção ocupa 1 de 4 colunas (mesmo tamanho dos produtos)
+          featSpan = 1;  // Coleção ocupa apenas 1 coluna (igual produtos)
           gap = '20px';
         } else if (w >= 768) {
           // Tablet: 2 colunas
@@ -657,11 +657,10 @@ import '../styles/global.css';
           featSpan = 1;
           gap = '16px';
         }
-        
-        // Grid container com CSS inline (funciona dinamicamente)
+
         let gridHtml = `<div style="display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: ${gap};">`;
-        
-        // Card Grande da Coleção
+
+        // Card da Coleção
         gridHtml += `
           <div style="grid-column: span ${featSpan}; position: relative;" class="group clickable">
             <div class="relative w-full overflow-hidden tech-card-asymmetric bg-[#5f7085]" style="height: ${cardH};">
@@ -683,7 +682,7 @@ import '../styles/global.css';
           </div>
         `;
 
-        // Produtos (primeira fileira - até 3 produtos)
+        // Produtos
         gridProducts.slice(0, 3).forEach(p => {
           gridHtml += `
             <div class="relative group clickable flex flex-col">
@@ -706,7 +705,6 @@ import '../styles/global.css';
         });
         gridHtml += `</div>`;
 
-        // Segunda fileira (produtos restantes)
         if (gridProducts.length > 3) {
           gridHtml += `<div style="display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: ${gap}; margin-top: 24px;">`;
           gridProducts.slice(3).forEach(p => {
@@ -733,7 +731,6 @@ import '../styles/global.css';
         }
         gridContainer.innerHTML = gridHtml;
 
-        // Recarrega se a tela mudar de tamanho
         let resizeTimer;
         window.addEventListener('resize', () => {
           clearTimeout(resizeTimer);
