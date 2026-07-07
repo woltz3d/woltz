@@ -5,16 +5,18 @@ import '../styles/global.css';
 
 <Layout title="WOLTZ | NOCTIS VOL. I">
 
-  <!-- HERO BANNER -->
+  <!-- ========================================== -->
+  <!-- SEÇÃO 1: HERO BANNER                       -->
+  <!-- ========================================== -->
   <main class="relative w-full h-screen overflow-hidden bg-[#121214]" id="hero-section">
     <div class="absolute inset-0 z-0">
       <img id="hero-main-img" src="" alt="" class="w-full h-full object-cover transition-all duration-1000 ease-out opacity-0" />
       <div class="absolute inset-0 bg-gradient-to-br from-[#121214]/90 via-[#121214]/60 to-transparent"></div>
     </div>
 
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 py-4 md:py-8">
-      <div class="text-sm sm:text-base md:text-lg font-light tracking-[0.3em] sm:tracking-[0.5em] text-white">WOLTZ</div>
-      <nav class="hidden lg:flex gap-6 xl:gap-10 text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.3em] text-white/60 uppercase font-light">
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-8 md:px-16 py-4 md:py-8">
+      <div class="text-sm sm:text-lg font-light tracking-[0.3em] sm:tracking-[0.5em] text-white">WOLTZ</div>
+      <nav class="hidden lg:flex gap-4 xl:gap-10 text-[8px] lg:text-[10px] tracking-[0.2em] lg:tracking-[0.3em] text-white/60 uppercase font-light">
         <a href="/catalog" class="hover:text-white transition-colors duration-500 clickable">[ Catalog ]</a>
         <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Puffers ]</a>
         <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Boots ]</a>
@@ -38,7 +40,7 @@ import '../styles/global.css';
       </div>
     </header>
 
-    <div class="relative z-10 w-full h-full flex items-center px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24">
+    <div class="relative z-10 w-full h-full flex items-center px-4 sm:px-8 md:px-16 lg:px-24">
       <div class="max-w-xl sm:max-w-2xl fade-in-up">
         <div id="collection-series" class="text-[8px] sm:text-[10px] tracking-[0.3em] sm:tracking-[0.4em] text-white/40 mb-4 sm:mb-8 uppercase font-light transition-opacity duration-500 opacity-0">Loading...</div>
         
@@ -47,7 +49,7 @@ import '../styles/global.css';
         </h1>
         
         <div class="flex items-center gap-4 sm:gap-8 mb-3 sm:mb-5">
-          <span class="text-[8px] sm:text-[10px] tracking-[0.3em] text-white/40 uppercase w-16 sm:w-20 font-light">Sets</span>
+          <span class="text-[8px] sm:text-[10px] tracking-[0.3em] text-white/40 uppercase w-14 sm:w-20 font-light">Sets</span>
           <div id="collection-sets" class="flex gap-4 sm:gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500 opacity-0">
             <span class="text-white cursor-pointer clickable">-</span>
           </div>
@@ -71,26 +73,24 @@ import '../styles/global.css';
         </div>
       </div>
 
-      <div class="absolute right-4 sm:right-8 md:right-12 lg:right-16 xl:right-24 top-[20%] sm:top-[25%] flex flex-col items-end gap-2 sm:gap-4 fade-in-up delay-300 w-[200px] sm:w-[280px] md:w-[320px]" id="sidebar-container">
+      <div class="absolute right-4 sm:right-8 md:right-16 lg:right-24 top-[20%] sm:top-[25%] flex flex-col items-end gap-2 sm:gap-4 fade-in-up delay-300 w-[180px] sm:w-[280px] md:w-[320px]" id="sidebar-container">
         <div class="flex flex-col gap-2 sm:gap-4 w-full" id="sidebar-thumbs"></div>
         <div class="text-[8px] sm:text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-1 sm:mt-2 w-full flex justify-end" id="image-indicator">-- — --</div>
       </div>
 
-      <div class="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 md:bottom-12 md:right-12 lg:right-16 xl:right-24 flex gap-3 sm:gap-5 fade-in-up delay-500">
+      <div class="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 md:bottom-12 md:right-16 lg:right-24 flex gap-3 sm:gap-5 fade-in-up delay-500">
         <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
           </svg>
         </a>
         <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
           </svg>
         </a>
         <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
           </svg>
         </a>
@@ -98,8 +98,10 @@ import '../styles/global.css';
     </div>
   </main>
 
-  <!-- NEW COLLECTION -->
-  <section class="relative w-full bg-[#6b7c93] py-8 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20">
+  <!-- ========================================== -->
+  <!-- SEÇÃO 2: NEW COLLECTION                    -->
+  <!-- ========================================== -->
+  <section class="relative w-full bg-[#6b7c93] py-8 sm:py-12 px-4 sm:px-6 md:px-12 lg:px-20">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 sm:mb-8 gap-4">
       <div class="flex-1">
         <h2 class="font-['Anton'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl uppercase text-white tracking-tight">NEW COLLECTION</h2>
@@ -113,11 +115,13 @@ import '../styles/global.css';
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="relative w-full bg-[#6b7c93] pt-12 sm:pt-16 pb-8 sm:pb-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 overflow-hidden flex flex-col">
-    <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 md:gap-8 mb-8">
+  <!-- ========================================== -->
+  <!-- FOOTER                                     -->
+  <!-- ========================================== -->
+  <footer class="relative w-full bg-[#6b7c93] pt-12 sm:pt-16 pb-8 sm:pb-12 px-4 sm:px-6 md:px-12 lg:px-20 overflow-hidden flex flex-col">
+    <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-8 mb-8">
       <div class="flex flex-col gap-4 sm:gap-6">
-        <svg class="w-32 sm:w-40 md:w-48 h-8 sm:h-10 text-white/80" viewBox="0 0 200 40" fill="currentColor">
+        <svg class="w-32 sm:w-40 lg:w-48 h-8 sm:h-10 text-white/80" viewBox="0 0 200 40" fill="currentColor">
           <rect x="0" y="0" width="2" height="40"/><rect x="4" y="0" width="1" height="40"/><rect x="7" y="0" width="3" height="40"/><rect x="12" y="0" width="1" height="40"/><rect x="15" y="0" width="2" height="40"/><rect x="19" y="0" width="4" height="40"/><rect x="25" y="0" width="1" height="40"/><rect x="28" y="0" width="2" height="40"/><rect x="32" y="0" width="3" height="40"/><rect x="37" y="0" width="1" height="40"/><rect x="40" y="0" width="2" height="40"/><rect x="44" y="0" width="1" height="40"/><rect x="47" y="0" width="3" height="40"/><rect x="52" y="0" width="2" height="40"/><rect x="56" y="0" width="1" height="40"/><rect x="59" y="0" width="4" height="40"/><rect x="65" y="0" width="1" height="40"/><rect x="68" y="0" width="2" height="40"/><rect x="72" y="0" width="1" height="40"/><rect x="75" y="0" width="3" height="40"/><rect x="80" y="0" width="2" height="40"/><rect x="84" y="0" width="1" height="40"/><rect x="87" y="0" width="2" height="40"/><rect x="91" y="0" width="3" height="40"/><rect x="96" y="0" width="1" height="40"/><rect x="99" y="0" width="2" height="40"/><rect x="103" y="0" width="4" height="40"/><rect x="109" y="0" width="1" height="40"/><rect x="112" y="0" width="2" height="40"/><rect x="116" y="0" width="1" height="40"/><rect x="119" y="0" width="3" height="40"/><rect x="124" y="0" width="2" height="40"/><rect x="128" y="0" width="1" height="40"/><rect x="131" y="0" width="2" height="40"/><rect x="135" y="0" width="3" height="40"/><rect x="140" y="0" width="1" height="40"/><rect x="143" y="0" width="2" height="40"/><rect x="147" y="0" width="1" height="40"/><rect x="150" y="0" width="4" height="40"/><rect x="156" y="0" width="1" height="40"/><rect x="159" y="0" width="2" height="40"/><rect x="163" y="0" width="3" height="40"/><rect x="168" y="0" width="1" height="40"/><rect x="171" y="0" width="2" height="40"/><rect x="175" y="0" width="1" height="40"/><rect x="178" y="0" width="3" height="40"/><rect x="183" y="0" width="2" height="40"/><rect x="187" y="0" width="1" height="40"/><rect x="190" y="0" width="2" height="40"/><rect x="194" y="0" width="3" height="40"/><rect x="199" y="0" width="1" height="40"/>
         </svg>
         <div class="font-vcr text-[9px] sm:text-[10px] tracking-[0.15em] text-white/80 uppercase leading-relaxed">
@@ -151,7 +155,7 @@ import '../styles/global.css';
           <a href="#" class="hover:text-white transition-colors duration-300">[ NEWS ]</a>
         </nav>
       </div>
-      <div class="flex flex-col items-start sm:items-start md:items-end gap-4 sm:gap-6">
+      <div class="flex flex-col items-start sm:items-start lg:items-end gap-4 sm:gap-6">
         <div class="font-['Anton'] text-2xl sm:text-3xl tracking-[0.2em] text-white">WOLTZ</div>
         <div class="flex gap-3 sm:gap-4">
           <a href="#" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
@@ -167,7 +171,7 @@ import '../styles/global.css';
       </div>
     </div>
     <div class="relative w-full flex items-center justify-center py-8 sm:py-12 md:py-16 overflow-hidden">
-      <h2 class="font-['Anton'] text-[20vw] sm:text-[18vw] md:text-[15vw] leading-none text-white/[0.07] tracking-tight select-none whitespace-nowrap">WOLTZ PUFFERS</h2>
+      <h2 class="font-['Anton'] text-[20vw] sm:text-[18vw] lg:text-[15vw] leading-none text-white/[0.07] tracking-tight select-none whitespace-nowrap">WOLTZ PUFFERS</h2>
     </div>
     <div class="relative z-10 border-t border-white/20 pt-4 sm:pt-6 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 font-vcr text-[8px] sm:text-[9px] tracking-[0.2em] text-white/40 uppercase">
       <p>MADE WITH PRECISION IN BROOKLYN</p>
@@ -175,7 +179,9 @@ import '../styles/global.css';
     </div>
   </footer>
 
-  <!-- CARRINHO: PREVIEW LATERAL -->
+  <!-- ========================================== -->
+  <!-- CARRINHO: PREVIEW LATERAL (DRAWER)         -->
+  <!-- ========================================== -->
   <div id="cart-preview" class="fixed inset-0 z-[100] hidden">
     <div class="absolute inset-0 bg-black/40 backdrop-blur-xl" id="cart-preview-overlay"></div>
     <div class="absolute right-0 top-0 h-full w-[420px] max-w-[90vw] bg-white/10 backdrop-blur-2xl border-l border-white/20 flex flex-col transform translate-x-full transition-transform duration-500 ease-out shadow-2xl" id="cart-preview-panel">
@@ -200,7 +206,9 @@ import '../styles/global.css';
     </div>
   </div>
 
-  <!-- CARRINHO: MODAL COMPLETO -->
+  <!-- ========================================== -->
+  <!-- CARRINHO: MODAL COMPLETO                   -->
+  <!-- ========================================== -->
   <div id="cart-modal" class="fixed inset-0 z-[150] hidden">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-xl" id="cart-modal-overlay"></div>
     <div class="absolute inset-0 flex items-center justify-center p-4 md:p-8">
@@ -257,7 +265,9 @@ import '../styles/global.css';
     </div>
   </div>
 
-  <!-- CARRINHO: TOAST -->
+  <!-- ========================================== -->
+  <!-- CARRINHO: NOTIFICAÇÃO TOAST                -->
+  <!-- ========================================== -->
   <div id="cart-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-xl text-black px-6 py-3 rounded-lg shadow-2xl z-[200] transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 border border-white/50">
     <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
     <span id="cart-toast-message" class="text-sm font-medium">Added to cart</span>
@@ -606,45 +616,19 @@ import '../styles/global.css';
         });
         updateHero(0);
 
-        // === GRID RESPONSIVO ===
+        // === GRID RESPONSIVO COM CLASSES TAILWIND ===
         const gridContainer = document.getElementById('dynamic-grid');
         
-        // Detecta tamanho da tela para definir número de colunas
-        const getGridClasses = () => {
-          if (window.innerWidth >= 1280) return 'grid-cols-5';
-          if (window.innerWidth >= 1024) return 'grid-cols-4';
-          if (window.innerWidth >= 768) return 'grid-cols-3';
-          if (window.innerWidth >= 640) return 'grid-cols-2';
-          return 'grid-cols-1';
-        };
+        // Grid responsivo: 1col mobile → 2col sm → 3col md → 4col lg → 5col xl
+        let gridHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">`;
         
-        const getCardHeight = () => {
-          if (window.innerWidth >= 1280) return 'h-[550px]';
-          if (window.innerWidth >= 1024) return 'h-[480px]';
-          if (window.innerWidth >= 768) return 'h-[420px]';
-          if (window.innerWidth >= 640) return 'h-[380px]';
-          return 'h-[340px]';
-        };
-        
-        const getFeaturedSpan = () => {
-          if (window.innerWidth >= 1280) return 'col-span-2';
-          if (window.innerWidth >= 768) return 'col-span-2';
-          return 'col-span-1';
-        };
-        
-        const gridCols = getGridClasses();
-        const cardHeight = getCardHeight();
-        const featuredSpan = getFeaturedSpan();
-        
-        let gridHtml = `<div class="grid ${gridCols} gap-3 sm:gap-4 md:gap-6">`;
-        
-        // Card Grande da Coleção
+        // Card Grande da Coleção - ocupa 2 colunas em telas médias/grandes
         gridHtml += `
-          <div class="${featuredSpan} relative group clickable ${cardHeight}">
+          <div class="col-span-1 sm:col-span-2 relative group clickable h-[380px] sm:h-[450px] md:h-[500px] lg:h-[550px]">
             <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
               <img src="${imgUrl(featuredCollection.image_url, 1200)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="${featuredCollection.name}" />
               <div class="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-10 text-right">
-                <h3 class="font-['Anton'] text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white tracking-tight leading-none mb-1 drop-shadow-md">${featuredCollection.name.toUpperCase()}</h3>
+                <h3 class="font-['Anton'] text-xl sm:text-2xl md:text-3xl lg:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">${featuredCollection.name.toUpperCase()}</h3>
                 <p class="text-[8px] sm:text-[9px] md:text-xs tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-2 sm:mb-3 font-vcr">${featuredCollection.description ? featuredCollection.description.substring(0, 30) + '...' : 'PREMIUM COLLECTION'}</p>
                 <div class="flex items-center justify-end gap-2 sm:gap-3">
                   <div class="text-right hidden sm:block">
@@ -652,7 +636,7 @@ import '../styles/global.css';
                     <p class="text-base sm:text-lg font-light text-white drop-shadow-sm">$ ${Number(featuredCollection.pack_price_usd).toFixed(2)}</p>
                   </div>
                   <button class="add-pack-btn w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white" onclick="window.addPackFromCard('${featuredCollection.id}', '${featuredCollection.name.replace(/'/g, "\\'")}', '${featuredCollection.pack_price_usd}', '${featuredCollection.image_url}')">
-                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
                   </button>
                 </div>
               </div>
@@ -662,13 +646,13 @@ import '../styles/global.css';
 
         gridProducts.slice(0, 3).forEach(p => {
           gridHtml += `
-            <div class="col-span-1 relative group clickable flex flex-col ${cardHeight}">
+            <div class="col-span-1 relative group clickable flex flex-col h-[380px] sm:h-[450px] md:h-[500px] lg:h-[550px]">
               <div class="relative w-full flex-1 overflow-hidden mb-3 sm:mb-4 tech-card-asymmetric bg-[#5f7085]">
                 <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
               </div>
               <div class="mt-auto">
                 <h4 class="font-['Anton'] text-xs sm:text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
-                <p class="text-[8px] sm:text-[9px] tracking-wider text-white/60 uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                <p class="text-white/60 text-[8px] sm:text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
                 <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
                 <div class="flex items-center justify-between">
                   <button class="add-to-cart-btn w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
@@ -683,16 +667,16 @@ import '../styles/global.css';
         gridHtml += `</div>`;
 
         if (gridProducts.length > 3) {
-          gridHtml += `<div class="grid ${gridCols} gap-3 sm:gap-4 md:gap-6 mt-4 sm:mt-6">`;
+          gridHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 mt-4 sm:mt-6">`;
           gridProducts.slice(3).forEach(p => {
             gridHtml += `
-              <div class="col-span-1 relative group clickable flex flex-col ${cardHeight}">
+              <div class="col-span-1 relative group clickable flex flex-col h-[380px] sm:h-[450px] md:h-[500px] lg:h-[550px]">
                 <div class="relative w-full flex-1 overflow-hidden mb-3 sm:mb-4 tech-card-asymmetric bg-[#5f7085]">
                   <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
                 </div>
                 <div class="mt-auto">
                   <h4 class="font-['Anton'] text-xs sm:text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
-                  <p class="text-[8px] sm:text-[9px] tracking-wider text-white/60 uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                  <p class="text-white/60 text-[8px] sm:text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
                   <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
                   <div class="flex items-center justify-between">
                     <button class="add-to-cart-btn w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
