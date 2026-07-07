@@ -213,4 +213,553 @@ import '../styles/global.css';
   <!-- ========================================== -->
   <div id="cart-modal" class="fixed inset-0 z-[150] hidden">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-xl" id="cart-modal-overlay"></div>
-    <div class="
+    <div class="absolute inset-0 flex items-center justify-center p-4 md:p-8">
+      <div class="relative w-full max-w-5xl max-h-[85vh] bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden transform scale-95 opacity-0 transition-all duration-500" id="cart-modal-panel">
+        <div class="flex items-center justify-between px-6 sm:px-8 py-4 sm:py-5 border-b border-white/20 bg-black/20">
+          <h3 class="font-['Anton'] text-xl sm:text-2xl md:text-3xl uppercase text-white tracking-wide">Your Cart</h3>
+          <button id="close-cart-modal" class="text-white/70 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-hidden">
+          <div class="h-full grid grid-cols-1 lg:grid-cols-[1fr_320px] overflow-hidden">
+            <div class="overflow-y-auto p-6 sm:p-8" id="cart-modal-items">
+              <p class="text-white/50 text-center py-12 font-vcr text-sm">Your cart is empty</p>
+            </div>
+            <div class="bg-black/30 backdrop-blur-md border-l border-white/20 p-5 sm:p-6 overflow-y-auto">
+              <h4 class="font-['Anton'] text-lg sm:text-xl uppercase tracking-wide mb-5 sm:mb-6 text-white">Order Summary</h4>
+              <div class="space-y-3 mb-5 sm:mb-6 pb-5 sm:pb-6 border-b border-white/20">
+                <div class="flex justify-between items-center">
+                  <span class="text-white/70 font-vcr uppercase text-xs tracking-wider">Subtotal</span>
+                  <span id="modal-subtotal" class="font-mono text-white text-sm sm:text-base">$ 0.00</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-white/70 font-vcr uppercase text-xs tracking-wider">Shipping</span>
+                  <span class="font-mono text-green-400 text-sm sm:text-base">FREE</span>
+                </div>
+                <div id="modal-discount-row" class="hidden flex justify-between items-center">
+                  <span class="text-white/70 font-vcr uppercase text-xs tracking-wider">Discount</span>
+                  <span id="modal-discount" class="font-mono text-red-400 text-sm sm:text-base">- $ 0.00</span>
+                </div>
+              </div>
+              <div class="mb-5 sm:mb-6">
+                <label class="text-[9px] sm:text-[10px] tracking-[0.2em] text-white/60 uppercase mb-2 block font-vcr">Coupon Code</label>
+                <div class="flex gap-2">
+                  <input type="text" id="modal-coupon-input" placeholder="ENTER CODE" class="flex-1 bg-black/40 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/50 uppercase font-vcr" />
+                  <button id="modal-apply-coupon" class="bg-white text-black px-3 sm:px-4 py-2 text-xs uppercase tracking-wider font-bold hover:bg-white/90 transition-colors rounded-lg whitespace-nowrap">Apply</button>
+                </div>
+                <p id="modal-coupon-message" class="text-xs mt-2 hidden font-vcr"></p>
+              </div>
+              <div class="flex justify-between items-center mb-5 sm:mb-6 pb-5 sm:pb-6 border-b border-white/20">
+                <span class="text-white uppercase tracking-wider text-sm font-vcr">Total</span>
+                <span id="modal-total" class="font-['Anton'] text-2xl sm:text-3xl">$ 0.00</span>
+              </div>
+              <button id="modal-checkout-btn" class="w-full bg-white text-black py-3 text-sm uppercase tracking-[0.3em] font-bold hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-lg shadow-lg">
+                Proceed to Checkout
+              </button>
+              <p class="text-center text-white/40 text-[9px] sm:text-[10px] font-vcr mt-3 uppercase tracking-wider">
+                Secure payment via Stripe
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- CARRINHO: NOTIFICAÇÃO TOAST                -->
+  <!-- ========================================== -->
+  <div id="cart-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-xl text-black px-6 py-3 rounded-lg shadow-2xl z-[200] transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 border border-white/50">
+    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <span id="cart-toast-message" class="text-sm font-medium">Added to cart</span>
+  </div>
+
+  <!-- ESTILOS GLOBAIS -->
+  <style is:global>
+    @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
+    .font-vcr { font-family: 'VCR OSD Mono', monospace; }
+    .tech-card-asymmetric {
+      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+      background-color: #5f7085;
+    }
+    #cart-modal-items::-webkit-scrollbar { width: 6px; }
+    #cart-modal-items::-webkit-scrollbar-track { background: transparent; }
+    #cart-modal-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    #cart-modal-items::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+  </style>
+
+  <!-- SCRIPT PRINCIPAL -->
+  <script is:inline>
+    const Cart = {
+      items: [],
+      discount: 0,
+      couponCode: null,
+      init() {
+        const saved = localStorage.getItem('woltz_cart');
+        if (saved) {
+          try { this.items = JSON.parse(saved); } catch(e) { this.items = []; }
+        }
+        this.updateUI();
+      },
+      save() {
+        localStorage.setItem('woltz_cart', JSON.stringify(this.items));
+        this.updateUI();
+      },
+      add(product) {
+        const existing = this.items.find(i => i.id === product.id);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          this.items.push({
+            id: product.id,
+            name: product.name,
+            price: parseFloat(product.price_usd) || 0,
+            thumbnail: product.thumbnail_url,
+            qty: 1,
+            isPack: product.isPack || false
+          });
+        }
+        this.save();
+        this.showToast(`${product.name} added to cart`);
+      },
+      remove(productId) {
+        this.items = this.items.filter(i => i.id !== productId);
+        this.save();
+      },
+      updateQty(productId, delta) {
+        const item = this.items.find(i => i.id === productId);
+        if (item) {
+          item.qty += delta;
+          if (item.qty <= 0) {
+            this.remove(productId);
+            return;
+          }
+        }
+        this.save();
+      },
+      applyCoupon(code) {
+        const coupons = {
+          'WELCOME10': 0.10,
+          'INFLUENCER15': 0.15,
+          'VIP20': 0.20
+        };
+        const upperCode = code.toUpperCase().trim();
+        if (coupons[upperCode]) {
+          this.discount = coupons[upperCode];
+          this.couponCode = upperCode;
+          return { success: true, message: `Coupon ${upperCode} applied! ${Math.round(this.discount*100)}% off` };
+        }
+        return { success: false, message: 'Invalid coupon code' };
+      },
+      getTotal() {
+        return this.items.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      },
+      getSubtotal() { return this.getTotal(); },
+      getDiscount() { return this.getSubtotal() * this.discount; },
+      getFinalTotal() { return this.getSubtotal() - this.getDiscount(); },
+      getCount() {
+        return this.items.reduce((sum, i) => sum + i.qty, 0);
+      },
+      updateUI() {
+        const countEl = document.getElementById('cart-count');
+        const count = this.getCount();
+        if (countEl) {
+          countEl.textContent = count;
+          countEl.style.opacity = count > 0 ? '1' : '0';
+        }
+        this.renderPreview();
+        this.renderModal();
+      },
+      renderPreview() {
+        const container = document.getElementById('cart-preview-items');
+        const totalEl = document.getElementById('cart-preview-total');
+        if (!container) return;
+        if (this.items.length === 0) {
+          container.innerHTML = '<p class="text-white/50 text-sm text-center py-8 font-vcr">Your cart is empty</p>';
+          if (totalEl) totalEl.textContent = '$ 0.00';
+          return;
+        }
+        container.innerHTML = this.items.map(item => `
+          <div class="flex gap-4 items-center bg-white/10 backdrop-blur-md p-3 rounded-lg border border-white/20 hover:bg-white/15 transition-colors">
+            <img src="${item.thumbnail ? item.thumbnail + '?width=80&quality=80' : ''}" class="w-16 h-16 object-cover rounded-md border border-white/10" />
+            <div class="flex-1 min-w-0">
+              <h4 class="text-white text-sm font-medium truncate font-['Anton'] uppercase tracking-wide">${item.name}</h4>
+              <p class="text-white/60 text-xs font-vcr">Qty: ${item.qty}</p>
+              <p class="text-white font-mono text-sm mt-1">$ ${(item.price * item.qty).toFixed(2)}</p>
+            </div>
+            <button data-remove="${item.id}" class="remove-item-btn text-white/50 hover:text-red-400 p-2 hover:bg-white/10 rounded-full transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+        `).join('');
+        if (totalEl) totalEl.textContent = `$ ${this.getFinalTotal().toFixed(2)}`;
+        container.querySelectorAll('.remove-item-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = e.currentTarget.dataset.remove;
+            this.remove(id);
+          });
+        });
+      },
+      renderModal() {
+        const container = document.getElementById('cart-modal-items');
+        const subtotalEl = document.getElementById('modal-subtotal');
+        const totalEl = document.getElementById('modal-total');
+        const discountRow = document.getElementById('modal-discount-row');
+        const discountEl = document.getElementById('modal-discount');
+        const checkoutBtn = document.getElementById('modal-checkout-btn');
+        if (!container) return;
+        if (this.items.length === 0) {
+          container.innerHTML = '<p class="text-white/50 text-center py-12 font-vcr text-sm">Your cart is empty</p>';
+          if (subtotalEl) subtotalEl.textContent = '$ 0.00';
+          if (totalEl) totalEl.textContent = '$ 0.00';
+          if (discountRow) discountRow.classList.add('hidden');
+          if (checkoutBtn) checkoutBtn.disabled = true;
+          return;
+        }
+        if (checkoutBtn) checkoutBtn.disabled = false;
+        container.innerHTML = '<div class="space-y-3">' + this.items.map(item => `
+          <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-4 flex gap-4 items-center hover:bg-white/15 transition-colors">
+            <img src="${item.thumbnail ? item.thumbnail + '?width=150&quality=80' : ''}" class="w-24 h-24 md:w-28 md:h-28 object-cover rounded-lg border border-white/10 flex-shrink-0" />
+            <div class="flex-1 min-w-0">
+              <h4 class="font-['Anton'] text-lg uppercase tracking-wide mb-1 text-white">${item.name}</h4>
+              <p class="text-white/60 text-xs font-vcr mb-3 uppercase tracking-wider">${item.isPack ? 'COLLECTION PACK' : 'DIGITAL DOWNLOAD'}</p>
+              <div class="flex items-center gap-3">
+                <button data-dec="${item.id}" class="qty-btn w-8 h-8 rounded-lg border border-white/30 flex items-center justify-center hover:bg-white hover:text-black transition-colors text-sm font-bold">−</button>
+                <span class="text-sm font-mono w-6 text-center text-white">${item.qty}</span>
+                <button data-inc="${item.id}" class="qty-btn w-8 h-8 rounded-lg border border-white/30 flex items-center justify-center hover:bg-white hover:text-black transition-colors text-sm font-bold">+</button>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <p class="font-mono text-lg mb-2 text-white">$ ${(item.price * item.qty).toFixed(2)}</p>
+              <button data-remove="${item.id}" class="remove-btn text-white/50 hover:text-red-400 text-xs uppercase tracking-wider transition-colors font-vcr">Remove</button>
+            </div>
+          </div>
+        `).join('') + '</div>';
+        const subtotal = this.getSubtotal();
+        const discount = this.getDiscount();
+        const total = this.getFinalTotal();
+        if (subtotalEl) subtotalEl.textContent = `$ ${subtotal.toFixed(2)}`;
+        if (totalEl) totalEl.textContent = `$ ${total.toFixed(2)}`;
+        if (discount > 0) {
+          if (discountRow) discountRow.classList.remove('hidden');
+          if (discountEl) discountEl.textContent = `- $ ${discount.toFixed(2)}`;
+        } else {
+          if (discountRow) discountRow.classList.add('hidden');
+        }
+        container.querySelectorAll('.remove-btn').forEach(btn => {
+          btn.addEventListener('click', () => this.remove(btn.dataset.remove));
+        });
+        container.querySelectorAll('.qty-btn[data-inc]').forEach(btn => {
+          btn.addEventListener('click', () => this.updateQty(btn.dataset.inc, 1));
+        });
+        container.querySelectorAll('.qty-btn[data-dec]').forEach(btn => {
+          btn.addEventListener('click', () => this.updateQty(btn.dataset.dec, -1));
+        });
+      },
+      showToast(message) {
+        const toast = document.getElementById('cart-toast');
+        const msgEl = document.getElementById('cart-toast-message');
+        if (!toast || !msgEl) return;
+        msgEl.textContent = message;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0');
+          toast.classList.remove('translate-y-0', 'opacity-100');
+        }, 2500);
+      },
+      openPreview() {
+        const preview = document.getElementById('cart-preview');
+        const panel = document.getElementById('cart-preview-panel');
+        if (preview && panel) {
+          preview.classList.remove('hidden');
+          setTimeout(() => panel.classList.remove('translate-x-full'), 10);
+        }
+      },
+      closePreview() {
+        const preview = document.getElementById('cart-preview');
+        const panel = document.getElementById('cart-preview-panel');
+        if (preview && panel) {
+          panel.classList.add('translate-x-full');
+          setTimeout(() => preview.classList.add('hidden'), 500);
+        }
+      },
+      openModal() {
+        const modal = document.getElementById('cart-modal');
+        const panel = document.getElementById('cart-modal-panel');
+        if (modal && panel) {
+          modal.classList.remove('hidden');
+          setTimeout(() => {
+            panel.classList.remove('scale-95', 'opacity-0');
+            panel.classList.add('scale-100', 'opacity-100');
+          }, 10);
+        }
+      },
+      closeModal() {
+        const modal = document.getElementById('cart-modal');
+        const panel = document.getElementById('cart-modal-panel');
+        if (modal && panel) {
+          panel.classList.remove('scale-100', 'opacity-100');
+          panel.classList.add('scale-95', 'opacity-0');
+          setTimeout(() => modal.classList.add('hidden'), 500);
+        }
+      }
+    };
+
+    let currentPackData = null;
+    window.addCurrentPack = function() {
+      if (currentPackData) {
+        Cart.add(currentPackData);
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      Cart.init();
+      try {
+        const res = await fetch('/api/home-data');
+        if (!res.ok) throw new Error('Failed to load data');
+        const data = await res.json();
+        const { featuredCollection, sidebarCollections, gridProducts } = data;
+        if (!featuredCollection) return;
+
+        const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
+        const renderColors = (colors) => {
+          if (!colors || !Array.isArray(colors) || colors.length === 0) return '';
+          let html = '<div class="flex items-center gap-1.5">';
+          colors.slice(0, 4).forEach(c => {
+            if (c.type === 'pattern' && c.url) {
+              html += `<span class="w-3 h-3 rounded-full overflow-hidden border border-white/70 inline-block shadow-sm"><img src="${c.url}?width=20" class="w-full h-full object-cover" /></span>`;
+            } else {
+              html += `<span class="w-3 h-3 rounded-full shadow-sm inline-block border border-white/30" style="background:${c.hex || '#ccc'}"></span>`;
+            }
+          });
+          if (colors.length > 4) html += `<span class="text-[10px] text-white/80 font-vcr ml-1 font-bold">+${colors.length - 4}</span>`;
+          html += '</div>';
+          return html;
+        };
+
+        const mainImg = document.getElementById('hero-main-img');
+        const seriesEl = document.getElementById('collection-series');
+        const titleEl = document.getElementById('collection-title');
+        const setsEl = document.getElementById('collection-sets');
+        const priceEl = document.getElementById('collection-price');
+        const indicator = document.getElementById('image-indicator');
+        const sidebarContainer = document.getElementById('sidebar-thumbs');
+
+        const allHeroData = [featuredCollection, ...sidebarCollections].map((col, i) => ({
+          index: i,
+          image: imgUrl(col.image_url, 2400),
+          thumbImage: imgUrl(col.image_url, 600),
+          series: `[ Series: ${col.category || 'Latest Drop'} ] · [ Collection ]`,
+          title: col.name,
+          sets: `${col.product_count || 0} Items`,
+          price: `$ ${Number(col.pack_price_usd || 0).toFixed(2)}`,
+          collectionId: col.id,
+          packPriceUsd: col.pack_price_usd,
+          collectionImage: col.image_url
+        }));
+
+        function updateHero(index) {
+          const d = allHeroData[index];
+          if (!d) return;
+          [seriesEl, titleEl, setsEl, priceEl].forEach(el => el.style.opacity = '0');
+          mainImg.style.opacity = '0';
+          mainImg.style.filter = 'blur(15px) scale(1.05)';
+          setTimeout(() => {
+            mainImg.src = d.image;
+            seriesEl.innerText = d.series;
+            titleEl.innerText = d.title;
+            setsEl.innerHTML = `<span class="text-white cursor-pointer clickable">${d.sets}</span>`;
+            priceEl.innerText = d.price;
+            currentPackData = {
+              id: 'pack-' + d.collectionId,
+              name: d.title + ' (Pack)',
+              price_usd: d.packPriceUsd,
+              thumbnail_url: d.collectionImage,
+              isPack: true
+            };
+            const thumbs = sidebarContainer.querySelectorAll('.thumb-item');
+            thumbs.forEach((t, i) => {
+              const img = t.querySelector('img');
+              if (i === index) {
+                t.classList.remove('opacity-60', 'grayscale');
+                t.classList.add('opacity-100');
+                img?.classList.remove('border-transparent');
+                img?.classList.add('border-white/80');
+              } else {
+                t.classList.remove('opacity-100');
+                t.classList.add('opacity-60', 'grayscale');
+                img?.classList.remove('border-white/80');
+                img?.classList.add('border-transparent');
+              }
+            });
+            mainImg.onload = () => {
+              mainImg.style.opacity = '1';
+              mainImg.style.filter = 'blur(0px) scale(1)';
+            };
+            setTimeout(() => {
+              mainImg.style.opacity = '1';
+              mainImg.style.filter = 'blur(0px) scale(1)';
+            }, 500);
+            [seriesEl, titleEl, setsEl, priceEl].forEach(el => el.style.opacity = '1');
+            indicator.textContent = `0${index + 1} — 0${thumbs.length}`;
+          }, 500);
+        }
+
+        sidebarContainer.innerHTML = allHeroData.map((d, i) => `
+          <div data-index="${i}" class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 ${i === 0 ? 'opacity-100' : 'opacity-60 hover:opacity-90 grayscale hover:grayscale-0'}">
+            <img src="${d.thumbImage}" class="w-full h-24 sm:h-32 md:h-40 object-cover border ${i === 0 ? 'border-white/80' : 'border-transparent'} transition-all duration-500 pointer-events-none" alt="${d.title}" />
+            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+        `).join('');
+        sidebarContainer.querySelectorAll('.thumb-item').forEach((thumb, i) => {
+          thumb.addEventListener('click', () => updateHero(i));
+        });
+        updateHero(0);
+
+        // === GRID RESPONSIVO ===
+        const gridContainer = document.getElementById('dynamic-grid');
+        
+        // Detecta tamanho da tela para definir número de colunas
+        const getGridClasses = () => {
+          if (window.innerWidth >= 1280) return 'grid-cols-5';
+          if (window.innerWidth >= 1024) return 'grid-cols-4';
+          if (window.innerWidth >= 768) return 'grid-cols-3';
+          if (window.innerWidth >= 640) return 'grid-cols-2';
+          return 'grid-cols-1';
+        };
+        
+        const getCardHeight = () => {
+          if (window.innerWidth >= 1280) return 'h-[550px]';
+          if (window.innerWidth >= 1024) return 'h-[480px]';
+          if (window.innerWidth >= 768) return 'h-[420px]';
+          if (window.innerWidth >= 640) return 'h-[380px]';
+          return 'h-[340px]';
+        };
+        
+        const getFeaturedSpan = () => {
+          if (window.innerWidth >= 1280) return 'col-span-2';
+          if (window.innerWidth >= 768) return 'col-span-2';
+          return 'col-span-1';
+        };
+        
+        const gridCols = getGridClasses();
+        const cardHeight = getCardHeight();
+        const featuredSpan = getFeaturedSpan();
+        
+        let gridHtml = `<div class="grid ${gridCols} gap-3 sm:gap-4 md:gap-6">`;
+        
+        // Card Grande da Coleção
+        gridHtml += `
+          <div class="${featuredSpan} relative group clickable ${cardHeight}">
+            <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
+              <img src="${imgUrl(featuredCollection.image_url, 1200)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="${featuredCollection.name}" />
+              <div class="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-10 text-right">
+                <h3 class="font-['Anton'] text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white tracking-tight leading-none mb-1 drop-shadow-md">${featuredCollection.name.toUpperCase()}</h3>
+                <p class="text-[8px] sm:text-[9px] md:text-xs tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-2 sm:mb-3 font-vcr">${featuredCollection.description ? featuredCollection.description.substring(0, 30) + '...' : 'PREMIUM COLLECTION'}</p>
+                <div class="flex items-center justify-end gap-2 sm:gap-3">
+                  <div class="text-right hidden sm:block">
+                    <p class="text-[8px] sm:text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Pack Price</p>
+                    <p class="text-base sm:text-lg font-light text-white drop-shadow-sm">$ ${Number(featuredCollection.pack_price_usd).toFixed(2)}</p>
+                  </div>
+                  <button class="add-pack-btn w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white" onclick="window.addPackFromCard('${featuredCollection.id}', '${featuredCollection.name.replace(/'/g, "\\'")}', '${featuredCollection.pack_price_usd}', '${featuredCollection.image_url}')">
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        gridProducts.slice(0, 3).forEach(p => {
+          gridHtml += `
+            <div class="col-span-1 relative group clickable flex flex-col ${cardHeight}">
+              <div class="relative w-full flex-1 overflow-hidden mb-3 sm:mb-4 tech-card-asymmetric bg-[#5f7085]">
+                <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
+              </div>
+              <div class="mt-auto">
+                <h4 class="font-['Anton'] text-xs sm:text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
+                <p class="text-[8px] sm:text-[9px] tracking-wider text-white/60 uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
+                <div class="flex items-center justify-between">
+                  <button class="add-to-cart-btn w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
+                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                  </button>
+                  <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        gridHtml += `</div>`;
+
+        if (gridProducts.length > 3) {
+          gridHtml += `<div class="grid ${gridCols} gap-3 sm:gap-4 md:gap-6 mt-4 sm:mt-6">`;
+          gridProducts.slice(3).forEach(p => {
+            gridHtml += `
+              <div class="col-span-1 relative group clickable flex flex-col ${cardHeight}">
+                <div class="relative w-full flex-1 overflow-hidden mb-3 sm:mb-4 tech-card-asymmetric bg-[#5f7085]">
+                  <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
+                </div>
+                <div class="mt-auto">
+                  <h4 class="font-['Anton'] text-xs sm:text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
+                  <p class="text-[8px] sm:text-[9px] tracking-wider text-white/60 uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                  <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
+                  <div class="flex items-center justify-between">
+                    <button class="add-to-cart-btn w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
+                      <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </button>
+                    <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          gridHtml += `</div>`;
+        }
+        gridContainer.innerHTML = gridHtml;
+
+        window.addProductToCart = function(id, name, price, thumbnail) {
+          Cart.add({ id: id, name: name, price_usd: price, thumbnail_url: thumbnail });
+        };
+        window.addPackFromCard = function(id, name, price, thumbnail) {
+          Cart.add({ id: 'pack-' + id, name: name + ' (Pack)', price_usd: price, thumbnail_url: thumbnail, isPack: true });
+        };
+
+        document.getElementById('cart-btn')?.addEventListener('click', () => Cart.openPreview());
+        document.getElementById('close-cart-preview')?.addEventListener('click', () => Cart.closePreview());
+        document.getElementById('cart-preview-overlay')?.addEventListener('click', () => Cart.closePreview());
+        document.getElementById('view-full-cart')?.addEventListener('click', () => {
+          Cart.closePreview();
+          setTimeout(() => Cart.openModal(), 300);
+        });
+        document.getElementById('close-cart-modal')?.addEventListener('click', () => Cart.closeModal());
+        document.getElementById('cart-modal-overlay')?.addEventListener('click', () => Cart.closeModal());
+        document.getElementById('modal-apply-coupon')?.addEventListener('click', () => {
+          const input = document.getElementById('modal-coupon-input');
+          const msgEl = document.getElementById('modal-coupon-message');
+          if (!input || !msgEl) return;
+          const result = Cart.applyCoupon(input.value);
+          msgEl.textContent = result.message;
+          msgEl.classList.remove('hidden', 'text-green-400', 'text-red-400');
+          msgEl.classList.add(result.success ? 'text-green-400' : 'text-red-400');
+          if (result.success) {
+            input.value = '';
+            Cart.updateUI();
+          }
+        });
+        document.getElementById('modal-checkout-btn')?.addEventListener('click', () => {
+          alert('Stripe checkout integration coming next!');
+        });
+        document.getElementById('filters-btn')?.addEventListener('click', () => {
+          alert('Filters coming soon!');
+        });
+      } catch (err) {
+        console.error('Homepage Load Error:', err);
+        document.getElementById('dynamic-grid').innerHTML = '<p class="text-red-400">Error loading content. Please refresh.</p>';
+      }
+    });
+  </script>
+
+</Layout>
