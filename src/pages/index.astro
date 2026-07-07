@@ -624,7 +624,7 @@ import '../styles/global.css';
         updateHero(0);
 
         // ============================================
-        // GRID RESPONSIVO - LÓGICA FINAL
+        // GRID RESPONSIVO - LÓGICA CORRIGIDA
         // ============================================
         const gridContainer = document.getElementById('dynamic-grid');
 
@@ -632,30 +632,37 @@ import '../styles/global.css';
         const w = window.innerWidth;
         let cols, cardH, featSpan, gap;
 
-        if (w >= 1440) {
-          // Desktop MUITO grande: 5 colunas, coleção ocupa 2 (40%)
+        // DEBUG: Mostra no console qual breakpoint está sendo usado
+        console.log('📐 Largura da tela:', w, 'px');
+
+        if (w >= 1920) {
+          // Desktop MUITO grande (4K, monitores grandes): 5 colunas, coleção ocupa 2 (40%)
           cols = 5;
           cardH = '550px';
           featSpan = 2;
           gap = '24px';
+          console.log('✅ Breakpoint: Desktop muito grande (≥1920px) - 5 colunas com destaque');
         } else if (w >= 1024) {
-          // Notebook e Desktop normal: 4 colunas, TODOS IGUAIS (25%)
+          // Notebook e Desktop normal (1024-1919px): 4 colunas, TODOS IGUAIS (25%)
           cols = 4;
           cardH = '500px';
-          featSpan = 1;  // Coleção ocupa apenas 1 coluna (igual produtos)
+          featSpan = 1;  // ← Coleção ocupa 1 coluna (igual aos produtos)
           gap = '20px';
+          console.log('✅ Breakpoint: Notebook/Desktop (1024-1919px) - 4 colunas iguais');
         } else if (w >= 768) {
           // Tablet: 2 colunas
           cols = 2;
           cardH = '450px';
           featSpan = 1;
           gap = '16px';
+          console.log('✅ Breakpoint: Tablet (768-1023px) - 2 colunas');
         } else {
           // Mobile: 1 coluna
           cols = 1;
           cardH = '400px';
           featSpan = 1;
           gap = '16px';
+          console.log('✅ Breakpoint: Mobile (<768px) - 1 coluna');
         }
 
         let gridHtml = `<div style="display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: ${gap};">`;
