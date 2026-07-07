@@ -624,7 +624,7 @@ import '../styles/global.css';
         updateHero(0);
 
         // ============================================
-        // GRID RESPONSIVO - 4 COLUNAS IGUAIS
+        // GRID RESPONSIVO - 4 COLUNAS DESKTOP/NOTEBOOK
         // ============================================
         const gridContainer = document.getElementById('dynamic-grid');
 
@@ -632,9 +632,14 @@ import '../styles/global.css';
         const w = window.innerWidth;
         let cols, cardH, gap;
 
-        if (w >= 1024) {
-          // Desktop e Notebook: 4 colunas (1 coleção + 3 produtos)
+        if (w >= 1440) {
+          // Desktop grande: 4 colunas
           cols = 4;
+          cardH = '550px';
+          gap = '24px';
+        } else if (w >= 1024) {
+          // Notebook: 3 colunas (mesmo tamanho dos cards do desktop)
+          cols = 3;
           cardH = '550px';
           gap = '24px';
         } else if (w >= 768) {
