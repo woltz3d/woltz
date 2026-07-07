@@ -6,7 +6,7 @@ import '../styles/global.css';
 <Layout title="WOLTZ | NOCTIS VOL. I">
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 1: HERO BANNER                       -->
+  <!-- SEÇÃO 1: HERO BANNER (RESPONSIVO)          -->
   <!-- ========================================== -->
   <main class="relative w-full h-screen overflow-hidden bg-[#121214]" id="hero-section">
     <div class="absolute inset-0 z-0">
@@ -14,87 +14,85 @@ import '../styles/global.css';
       <div class="absolute inset-0 bg-gradient-to-br from-[#121214]/90 via-[#121214]/60 to-transparent"></div>
     </div>
 
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 md:px-16 py-8">
-      <div class="text-lg font-light tracking-[0.5em] text-white">WOLTZ</div>
-      <nav class="hidden md:flex gap-10 text-[10px] tracking-[0.3em] text-white/60 uppercase font-light">
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 py-4 md:py-8">
+      <div class="text-sm sm:text-base md:text-lg font-light tracking-[0.3em] sm:tracking-[0.5em] text-white">WOLTZ</div>
+      <nav class="hidden lg:flex gap-6 xl:gap-10 text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.3em] text-white/60 uppercase font-light">
         <a href="/catalog" class="hover:text-white transition-colors duration-500 clickable">[ Catalog ]</a>
         <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Puffers ]</a>
         <a href="#" class="hover:text-white transition-colors duration-500 clickable">[ Boots ]</a>
         <a href="/collections" class="hover:text-white transition-colors duration-500 clickable">[ Collections ]</a>
       </nav>
-      <div class="flex gap-5 text-white/60">
+      <div class="flex gap-3 sm:gap-5 text-white/60">
         <button class="hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.3-4.3"/>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" class="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
           </svg>
         </button>
-        
         <button id="cart-btn" class="relative hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" class="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
             <path d="M3 6h18"/>
             <path d="M16 10a4 4 0 0 1-8 0"/>
             <path d="M17 7l4-4M21 3h-4M21 3v4" stroke-width="1.5"/>
           </svg>
-          <span id="cart-count" class="absolute -top-2 -right-2 bg-white text-black text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span>
+          <span id="cart-count" class="absolute -top-2 -right-2 bg-white text-black text-[8px] sm:text-[9px] font-bold w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span>
         </button>
       </div>
     </header>
 
-    <div class="relative z-10 w-full h-full flex items-center px-8 md:px-16 lg:px-24">
-      <div class="max-w-2xl fade-in-up">
-        <div id="collection-series" class="text-[10px] tracking-[0.4em] text-white/40 mb-8 uppercase font-light transition-opacity duration-500 opacity-0">Loading...</div>
+    <div class="relative z-10 w-full h-full flex items-center px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24">
+      <div class="max-w-xl sm:max-w-2xl fade-in-up">
+        <div id="collection-series" class="text-[8px] sm:text-[10px] tracking-[0.3em] sm:tracking-[0.4em] text-white/40 mb-4 sm:mb-8 uppercase font-light transition-opacity duration-500 opacity-0">Loading...</div>
         
-        <h1 id="collection-title" class="font-['Anton'] text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-10 uppercase text-white transition-opacity duration-500 opacity-0">
+        <h1 id="collection-title" class="font-['Anton'] text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight mb-6 sm:mb-10 uppercase text-white transition-opacity duration-500 opacity-0">
           WOLTZ
         </h1>
         
-        <div class="flex items-center gap-8 mb-5">
-          <span class="text-[10px] tracking-[0.3em] text-white/40 uppercase w-20 font-light">Sets</span>
-          <div id="collection-sets" class="flex gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500 opacity-0">
+        <div class="flex items-center gap-4 sm:gap-8 mb-3 sm:mb-5">
+          <span class="text-[8px] sm:text-[10px] tracking-[0.3em] text-white/40 uppercase w-16 sm:w-20 font-light">Sets</span>
+          <div id="collection-sets" class="flex gap-4 sm:gap-6 text-xs tracking-[0.2em] font-light transition-opacity duration-500 opacity-0">
             <span class="text-white cursor-pointer clickable">-</span>
           </div>
         </div>
         
-        <div class="flex items-center gap-8">
-          <button id="add-pack-hero-btn" class="group relative w-24 h-24 flex items-center justify-center clickable" onclick="window.addCurrentPack()">
+        <div class="flex items-center gap-4 sm:gap-8">
+          <button id="add-pack-hero-btn" class="group relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex items-center justify-center clickable" onclick="window.addCurrentPack()">
             <svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full">
               <polygon points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30" fill="none" stroke="rgba(168,181,196,0.4)" stroke-width="1" class="transition-all duration-700 group-hover:stroke-white group-hover:stroke-[1.5]"/>
             </svg>
-            <svg class="w-6 h-6 text-white/70 group-hover:text-white transition-all duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white/70 group-hover:text-white transition-all duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/>
             </svg>
           </button>
           <div>
-            <div class="text-[10px] tracking-[0.3em] text-white/40 uppercase mb-2 font-light">Pack Price</div>
-            <div id="collection-price" class="text-3xl font-extralight text-white tracking-tight transition-opacity duration-500 opacity-0">
+            <div class="text-[8px] sm:text-[10px] tracking-[0.3em] text-white/40 uppercase mb-1 sm:mb-2 font-light">Pack Price</div>
+            <div id="collection-price" class="text-xl sm:text-2xl md:text-3xl font-extralight text-white tracking-tight transition-opacity duration-500 opacity-0">
               $ -.--
             </div>
           </div>
         </div>
       </div>
 
-      <div class="absolute right-8 md:right-16 lg:right-24 top-[25%] flex flex-col items-end gap-4 fade-in-up delay-300 w-[280px] md:w-[320px]" id="sidebar-container">
-        <div class="flex flex-col gap-4 w-full" id="sidebar-thumbs"></div>
-        <div class="text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-2 w-full flex justify-end" id="image-indicator">-- — --</div>
+      <div class="absolute right-4 sm:right-8 md:right-12 lg:right-16 xl:right-24 top-[20%] sm:top-[25%] flex flex-col items-end gap-2 sm:gap-4 fade-in-up delay-300 w-[200px] sm:w-[280px] md:w-[320px]" id="sidebar-container">
+        <div class="flex flex-col gap-2 sm:gap-4 w-full" id="sidebar-thumbs"></div>
+        <div class="text-[8px] sm:text-[10px] tracking-[0.3em] text-white/60 text-right font-light mt-1 sm:mt-2 w-full flex justify-end" id="image-indicator">-- — --</div>
       </div>
 
-      <div class="absolute bottom-8 right-8 md:bottom-12 md:right-16 lg:right-24 flex gap-5 fade-in-up delay-500">
+      <div class="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 md:bottom-12 md:right-12 lg:right-16 xl:right-24 flex gap-3 sm:gap-5 fade-in-up delay-500">
         <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
             <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
           </svg>
         </a>
         <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
           </svg>
         </a>
         <a href="#" class="text-white/50 hover:text-white transition-colors duration-500 clickable">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
           </svg>
         </a>
@@ -103,14 +101,14 @@ import '../styles/global.css';
   </main>
 
   <!-- ========================================== -->
-  <!-- SEÇÃO 2: NEW COLLECTION                    -->
+  <!-- SEÇÃO 2: NEW COLLECTION (RESPONSIVA)       -->
   <!-- ========================================== -->
-  <section class="relative w-full bg-[#6b7c93] py-12 px-6 md:px-12 lg:px-20">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+  <section class="relative w-full bg-[#6b7c93] py-8 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 sm:mb-8 gap-4">
       <div class="flex-1">
-        <h2 class="font-['Anton'] text-5xl md:text-7xl uppercase text-white tracking-tight">NEW COLLECTION</h2>
+        <h2 class="font-['Anton'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl uppercase text-white tracking-tight">NEW COLLECTION</h2>
       </div>
-      <button id="filters-btn" class="border border-white/30 px-6 py-2 text-[10px] tracking-[0.2em] text-white hover:bg-white hover:text-[#6b7c93] transition-all duration-300 uppercase backdrop-blur-sm font-vcr">
+      <button id="filters-btn" class="border border-white/30 px-4 sm:px-6 py-2 text-[9px] sm:text-[10px] tracking-[0.2em] text-white hover:bg-white hover:text-[#6b7c93] transition-all duration-300 uppercase backdrop-blur-sm font-vcr">
         Filters
       </button>
     </div>
@@ -120,40 +118,38 @@ import '../styles/global.css';
   </section>
 
   <!-- ========================================== -->
-  <!-- FOOTER                                     -->
+  <!-- FOOTER (RESPONSIVO)                        -->
   <!-- ========================================== -->
-  <footer class="relative w-full bg-[#6b7c93] pt-16 pb-12 px-6 md:px-12 lg:px-20 overflow-hidden flex flex-col">
-    <div class="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-8">
-      <div class="flex flex-col gap-6">
-        <svg class="w-48 h-10 text-white/80" viewBox="0 0 200 40" fill="currentColor">
+  <footer class="relative w-full bg-[#6b7c93] pt-12 sm:pt-16 pb-8 sm:pb-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 overflow-hidden flex flex-col">
+    <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 md:gap-8 mb-8">
+      <div class="flex flex-col gap-4 sm:gap-6">
+        <svg class="w-32 sm:w-40 md:w-48 h-8 sm:h-10 text-white/80" viewBox="0 0 200 40" fill="currentColor">
           <rect x="0" y="0" width="2" height="40"/><rect x="4" y="0" width="1" height="40"/><rect x="7" y="0" width="3" height="40"/><rect x="12" y="0" width="1" height="40"/><rect x="15" y="0" width="2" height="40"/><rect x="19" y="0" width="4" height="40"/><rect x="25" y="0" width="1" height="40"/><rect x="28" y="0" width="2" height="40"/><rect x="32" y="0" width="3" height="40"/><rect x="37" y="0" width="1" height="40"/><rect x="40" y="0" width="2" height="40"/><rect x="44" y="0" width="1" height="40"/><rect x="47" y="0" width="3" height="40"/><rect x="52" y="0" width="2" height="40"/><rect x="56" y="0" width="1" height="40"/><rect x="59" y="0" width="4" height="40"/><rect x="65" y="0" width="1" height="40"/><rect x="68" y="0" width="2" height="40"/><rect x="72" y="0" width="1" height="40"/><rect x="75" y="0" width="3" height="40"/><rect x="80" y="0" width="2" height="40"/><rect x="84" y="0" width="1" height="40"/><rect x="87" y="0" width="2" height="40"/><rect x="91" y="0" width="3" height="40"/><rect x="96" y="0" width="1" height="40"/><rect x="99" y="0" width="2" height="40"/><rect x="103" y="0" width="4" height="40"/><rect x="109" y="0" width="1" height="40"/><rect x="112" y="0" width="2" height="40"/><rect x="116" y="0" width="1" height="40"/><rect x="119" y="0" width="3" height="40"/><rect x="124" y="0" width="2" height="40"/><rect x="128" y="0" width="1" height="40"/><rect x="131" y="0" width="2" height="40"/><rect x="135" y="0" width="3" height="40"/><rect x="140" y="0" width="1" height="40"/><rect x="143" y="0" width="2" height="40"/><rect x="147" y="0" width="1" height="40"/><rect x="150" y="0" width="4" height="40"/><rect x="156" y="0" width="1" height="40"/><rect x="159" y="0" width="2" height="40"/><rect x="163" y="0" width="3" height="40"/><rect x="168" y="0" width="1" height="40"/><rect x="171" y="0" width="2" height="40"/><rect x="175" y="0" width="1" height="40"/><rect x="178" y="0" width="3" height="40"/><rect x="183" y="0" width="2" height="40"/><rect x="187" y="0" width="1" height="40"/><rect x="190" y="0" width="2" height="40"/><rect x="194" y="0" width="3" height="40"/><rect x="199" y="0" width="1" height="40"/>
         </svg>
-        <div class="font-vcr text-[10px] tracking-[0.15em] text-white/80 uppercase leading-relaxed">
+        <div class="font-vcr text-[9px] sm:text-[10px] tracking-[0.15em] text-white/80 uppercase leading-relaxed">
           <p>©2026 WOLTZ WEAR</p>
           <p>ALL RIGHTS RESERVED</p>
         </div>
-        <div class="font-vcr text-[10px] tracking-[0.15em] text-white/60 uppercase leading-relaxed">
+        <div class="font-vcr text-[9px] sm:text-[10px] tracking-[0.15em] text-white/60 uppercase leading-relaxed">
           <p>WAREHOUSE ZONE / INDUSTRIAL</p>
           <p>PIER / COLD STORAGE DISTRICT</p>
           <p class="mt-2">419 PIER AVE, BROOKLYN, NY</p>
         </div>
       </div>
-      <div class="flex flex-col gap-4">
-        <div class="font-vcr text-[10px] tracking-[0.2em] text-white/80 uppercase">
+      <div class="flex flex-col gap-3 sm:gap-4">
+        <div class="font-vcr text-[9px] sm:text-[10px] tracking-[0.2em] text-white/80 uppercase">
           <p>NEWSLETTER SIGN UP</p>
           <p class="text-white/50 mt-1">BE THE FIRST WHO KNOWS</p>
         </div>
-        <div class="relative mt-4 max-w-[280px]">
-          <input type="email" placeholder="EMAIL" class="w-full bg-transparent border-b border-white/40 pb-2 font-vcr text-[11px] tracking-[0.2em] text-white placeholder:text-white/40 focus:outline-none focus:border-white transition-colors uppercase" />
+        <div class="relative mt-2 sm:mt-4 max-w-[240px] sm:max-w-[280px]">
+          <input type="email" placeholder="EMAIL" class="w-full bg-transparent border-b border-white/40 pb-2 font-vcr text-[10px] sm:text-[11px] tracking-[0.2em] text-white placeholder:text-white/40 focus:outline-none focus:border-white transition-colors uppercase" />
           <button class="absolute right-0 bottom-2 text-white/60 hover:text-white transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-            </svg>
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
           </button>
         </div>
       </div>
-      <div class="flex flex-col gap-3">
-        <nav class="flex flex-col gap-2 font-vcr text-[10px] tracking-[0.2em] text-white/70 uppercase">
+      <div class="flex flex-col gap-2 sm:gap-3">
+        <nav class="flex flex-col gap-1.5 sm:gap-2 font-vcr text-[9px] sm:text-[10px] tracking-[0.2em] text-white/70 uppercase">
           <a href="/catalog" class="hover:text-white transition-colors duration-300">[ CATALOG ]</a>
           <a href="#" class="hover:text-white transition-colors duration-300">[ PUFFERS ]</a>
           <a href="#" class="hover:text-white transition-colors duration-300">[ BOOTS ]</a>
@@ -161,31 +157,25 @@ import '../styles/global.css';
           <a href="#" class="hover:text-white transition-colors duration-300">[ NEWS ]</a>
         </nav>
       </div>
-      <div class="flex flex-col items-start md:items-end gap-6">
-        <div class="font-['Anton'] text-3xl tracking-[0.2em] text-white">WOLTZ</div>
-        <div class="flex gap-4">
-          <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-            </svg>
+      <div class="flex flex-col items-start sm:items-start md:items-end gap-4 sm:gap-6">
+        <div class="font-['Anton'] text-2xl sm:text-3xl tracking-[0.2em] text-white">WOLTZ</div>
+        <div class="flex gap-3 sm:gap-4">
+          <a href="#" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
           </a>
-          <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-            </svg>
+          <a href="#" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
           </a>
-          <a href="#" class="w-8 h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-            </svg>
+          <a href="#" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center border border-white/30 hover:bg-white hover:text-[#6b7c93] transition-all duration-300">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
           </a>
         </div>
       </div>
     </div>
-    <div class="relative w-full flex items-center justify-center py-12 md:py-16 overflow-hidden">
-      <h2 class="font-['Anton'] text-[18vw] md:text-[15vw] leading-none text-white/[0.07] tracking-tight select-none whitespace-nowrap">WOLTZ PUFFERS</h2>
+    <div class="relative w-full flex items-center justify-center py-8 sm:py-12 md:py-16 overflow-hidden">
+      <h2 class="font-['Anton'] text-[20vw] sm:text-[18vw] md:text-[15vw] leading-none text-white/[0.07] tracking-tight select-none whitespace-nowrap">WOLTZ PUFFERS</h2>
     </div>
-    <div class="relative z-10 border-t border-white/20 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 font-vcr text-[9px] tracking-[0.2em] text-white/40 uppercase">
+    <div class="relative z-10 border-t border-white/20 pt-4 sm:pt-6 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 font-vcr text-[8px] sm:text-[9px] tracking-[0.2em] text-white/40 uppercase">
       <p>MADE WITH PRECISION IN BROOKLYN</p>
       <p>TERMS · PRIVACY · COOKIES</p>
     </div>
@@ -223,534 +213,4 @@ import '../styles/global.css';
   <!-- ========================================== -->
   <div id="cart-modal" class="fixed inset-0 z-[150] hidden">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-xl" id="cart-modal-overlay"></div>
-    <div class="absolute inset-0 flex items-center justify-center p-4 md:p-8">
-      <div class="relative w-full max-w-5xl max-h-[85vh] bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden transform scale-95 opacity-0 transition-all duration-500" id="cart-modal-panel">
-        <div class="flex items-center justify-between px-8 py-5 border-b border-white/20 bg-black/20">
-          <h3 class="font-['Anton'] text-2xl md:text-3xl uppercase text-white tracking-wide">Your Cart</h3>
-          <button id="close-cart-modal" class="text-white/70 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        </div>
-        <div class="flex-1 overflow-hidden">
-          <div class="h-full grid grid-cols-1 lg:grid-cols-[1fr_320px] overflow-hidden">
-            <div class="overflow-y-auto p-8" id="cart-modal-items">
-              <p class="text-white/50 text-center py-12 font-vcr text-sm">Your cart is empty</p>
-            </div>
-            <div class="bg-black/30 backdrop-blur-md border-l border-white/20 p-6 overflow-y-auto">
-              <h4 class="font-['Anton'] text-xl uppercase tracking-wide mb-6 text-white">Order Summary</h4>
-              <div class="space-y-3 mb-6 pb-6 border-b border-white/20">
-                <div class="flex justify-between items-center">
-                  <span class="text-white/70 font-vcr uppercase text-xs tracking-wider">Subtotal</span>
-                  <span id="modal-subtotal" class="font-mono text-white text-base">$ 0.00</span>
-                </div>
-                <div class="flex justify-between items-center">
-                  <span class="text-white/70 font-vcr uppercase text-xs tracking-wider">Shipping</span>
-                  <span class="font-mono text-green-400 text-base">FREE</span>
-                </div>
-                <div id="modal-discount-row" class="hidden flex justify-between items-center">
-                  <span class="text-white/70 font-vcr uppercase text-xs tracking-wider">Discount</span>
-                  <span id="modal-discount" class="font-mono text-red-400 text-base">- $ 0.00</span>
-                </div>
-              </div>
-              <div class="mb-6">
-                <label class="text-[10px] tracking-[0.2em] text-white/60 uppercase mb-2 block font-vcr">Coupon Code</label>
-                <div class="flex gap-2">
-                  <input type="text" id="modal-coupon-input" placeholder="ENTER CODE" class="flex-1 bg-black/40 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/50 uppercase font-vcr" />
-                  <button id="modal-apply-coupon" class="bg-white text-black px-4 py-2 text-xs uppercase tracking-wider font-bold hover:bg-white/90 transition-colors rounded-lg whitespace-nowrap">Apply</button>
-                </div>
-                <p id="modal-coupon-message" class="text-xs mt-2 hidden font-vcr"></p>
-              </div>
-              <div class="flex justify-between items-center mb-6 pb-6 border-b border-white/20">
-                <span class="text-white uppercase tracking-wider text-sm font-vcr">Total</span>
-                <span id="modal-total" class="font-['Anton'] text-3xl">$ 0.00</span>
-              </div>
-              <button id="modal-checkout-btn" class="w-full bg-white text-black py-3 text-sm uppercase tracking-[0.3em] font-bold hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-lg shadow-lg">
-                Proceed to Checkout
-              </button>
-              <p class="text-center text-white/40 text-[10px] font-vcr mt-3 uppercase tracking-wider">
-                Secure payment via Stripe
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- CARRINHO: NOTIFICAÇÃO TOAST                -->
-  <!-- ========================================== -->
-  <div id="cart-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-xl text-black px-6 py-3 rounded-lg shadow-2xl z-[200] transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 border border-white/50">
-    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-    <span id="cart-toast-message" class="text-sm font-medium">Added to cart</span>
-  </div>
-
-  <!-- ESTILOS GLOBAIS -->
-  <style is:global>
-    @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
-    .font-vcr { font-family: 'VCR OSD Mono', monospace; }
-    .tech-card-asymmetric {
-      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-      background-color: #5f7085;
-    }
-    #cart-modal-items::-webkit-scrollbar { width: 6px; }
-    #cart-modal-items::-webkit-scrollbar-track { background: transparent; }
-    #cart-modal-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
-    #cart-modal-items::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
-  </style>
-
-  <!-- SCRIPT PRINCIPAL -->
-  <script is:inline>
-    const Cart = {
-      items: [],
-      discount: 0,
-      couponCode: null,
-      init() {
-        const saved = localStorage.getItem('woltz_cart');
-        if (saved) {
-          try { this.items = JSON.parse(saved); } catch(e) { this.items = []; }
-        }
-        this.updateUI();
-      },
-      save() {
-        localStorage.setItem('woltz_cart', JSON.stringify(this.items));
-        this.updateUI();
-      },
-      add(product) {
-        const existing = this.items.find(i => i.id === product.id);
-        if (existing) {
-          existing.qty += 1;
-        } else {
-          this.items.push({
-            id: product.id,
-            name: product.name,
-            price: parseFloat(product.price_usd) || 0,
-            thumbnail: product.thumbnail_url,
-            qty: 1,
-            isPack: product.isPack || false
-          });
-        }
-        this.save();
-        this.showToast(`${product.name} added to cart`);
-      },
-      remove(productId) {
-        this.items = this.items.filter(i => i.id !== productId);
-        this.save();
-      },
-      updateQty(productId, delta) {
-        const item = this.items.find(i => i.id === productId);
-        if (item) {
-          item.qty += delta;
-          if (item.qty <= 0) {
-            this.remove(productId);
-            return;
-          }
-        }
-        this.save();
-      },
-      applyCoupon(code) {
-        const coupons = {
-          'WELCOME10': 0.10,
-          'INFLUENCER15': 0.15,
-          'VIP20': 0.20
-        };
-        const upperCode = code.toUpperCase().trim();
-        if (coupons[upperCode]) {
-          this.discount = coupons[upperCode];
-          this.couponCode = upperCode;
-          return { success: true, message: `Coupon ${upperCode} applied! ${Math.round(this.discount*100)}% off` };
-        }
-        return { success: false, message: 'Invalid coupon code' };
-      },
-      getTotal() {
-        return this.items.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      },
-      getSubtotal() { return this.getTotal(); },
-      getDiscount() { return this.getSubtotal() * this.discount; },
-      getFinalTotal() { return this.getSubtotal() - this.getDiscount(); },
-      getCount() {
-        return this.items.reduce((sum, i) => sum + i.qty, 0);
-      },
-      updateUI() {
-        const countEl = document.getElementById('cart-count');
-        const count = this.getCount();
-        if (countEl) {
-          countEl.textContent = count;
-          countEl.style.opacity = count > 0 ? '1' : '0';
-        }
-        this.renderPreview();
-        this.renderModal();
-      },
-      renderPreview() {
-        const container = document.getElementById('cart-preview-items');
-        const totalEl = document.getElementById('cart-preview-total');
-        if (!container) return;
-        if (this.items.length === 0) {
-          container.innerHTML = '<p class="text-white/50 text-sm text-center py-8 font-vcr">Your cart is empty</p>';
-          if (totalEl) totalEl.textContent = '$ 0.00';
-          return;
-        }
-        container.innerHTML = this.items.map(item => `
-          <div class="flex gap-4 items-center bg-white/10 backdrop-blur-md p-3 rounded-lg border border-white/20 hover:bg-white/15 transition-colors">
-            <img src="${item.thumbnail ? item.thumbnail + '?width=80&quality=80' : ''}" class="w-16 h-16 object-cover rounded-md border border-white/10" />
-            <div class="flex-1 min-w-0">
-              <h4 class="text-white text-sm font-medium truncate font-['Anton'] uppercase tracking-wide">${item.name}</h4>
-              <p class="text-white/60 text-xs font-vcr">Qty: ${item.qty}</p>
-              <p class="text-white font-mono text-sm mt-1">$ ${(item.price * item.qty).toFixed(2)}</p>
-            </div>
-            <button data-remove="${item.id}" class="remove-item-btn text-white/50 hover:text-red-400 p-2 hover:bg-white/10 rounded-full transition-all">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-          </div>
-        `).join('');
-        if (totalEl) totalEl.textContent = `$ ${this.getFinalTotal().toFixed(2)}`;
-        container.querySelectorAll('.remove-item-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.dataset.remove;
-            this.remove(id);
-          });
-        });
-      },
-      renderModal() {
-        const container = document.getElementById('cart-modal-items');
-        const subtotalEl = document.getElementById('modal-subtotal');
-        const totalEl = document.getElementById('modal-total');
-        const discountRow = document.getElementById('modal-discount-row');
-        const discountEl = document.getElementById('modal-discount');
-        const checkoutBtn = document.getElementById('modal-checkout-btn');
-        if (!container) return;
-        if (this.items.length === 0) {
-          container.innerHTML = '<p class="text-white/50 text-center py-12 font-vcr text-sm">Your cart is empty</p>';
-          if (subtotalEl) subtotalEl.textContent = '$ 0.00';
-          if (totalEl) totalEl.textContent = '$ 0.00';
-          if (discountRow) discountRow.classList.add('hidden');
-          if (checkoutBtn) checkoutBtn.disabled = true;
-          return;
-        }
-        if (checkoutBtn) checkoutBtn.disabled = false;
-        container.innerHTML = '<div class="space-y-3">' + this.items.map(item => `
-          <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-4 flex gap-4 items-center hover:bg-white/15 transition-colors">
-            <img src="${item.thumbnail ? item.thumbnail + '?width=150&quality=80' : ''}" class="w-24 h-24 md:w-28 md:h-28 object-cover rounded-lg border border-white/10 flex-shrink-0" />
-            <div class="flex-1 min-w-0">
-              <h4 class="font-['Anton'] text-lg uppercase tracking-wide mb-1 text-white">${item.name}</h4>
-              <p class="text-white/60 text-xs font-vcr mb-3 uppercase tracking-wider">${item.isPack ? 'COLLECTION PACK' : 'DIGITAL DOWNLOAD'}</p>
-              <div class="flex items-center gap-3">
-                <button data-dec="${item.id}" class="qty-btn w-8 h-8 rounded-lg border border-white/30 flex items-center justify-center hover:bg-white hover:text-black transition-colors text-sm font-bold">−</button>
-                <span class="text-sm font-mono w-6 text-center text-white">${item.qty}</span>
-                <button data-inc="${item.id}" class="qty-btn w-8 h-8 rounded-lg border border-white/30 flex items-center justify-center hover:bg-white hover:text-black transition-colors text-sm font-bold">+</button>
-              </div>
-            </div>
-            <div class="text-right flex-shrink-0">
-              <p class="font-mono text-lg mb-2 text-white">$ ${(item.price * item.qty).toFixed(2)}</p>
-              <button data-remove="${item.id}" class="remove-btn text-white/50 hover:text-red-400 text-xs uppercase tracking-wider transition-colors font-vcr">Remove</button>
-            </div>
-          </div>
-        `).join('') + '</div>';
-        const subtotal = this.getSubtotal();
-        const discount = this.getDiscount();
-        const total = this.getFinalTotal();
-        if (subtotalEl) subtotalEl.textContent = `$ ${subtotal.toFixed(2)}`;
-        if (totalEl) totalEl.textContent = `$ ${total.toFixed(2)}`;
-        if (discount > 0) {
-          if (discountRow) discountRow.classList.remove('hidden');
-          if (discountEl) discountEl.textContent = `- $ ${discount.toFixed(2)}`;
-        } else {
-          if (discountRow) discountRow.classList.add('hidden');
-        }
-        container.querySelectorAll('.remove-btn').forEach(btn => {
-          btn.addEventListener('click', () => this.remove(btn.dataset.remove));
-        });
-        container.querySelectorAll('.qty-btn[data-inc]').forEach(btn => {
-          btn.addEventListener('click', () => this.updateQty(btn.dataset.inc, 1));
-        });
-        container.querySelectorAll('.qty-btn[data-dec]').forEach(btn => {
-          btn.addEventListener('click', () => this.updateQty(btn.dataset.dec, -1));
-        });
-      },
-      showToast(message) {
-        const toast = document.getElementById('cart-toast');
-        const msgEl = document.getElementById('cart-toast-message');
-        if (!toast || !msgEl) return;
-        msgEl.textContent = message;
-        toast.classList.remove('translate-y-20', 'opacity-0');
-        toast.classList.add('translate-y-0', 'opacity-100');
-        setTimeout(() => {
-          toast.classList.add('translate-y-20', 'opacity-0');
-          toast.classList.remove('translate-y-0', 'opacity-100');
-        }, 2500);
-      },
-      openPreview() {
-        const preview = document.getElementById('cart-preview');
-        const panel = document.getElementById('cart-preview-panel');
-        if (preview && panel) {
-          preview.classList.remove('hidden');
-          setTimeout(() => panel.classList.remove('translate-x-full'), 10);
-        }
-      },
-      closePreview() {
-        const preview = document.getElementById('cart-preview');
-        const panel = document.getElementById('cart-preview-panel');
-        if (preview && panel) {
-          panel.classList.add('translate-x-full');
-          setTimeout(() => preview.classList.add('hidden'), 500);
-        }
-      },
-      openModal() {
-        const modal = document.getElementById('cart-modal');
-        const panel = document.getElementById('cart-modal-panel');
-        if (modal && panel) {
-          modal.classList.remove('hidden');
-          setTimeout(() => {
-            panel.classList.remove('scale-95', 'opacity-0');
-            panel.classList.add('scale-100', 'opacity-100');
-          }, 10);
-        }
-      },
-      closeModal() {
-        const modal = document.getElementById('cart-modal');
-        const panel = document.getElementById('cart-modal-panel');
-        if (modal && panel) {
-          panel.classList.remove('scale-100', 'opacity-100');
-          panel.classList.add('scale-95', 'opacity-0');
-          setTimeout(() => modal.classList.add('hidden'), 500);
-        }
-      }
-    };
-
-    let currentPackData = null;
-    window.addCurrentPack = function() {
-      if (currentPackData) {
-        Cart.add(currentPackData);
-      }
-    };
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      Cart.init();
-      try {
-        const res = await fetch('/api/home-data');
-        if (!res.ok) throw new Error('Failed to load data');
-        const data = await res.json();
-        const { featuredCollection, sidebarCollections, gridProducts } = data;
-        if (!featuredCollection) return;
-
-        const imgUrl = (url, w=800) => url ? `${url}?width=${w}&quality=80` : '';
-        const renderColors = (colors) => {
-          if (!colors || !Array.isArray(colors) || colors.length === 0) return '';
-          let html = '<div class="flex items-center gap-1.5">';
-          colors.slice(0, 4).forEach(c => {
-            if (c.type === 'pattern' && c.url) {
-              html += `<span class="w-3 h-3 rounded-full overflow-hidden border border-white/70 inline-block shadow-sm"><img src="${c.url}?width=20" class="w-full h-full object-cover" /></span>`;
-            } else {
-              html += `<span class="w-3 h-3 rounded-full shadow-sm inline-block border border-white/30" style="background:${c.hex || '#ccc'}"></span>`;
-            }
-          });
-          if (colors.length > 4) html += `<span class="text-[10px] text-white/80 font-vcr ml-1 font-bold">+${colors.length - 4}</span>`;
-          html += '</div>';
-          return html;
-        };
-
-        const mainImg = document.getElementById('hero-main-img');
-        const seriesEl = document.getElementById('collection-series');
-        const titleEl = document.getElementById('collection-title');
-        const setsEl = document.getElementById('collection-sets');
-        const priceEl = document.getElementById('collection-price');
-        const indicator = document.getElementById('image-indicator');
-        const sidebarContainer = document.getElementById('sidebar-thumbs');
-
-        const allHeroData = [featuredCollection, ...sidebarCollections].map((col, i) => ({
-          index: i,
-          image: imgUrl(col.image_url, 2400),
-          thumbImage: imgUrl(col.image_url, 600),
-          series: `[ Series: ${col.category || 'Latest Drop'} ] · [ Collection ]`,
-          title: col.name,
-          sets: `${col.product_count || 0} Items`,
-          price: `$ ${Number(col.pack_price_usd || 0).toFixed(2)}`,
-          collectionId: col.id,
-          packPriceUsd: col.pack_price_usd,
-          collectionImage: col.image_url
-        }));
-
-        function updateHero(index) {
-          const d = allHeroData[index];
-          if (!d) return;
-          [seriesEl, titleEl, setsEl, priceEl].forEach(el => el.style.opacity = '0');
-          mainImg.style.opacity = '0';
-          mainImg.style.filter = 'blur(15px) scale(1.05)';
-          setTimeout(() => {
-            mainImg.src = d.image;
-            seriesEl.innerText = d.series;
-            titleEl.innerText = d.title;
-            setsEl.innerHTML = `<span class="text-white cursor-pointer clickable">${d.sets}</span>`;
-            priceEl.innerText = d.price;
-            currentPackData = {
-              id: 'pack-' + d.collectionId,
-              name: d.title + ' (Pack)',
-              price_usd: d.packPriceUsd,
-              thumbnail_url: d.collectionImage,
-              isPack: true
-            };
-            const thumbs = sidebarContainer.querySelectorAll('.thumb-item');
-            thumbs.forEach((t, i) => {
-              const img = t.querySelector('img');
-              if (i === index) {
-                t.classList.remove('opacity-60', 'grayscale');
-                t.classList.add('opacity-100');
-                img?.classList.remove('border-transparent');
-                img?.classList.add('border-white/80');
-              } else {
-                t.classList.remove('opacity-100');
-                t.classList.add('opacity-60', 'grayscale');
-                img?.classList.remove('border-white/80');
-                img?.classList.add('border-transparent');
-              }
-            });
-            mainImg.onload = () => {
-              mainImg.style.opacity = '1';
-              mainImg.style.filter = 'blur(0px) scale(1)';
-            };
-            setTimeout(() => {
-              mainImg.style.opacity = '1';
-              mainImg.style.filter = 'blur(0px) scale(1)';
-            }, 500);
-            [seriesEl, titleEl, setsEl, priceEl].forEach(el => el.style.opacity = '1');
-            indicator.textContent = `0${index + 1} — 0${thumbs.length}`;
-          }, 500);
-        }
-
-        sidebarContainer.innerHTML = allHeroData.map((d, i) => `
-          <div data-index="${i}" class="thumb-item thumbnail-wrapper relative group clickable cursor-pointer transition-all duration-500 ${i === 0 ? 'opacity-100' : 'opacity-60 hover:opacity-90 grayscale hover:grayscale-0'}">
-            <img src="${d.thumbImage}" class="w-full h-32 md:h-40 object-cover border ${i === 0 ? 'border-white/80' : 'border-transparent'} transition-all duration-500 pointer-events-none" alt="${d.title}" />
-            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </div>
-        `).join('');
-        sidebarContainer.querySelectorAll('.thumb-item').forEach((thumb, i) => {
-          thumb.addEventListener('click', () => updateHero(i));
-        });
-        updateHero(0);
-
-        const gridContainer = document.getElementById('dynamic-grid');
-        let gridHtml = `<div class="grid grid-cols-5 gap-4 md:gap-6">`;
-        
-        gridHtml += `
-          <div class="col-span-2 relative group clickable h-[550px]">
-            <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
-              <img src="${imgUrl(featuredCollection.image_url, 1200)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="${featuredCollection.name}" />
-              <div class="absolute bottom-6 right-6 z-10 text-right">
-                <h3 class="font-['Anton'] text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">${featuredCollection.name.toUpperCase()}</h3>
-                <p class="text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-3 font-vcr">${featuredCollection.description ? featuredCollection.description.substring(0, 30) + '...' : 'PREMIUM COLLECTION'}</p>
-                <div class="flex items-center justify-end gap-3">
-                  <div class="text-right hidden md:block">
-                    <p class="text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Pack Price</p>
-                    <p class="text-lg font-light text-white drop-shadow-sm">$ ${Number(featuredCollection.pack_price_usd).toFixed(2)}</p>
-                  </div>
-                  <button class="add-pack-btn w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white" onclick="window.addPackFromCard('${featuredCollection.id}', '${featuredCollection.name.replace(/'/g, "\\'")}', '${featuredCollection.pack_price_usd}', '${featuredCollection.image_url}')">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-
-        gridProducts.slice(0, 3).forEach(p => {
-          gridHtml += `
-            <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-              <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-                <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
-              </div>
-              <div class="mt-auto">
-                <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
-                <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
-                <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
-                <div class="flex items-center justify-between">
-                  <button class="add-to-cart-btn w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                  </button>
-                  <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
-                </div>
-              </div>
-            </div>
-          `;
-        });
-        gridHtml += `</div>`;
-
-        if (gridProducts.length > 3) {
-          gridHtml += `<div class="grid grid-cols-5 gap-4 md:gap-6 mt-6">`;
-          gridProducts.slice(3).forEach(p => {
-            gridHtml += `
-              <div class="col-span-1 relative group clickable flex flex-col h-[550px]">
-                <div class="relative w-full flex-1 overflow-hidden mb-4 tech-card-asymmetric bg-[#5f7085]">
-                  <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
-                </div>
-                <div class="mt-auto">
-                  <h4 class="font-['Anton'] text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
-                  <p class="text-white/60 text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
-                  <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
-                  <div class="flex items-center justify-between">
-                    <button class="add-to-cart-btn w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    </button>
-                    <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
-                  </div>
-                </div>
-              </div>
-            `;
-          });
-          gridHtml += `</div>`;
-        }
-        gridContainer.innerHTML = gridHtml;
-
-        window.addProductToCart = function(id, name, price, thumbnail) {
-          Cart.add({
-            id: id,
-            name: name,
-            price_usd: price,
-            thumbnail_url: thumbnail
-          });
-        };
-        window.addPackFromCard = function(id, name, price, thumbnail) {
-          Cart.add({
-            id: 'pack-' + id,
-            name: name + ' (Pack)',
-            price_usd: price,
-            thumbnail_url: thumbnail,
-            isPack: true
-          });
-        };
-
-        document.getElementById('cart-btn')?.addEventListener('click', () => Cart.openPreview());
-        document.getElementById('close-cart-preview')?.addEventListener('click', () => Cart.closePreview());
-        document.getElementById('cart-preview-overlay')?.addEventListener('click', () => Cart.closePreview());
-        document.getElementById('view-full-cart')?.addEventListener('click', () => {
-          Cart.closePreview();
-          setTimeout(() => Cart.openModal(), 300);
-        });
-        document.getElementById('close-cart-modal')?.addEventListener('click', () => Cart.closeModal());
-        document.getElementById('cart-modal-overlay')?.addEventListener('click', () => Cart.closeModal());
-        document.getElementById('modal-apply-coupon')?.addEventListener('click', () => {
-          const input = document.getElementById('modal-coupon-input');
-          const msgEl = document.getElementById('modal-coupon-message');
-          if (!input || !msgEl) return;
-          const result = Cart.applyCoupon(input.value);
-          msgEl.textContent = result.message;
-          msgEl.classList.remove('hidden', 'text-green-400', 'text-red-400');
-          msgEl.classList.add(result.success ? 'text-green-400' : 'text-red-400');
-          if (result.success) {
-            input.value = '';
-            Cart.updateUI();
-          }
-        });
-        document.getElementById('modal-checkout-btn')?.addEventListener('click', () => {
-          alert('Stripe checkout integration coming next!');
-        });
-        document.getElementById('filters-btn')?.addEventListener('click', () => {
-          alert('Filters coming soon!');
-        });
-      } catch (err) {
-        console.error('Homepage Load Error:', err);
-        document.getElementById('dynamic-grid').innerHTML = '<p class="text-red-400">Error loading content. Please refresh.</p>';
-      }
-    });
-  </script>
-
-</Layout>
+    <div class="
