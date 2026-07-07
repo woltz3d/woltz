@@ -624,102 +624,84 @@ import '../styles/global.css';
         updateHero(0);
 
         // ============================================
-        // GRID RESPONSIVO - 4 COLUNAS DESKTOP/NOTEBOOK
+        // GRID RESPONSIVO - 5 COLUNAS COM ALTURAS ADAPTATIVAS
         // ============================================
         const gridContainer = document.getElementById('dynamic-grid');
+        
+        // Grid fixo de 5 colunas (igual seu desktop original)
+        // Apenas as alturas mudam conforme a tela
+        let gridHtml = `<div class="grid grid-cols-5 gap-4 md:gap-6">`;
 
-        // Detecta largura da tela
-        const w = window.innerWidth;
-        let cols, cardH, gap;
-
-        if (w >= 1440) {
-          // Desktop grande: 4 colunas
-          cols = 4;
-          cardH = '550px';
-          gap = '24px';
-        } else if (w >= 1024) {
-          // Notebook: 3 colunas (mesmo tamanho dos cards do desktop)
-          cols = 3;
-          cardH = '550px';
-          gap = '24px';
-        } else if (w >= 768) {
-          // Tablet: 2 colunas
-          cols = 2;
-          cardH = '480px';
-          gap = '20px';
-        } else {
-          // Mobile: 1 coluna
-          cols = 1;
-          cardH = '420px';
-          gap = '16px';
-        }
-
-        // Junta todos os cards em uma única lista (coleção + produtos)
-        const allCards = [
-          { type: 'collection', data: featuredCollection },
-          ...gridProducts.map(p => ({ type: 'product', data: p }))
-        ];
-
-        // Cria o grid com todos os cards
-        let gridHtml = `<div style="display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: ${gap};">`;
-
-        allCards.forEach(card => {
-          if (card.type === 'collection') {
-            const col = card.data;
-            gridHtml += `
-              <div style="position: relative;" class="group clickable">
-                <div class="relative w-full overflow-hidden tech-card-asymmetric bg-[#5f7085]" style="height: ${cardH};">
-                  <img src="${imgUrl(col.image_url, 1200)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="${col.name}" />
-                  <div class="absolute bottom-6 right-6 z-10 text-right">
-                    <h3 class="font-['Anton'] text-2xl md:text-3xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">${col.name.toUpperCase()}</h3>
-                    <p class="text-[8px] md:text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-2 md:mb-3 font-vcr">${col.description ? col.description.substring(0, 30) + '...' : 'PREMIUM COLLECTION'}</p>
-                    <div class="flex items-center justify-end gap-2 md:gap-3">
-                      <div class="text-right hidden md:block">
-                        <p class="text-[8px] md:text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Pack Price</p>
-                        <p class="text-base md:text-lg font-light text-white drop-shadow-sm">$ ${Number(col.pack_price_usd).toFixed(2)}</p>
-                      </div>
-                      <button class="add-pack-btn w-9 h-9 md:w-10 md:h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white" onclick="window.addPackFromCard('${col.id}', '${col.name.replace(/'/g, "\\'")}', '${col.pack_price_usd}', '${col.image_url}')">
-                        <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-                      </button>
-                    </div>
+        // Card Grande da Coleção - ÍCONE DE SETINHA (↗) IGUAL AO HERO
+        // Altura responsiva: 350px mobile → 400px tablet → 450px notebook → 550px desktop
+        gridHtml += `
+          <div class="col-span-2 relative group clickable h-[350px] sm:h-[400px] md:h-[450px] lg:h-[550px]">
+            <div class="relative w-full h-full overflow-hidden tech-card-asymmetric bg-[#5f7085]">
+              <img src="${imgUrl(featuredCollection.image_url, 1200)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="${featuredCollection.name}" />
+              <div class="absolute bottom-6 right-6 z-10 text-right">
+                <h3 class="font-['Anton'] text-2xl sm:text-3xl md:text-4xl uppercase text-white tracking-tight leading-none mb-1 drop-shadow-md">${featuredCollection.name.toUpperCase()}</h3>
+                <p class="text-[8px] sm:text-[9px] tracking-[0.2em] text-white/90 uppercase font-medium drop-shadow-sm mb-2 sm:mb-3 font-vcr">${featuredCollection.description ? featuredCollection.description.substring(0, 30) + '...' : 'PREMIUM COLLECTION'}</p>
+                <div class="flex items-center justify-end gap-2 sm:gap-3">
+                  <div class="text-right hidden md:block">
+                    <p class="text-[8px] sm:text-[9px] tracking-widest text-white/60 uppercase mb-0.5 font-vcr">Pack Price</p>
+                    <p class="text-base sm:text-lg font-light text-white drop-shadow-sm">$ ${Number(featuredCollection.pack_price_usd).toFixed(2)}</p>
                   </div>
+                  <button class="add-pack-btn w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-md group-hover:border-white" onclick="window.addPackFromCard('${featuredCollection.id}', '${featuredCollection.name.replace(/'/g, "\\'")}', '${featuredCollection.pack_price_usd}', '${featuredCollection.image_url}')">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                  </button>
                 </div>
               </div>
-            `;
-          } else {
-            const p = card.data;
+            </div>
+          </div>
+        `;
+
+        gridProducts.slice(0, 3).forEach(p => {
+          gridHtml += `
+            <div class="col-span-1 relative group clickable flex flex-col h-[350px] sm:h-[400px] md:h-[450px] lg:h-[550px]">
+              <div class="relative w-full flex-1 overflow-hidden mb-3 sm:mb-4 tech-card-asymmetric bg-[#5f7085]">
+                <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
+              </div>
+              <div class="mt-auto">
+                <h4 class="font-['Anton'] text-xs sm:text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
+                <p class="text-white/60 text-[8px] sm:text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
+                <div class="flex items-center justify-between">
+                  <button class="add-to-cart-btn w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
+                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                  </button>
+                  <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        gridHtml += `</div>`;
+
+        if (gridProducts.length > 3) {
+          gridHtml += `<div class="grid grid-cols-5 gap-4 md:gap-6 mt-4 sm:mt-6">`;
+          gridProducts.slice(3).forEach(p => {
             gridHtml += `
-              <div class="relative group clickable flex flex-col">
-                <div class="relative w-full flex-1 overflow-hidden mb-3 md:mb-4 tech-card-asymmetric bg-[#5f7085]" style="height: ${cardH};">
+              <div class="col-span-1 relative group clickable flex flex-col h-[350px] sm:h-[400px] md:h-[450px] lg:h-[550px]">
+                <div class="relative w-full flex-1 overflow-hidden mb-3 sm:mb-4 tech-card-asymmetric bg-[#5f7085]">
                   <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
                 </div>
                 <div class="mt-auto">
-                  <h4 class="font-['Anton'] text-xs md:text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
-                  <p class="text-white/60 text-[8px] md:text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
+                  <h4 class="font-['Anton'] text-xs sm:text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
+                  <p class="text-white/60 text-[8px] sm:text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
                   <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
                   <div class="flex items-center justify-between">
-                    <button class="add-to-cart-btn w-7 h-7 md:w-8 md:h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
-                      <svg class="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <button class="add-to-cart-btn w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-[#6b7c93] transition-all backdrop-blur-sm group-hover:border-white mr-2" onclick="window.addProductToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price_usd}', '${p.thumbnail_url}')">
+                      <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     </button>
                     <p class="text-white text-xs font-light font-vcr">$ ${Number(p.price_usd || 0).toFixed(2)}</p>
                   </div>
                 </div>
               </div>
             `;
-          }
-        });
-
-        gridHtml += `</div>`;
+          });
+          gridHtml += `</div>`;
+        }
         gridContainer.innerHTML = gridHtml;
-
-        // Recarrega se a tela mudar de tamanho
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-          clearTimeout(resizeTimer);
-          resizeTimer = setTimeout(() => {
-            location.reload();
-          }, 300);
-        });
 
         // --- FUNÇÕES GLOBAIS PARA ADD TO CART ---
         window.addProductToCart = function(id, name, price, thumbnail) {
