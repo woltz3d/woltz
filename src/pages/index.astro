@@ -624,7 +624,7 @@ import '../styles/global.css';
         updateHero(0);
 
         // ============================================
-        // GRID RESPONSIVO - 3 COLUNAS (TODOS IGUAIS)
+        // GRID RESPONSIVO - ALTURA REDUZIDA
         // ============================================
         const gridContainer = document.getElementById('dynamic-grid');
 
@@ -634,22 +634,22 @@ import '../styles/global.css';
         if (w >= 1920) {
           // Desktop 4K: 4 colunas
           cols = 4;
-          cardH = '550px';
+          cardH = '450px';  // ← REDUZIDO de 550px
           gap = '24px';
         } else if (w >= 1024) {
-          // Notebook: 3 colunas (cards maiores, igual TESTE N3)
+          // Notebook: 3 colunas
           cols = 3;
-          cardH = '500px';
+          cardH = '400px';  // ← REDUZIDO de 500px (igual card da coleção)
           gap = '20px';
         } else if (w >= 768) {
           // Tablet: 2 colunas
           cols = 2;
-          cardH = '450px';
+          cardH = '350px';  // ← REDUZIDO de 450px
           gap = '16px';
         } else {
           // Mobile: 1 coluna
           cols = 1;
-          cardH = '400px';
+          cardH = '320px';  // ← REDUZIDO de 400px
           gap = '16px';
         }
 
