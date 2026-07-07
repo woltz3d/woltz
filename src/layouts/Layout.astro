@@ -139,6 +139,10 @@ const { title } = Astro.props;
         cursor: none !important;
       }
       
+      body * {
+        cursor: none !important;
+      }
+      
       h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-heading);
         font-weight: var(--weight-heading);
@@ -181,22 +185,23 @@ const { title } = Astro.props;
         padding: 0 var(--section-padding);
       }
       
-      /* CURSOR NORMAL - Bolinha pequena com borda */
+      /* CURSOR NORMAL - Bolinha pequena com borda branca */
       #custom-cursor {
         position: fixed;
         top: 0;
         left: 0;
         width: 24px;
         height: 24px;
-        border: 2px solid var(--color-primary);
+        border: 2px solid #ffffff;
         border-radius: 50%;
         pointer-events: none;
         z-index: 2147483647;
         transform: translate(-50%, -50%);
         transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-        opacity: 1 !important;
-        visibility: visible !important;
         background-color: transparent;
+        opacity: 1;
+        visibility: visible;
+        display: block;
       }
       
       /* CURSOR ATIVO (HOVER) - Círculo maior com borda branca e fundo sutil */
@@ -251,6 +256,7 @@ const { title } = Astro.props;
       
       @media (hover: none) and (pointer: coarse) {
         body { cursor: auto !important; }
+        body * { cursor: auto !important; }
         #custom-cursor { display: none !important; }
       }
     </style>
@@ -269,63 +275,77 @@ const { title } = Astro.props;
     
     <slot />
     
+    <!-- SCRIPT DO CURSOR - Executa imediatamente -->
     <script is:inline>
-      document.addEventListener('DOMContentLoaded', () => {
-        const cursor = document.getElementById('custom-cursor');
+      (function() {
+        var cursor = document.getElementById('custom-cursor');
         if (!cursor) return;
-
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let cursorX = mouseX;
-        let cursorY = mouseY;
-
-        document.addEventListener('mousemove', (e) => {
+        
+        // Garante visibilidade
+        cursor.style.display = 'block';
+        cursor.style.opacity = '1';
+        cursor.style.visibility = 'visible';
+        
+        // Posições iniciais (centro da tela)
+        var mouseX = window.innerWidth / 2;
+        var mouseY = window.innerHeight / 2;
+        var cursorX = mouseX;
+        var cursorY = mouseY;
+        
+        // Atualiza posição inicial
+        cursor.style.left = mouseX + 'px';
+        cursor.style.top = mouseY + 'px';
+        
+        // Captura movimento do mouse
+        window.onmousemove = function(e) {
           mouseX = e.clientX;
           mouseY = e.clientY;
-        });
-
-        function animate() {
-          cursorX += (mouseX - cursorX) * 0.2;
-          cursorY += (mouseY - cursorY) * 0.2;
+        };
+        
+        // Animação suave
+        function moveCursor() {
+          cursorX += (mouseX - cursorX) * 0.15;
+          cursorY += (mouseY - cursorY) * 0.15;
           cursor.style.left = cursorX + 'px';
           cursor.style.top = cursorY + 'px';
-          requestAnimationFrame(animate);
+          requestAnimationFrame(moveCursor);
         }
-        animate();
-
-        const clickables = document.querySelectorAll('a, button, [onclick], .clickable, input');
-        clickables.forEach(el => {
-          el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-          el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-        });
+        moveCursor();
         
-        cursor.style.display = 'block';
+        // Efeito hover
+        function addHover(el) {
+          if (!el) return;
+          el.onmouseenter = function() { cursor.className = 'active'; };
+          el.onmouseleave = function() { cursor.className = ''; };
+        }
         
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
+        // Aplica em todos elementos clicáveis
+        var clickables = document.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
+        for (var i = 0; i < clickables.length; i++) {
+          addHover(clickables[i]);
+        }
+        
+        // Observer para elementos dinâmicos
+        var observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(m) {
+            m.addedNodes.forEach(function(node) {
               if (node.nodeType === 1) {
-                if (node.matches && node.matches('a, button, [onclick], .clickable, input')) {
-                  node.addEventListener('mouseenter', () => cursor.classList.add('active'));
-                  node.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+                if (node.matches && node.matches('a, button, [onclick], .clickable, input, select, textarea')) {
+                  addHover(node);
                 }
                 if (node.querySelectorAll) {
-                  const newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input');
-                  newClickables.forEach(el => {
-                    el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-                    el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-                  });
+                  var newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
+                  for (var i = 0; i < newClickables.length; i++) {
+                    addHover(newClickables[i]);
+                  }
                 }
               }
             });
           });
         });
         
-        observer.observe(document.body, {
-          childList: true,
-          subtree: true
-        });
-      });
+        observer.observe(document.body, { childList: true, subtree: true });
+      })();
     </script>
   </body>
 </html>
