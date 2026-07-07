@@ -624,7 +624,7 @@ import '../styles/global.css';
         updateHero(0);
 
         // ============================================
-        // GRID RESPONSIVO - ALTURA REDUZIDA
+        // GRID RESPONSIVO - ALTURA UNIFORME
         // ============================================
         const gridContainer = document.getElementById('dynamic-grid');
 
@@ -632,28 +632,23 @@ import '../styles/global.css';
         let cols, cardH, gap;
 
         if (w >= 1920) {
-          // Desktop 4K: 4 colunas
           cols = 4;
-          cardH = '450px';  // ← REDUZIDO de 550px
+          cardH = '400px';
           gap = '24px';
         } else if (w >= 1024) {
-          // Notebook: 3 colunas
           cols = 3;
-          cardH = '400px';  // ← REDUZIDO de 500px (igual card da coleção)
+          cardH = '380px';  // Altura reduzida para ficar igual ao card da coleção
           gap = '20px';
         } else if (w >= 768) {
-          // Tablet: 2 colunas
           cols = 2;
-          cardH = '350px';  // ← REDUZIDO de 450px
+          cardH = '350px';
           gap = '16px';
         } else {
-          // Mobile: 1 coluna
           cols = 1;
-          cardH = '320px';  // ← REDUZIDO de 400px
+          cardH = '320px';
           gap = '16px';
         }
 
-        // TODOS os cards (coleção + produtos) em uma única lista
         const allCards = [
           { type: 'collection', data: featuredCollection },
           ...gridProducts.map(p => ({ type: 'product', data: p }))
@@ -687,11 +682,11 @@ import '../styles/global.css';
           } else {
             const p = card.data;
             gridHtml += `
-              <div class="relative group clickable flex flex-col">
-                <div class="relative w-full flex-1 overflow-hidden mb-3 md:mb-4 tech-card-asymmetric bg-[#5f7085]" style="height: ${cardH};">
+              <div class="relative group clickable">
+                <div class="relative w-full overflow-hidden tech-card-asymmetric bg-[#5f7085]" style="height: ${cardH};">
                   <img src="${imgUrl(p.thumbnail_url, 600)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}" />
                 </div>
-                <div class="mt-auto">
+                <div class="mt-3 md:mt-4">
                   <h4 class="font-['Anton'] text-xs md:text-sm tracking-wide uppercase mb-0.5 text-white">${p.name}</h4>
                   <p class="text-white/60 text-[8px] md:text-[9px] tracking-wider uppercase mb-2 font-vcr">${p.description ? p.description.substring(0, 25) + '...' : 'PREMIUM DIGITAL SET'}</p>
                   <div class="flex items-center justify-between mb-2">${renderColors(p.colors)}</div>
