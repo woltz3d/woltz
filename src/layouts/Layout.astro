@@ -75,20 +75,6 @@ const { title } = Astro.props;
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Tailwind Config -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            'anton': ['Anton', 'sans-serif'],
-            'vcr': ['VCR OSD Mono', 'monospace'],
-          },
-        }
-      }
-    }
-  </script>
-  
   <style is:global>
     @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
     
@@ -138,10 +124,40 @@ const { title } = Astro.props;
     
     .tech-card-asymmetric {
       clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-      background-color: var(--collection-card-bg);
+      background-color: var(--collection-card-bg) !important;
     }
     
-    /* Custom Cursor */
+    /* Aplicar cores dinâmicas */
+    header {
+      background: var(--header-bg) !important;
+      color: var(--header-text) !important;
+    }
+    
+    #hero-section {
+      background: var(--header-bg) !important;
+    }
+    
+    #collection-title {
+      color: var(--hero-title) !important;
+    }
+    
+    #collection-series {
+      color: var(--hero-label) !important;
+    }
+    
+    #collection-price {
+      color: var(--hero-price) !important;
+    }
+    
+    section.bg-\[\#6b7c93\] {
+      background: var(--collection-bg) !important;
+    }
+    
+    footer.bg-\[\#6b7c93\] {
+      background: var(--footer-bg) !important;
+      color: var(--footer-text) !important;
+    }
+    
     .clickable {
       cursor: crosshair;
       transition: color 0.3s;
@@ -151,7 +167,6 @@ const { title } = Astro.props;
       color: var(--cursor-color);
     }
     
-    /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb {
