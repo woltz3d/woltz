@@ -72,9 +72,6 @@ const { title } = Astro.props;
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
   <style is:global>
     @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
     
@@ -118,6 +115,11 @@ const { title } = Astro.props;
       background: #0a0a0c;
       color: #fff;
       overflow-x: hidden;
+      cursor: none !important;
+    }
+    
+    body * {
+      cursor: none !important;
     }
     
     .font-vcr { font-family: var(--font-mono); }
@@ -127,46 +129,39 @@ const { title } = Astro.props;
       background-color: var(--collection-card-bg) !important;
     }
     
-    /* Aplicar cores dinâmicas */
-    header {
-      background: var(--header-bg) !important;
-      color: var(--header-text) !important;
+    /* CURSOR CUSTOMIZADO - BOLA BRANCA */
+    #custom-cursor {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 24px !important;
+      height: 24px !important;
+      border: 2px solid var(--cursor-color) !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483647 !important;
+      transform: translate(-50%, -50%) !important;
+      transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+      background-color: transparent !important;
     }
     
-    #hero-section {
-      background: var(--header-bg) !important;
+    #custom-cursor.active {
+      width: 50px !important;
+      height: 50px !important;
+      border: 2px solid #ffffff !important;
+      background-color: rgba(255, 255, 255, 0.15) !important;
     }
     
-    #collection-title {
-      color: var(--hero-title) !important;
+    @media (hover: none) and (pointer: coarse) {
+      body { cursor: auto !important; }
+      body * { cursor: auto !important; }
+      #custom-cursor { display: none !important; }
     }
     
-    #collection-series {
-      color: var(--hero-label) !important;
-    }
-    
-    #collection-price {
-      color: var(--hero-price) !important;
-    }
-    
-    section.bg-\[\#6b7c93\] {
-      background: var(--collection-bg) !important;
-    }
-    
-    footer.bg-\[\#6b7c93\] {
-      background: var(--footer-bg) !important;
-      color: var(--footer-text) !important;
-    }
-    
-    .clickable {
-      cursor: crosshair;
-      transition: color 0.3s;
-    }
-    
-    .clickable:hover {
-      color: var(--cursor-color);
-    }
-    
+    /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb {
@@ -179,6 +174,74 @@ const { title } = Astro.props;
   </style>
 </head>
 <body>
+  <!-- CURSOR CUSTOMIZADO -->
+  <div id="custom-cursor"></div>
+  
   <slot />
+  
+  <!-- SCRIPT DO CURSOR -->
+  <script is:inline>
+    (function() {
+      var cursor = document.getElementById('custom-cursor');
+      if (!cursor) return;
+      
+      cursor.style.display = 'block';
+      cursor.style.opacity = '1';
+      cursor.style.visibility = 'visible';
+      
+      var mouseX = window.innerWidth / 2;
+      var mouseY = window.innerHeight / 2;
+      var cursorX = mouseX;
+      var cursorY = mouseY;
+      
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+      
+      window.onmousemove = function(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      };
+      
+      function moveCursor() {
+        cursorX += (mouseX - cursorX) * 0.15;
+        cursorY += (mouseY - cursorY) * 0.15;
+        cursor.style.left = cursorX + 'px';
+        cursor.style.top = cursorY + 'px';
+        requestAnimationFrame(moveCursor);
+      }
+      moveCursor();
+      
+      function addHover(el) {
+        if (!el) return;
+        el.onmouseenter = function() { cursor.className = 'active'; };
+        el.onmouseleave = function() { cursor.className = ''; };
+      }
+      
+      var clickables = document.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
+      for (var i = 0; i < clickables.length; i++) {
+        addHover(clickables[i]);
+      }
+      
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+          m.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) {
+              if (node.matches && node.matches('a, button, [onclick], .clickable, input, select, textarea')) {
+                addHover(node);
+              }
+              if (node.querySelectorAll) {
+                var newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
+                for (var i = 0; i < newClickables.length; i++) {
+                  addHover(newClickables[i]);
+                }
+              }
+            }
+          });
+        });
+      });
+      
+      observer.observe(document.body, { childList: true, subtree: true });
+    })();
+  </script>
 </body>
 </html>
