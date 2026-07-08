@@ -1,16 +1,8 @@
 ---
 import { supabase } from '../lib/supabase';
-import { createClient } from '@supabase/supabase-js';
 
 // Busca configurações do tema
 let themeSettings: any = {};
-const supabase = createClient(
-  import.meta.env.SUPABASE_URL,
-  import.meta.env.SUPABASE_ANON_KEY
-);
-
-// Carregar configurações do tema
-let themeData: any = {};
 try {
   const { data, error } = await supabase
     .from('theme_settings')
@@ -25,14 +17,8 @@ try {
       latestSettings.set(row.key, row.value);
     }
   });
-    .select('*');
   
   themeSettings = Object.fromEntries(latestSettings);
-  if (!error && data) {
-    data.forEach((row: any) => {
-      themeData[row.key] = row.value;
-    });
-  }
 } catch (e) {
   console.error('Failed to load theme settings:', e);
 }
@@ -77,38 +63,14 @@ const branding = {
   logoUrl: themeSettings['branding.logo_url']?.value || '',
   faviconUrl: themeSettings['branding.favicon_url']?.value || '',
   tagline: themeSettings['branding.tagline']?.value || '',
-// Valores padrão
-const theme = {
-  'header.bg_color': themeData['header.bg_color'] || '#121214',
-  'header.text_color': themeData['header.text_color'] || '#ffffff',
-  'hero.title_color': themeData['hero.title_color'] || '#ffffff',
-  'hero.subtitle_color': themeData['hero.subtitle_color'] || 'rgba(255,255,255,0.6)',
-  'hero.label_color': themeData['hero.label_color'] || 'rgba(255,255,255,0.4)',
-  'hero.price_color': themeData['hero.price_color'] || '#ffffff',
-  'hero.overlay_opacity': themeData['hero.overlay_opacity'] || '0.6',
-  'collection.bg_color': themeData['collection.bg_color'] || '#6b7c93',
-  'collection.title_color': themeData['collection.title_color'] || '#ffffff',
-  'collection.card_bg': themeData['collection.card_bg'] || '#5f7085',
-  'collection.product_name_color': themeData['collection.product_name_color'] || '#ffffff',
-  'collection.product_desc_color': themeData['collection.product_desc_color'] || 'rgba(255,255,255,0.6)',
-  'collection.price_color': themeData['collection.price_color'] || '#ffffff',
-  'collection.cart_icon_color': themeData['collection.cart_icon_color'] || '#ffffff',
-  'collection.filters_btn_bg': themeData['collection.filters_btn_bg'] || 'rgba(255,255,255,0.1)',
-  'collection.filters_btn_border': themeData['collection.filters_btn_border'] || 'rgba(255,255,255,0.3)',
-  'collection.filters_btn_text': themeData['collection.filters_btn_text'] || '#ffffff',
-  'footer.bg_color': themeData['footer.bg_color'] || '#6b7c93',
-  'footer.text_color': themeData['footer.text_color'] || '#ffffff',
-  'footer.muted_text': themeData['footer.muted_text'] || 'rgba(255,255,255,0.4)',
-  'footer.lettering_color': themeData['footer.lettering_color'] || 'rgba(255,255,255,0.07)',
-  'footer.border_color': themeData['footer.border_color'] || 'rgba(255,255,255,0.2)',
-  'global.cursor_color': themeData['global.cursor_color'] || '#ffffff',
-  'typography.font_heading': themeData['typography.font_heading'] || 'Anton',
-  'typography.font_body': themeData['typography.font_body'] || 'Inter, sans-serif',
-  'typography.font_mono': themeData['typography.font_mono'] || 'VCR OSD Mono, monospace',
 };
 
 interface Props {
-@@ -74,278 +61,109 @@ const { title } = Astro.props;
+  title: string;
+}
+
+const { title } = Astro.props;
+---
 
 <!doctype html>
 <html lang="pt-BR">
@@ -117,77 +79,14 @@ interface Props {
     <meta name="description" content={branding.tagline || "WOLTZ - Premium Digital Fashion"} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="WOLTZ - Premium Digital Fashion" />
-  <title>{title}</title>
-  
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Tailwind Config -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            'anton': ['Anton', 'sans-serif'],
-            'vcr': ['VCR OSD Mono', 'monospace'],
-          },
-        }
-      }
-    }
-  </script>
-  
-  <style is:global>
-    @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
-
+    
     {branding.faviconUrl && <link rel="icon" href={branding.faviconUrl} />}
-    :root {
-      --header-bg: {theme['header.bg_color']};
-      --header-text: {theme['header.text_color']};
-      --hero-title: {theme['hero.title_color']};
-      --hero-subtitle: {theme['hero.subtitle_color']};
-      --hero-label: {theme['hero.label_color']};
-      --hero-price: {theme['hero.price_color']};
-      --hero-overlay: {theme['hero.overlay_opacity']};
-      --collection-bg: {theme['collection.bg_color']};
-      --collection-title: {theme['collection.title_color']};
-      --collection-card-bg: {theme['collection.card_bg']};
-      --collection-product-name: {theme['collection.product_name_color']};
-      --collection-product-desc: {theme['collection.product_desc_color']};
-      --collection-price: {theme['collection.price_color']};
-      --collection-cart-icon: {theme['collection.cart_icon_color']};
-      --collection-filters-btn-bg: {theme['collection.filters_btn_bg']};
-      --collection-filters-btn-border: {theme['collection.filters_btn_border']};
-      --collection-filters-btn-text: {theme['collection.filters_btn_text']};
-      --footer-bg: {theme['footer.bg_color']};
-      --footer-text: {theme['footer.text_color']};
-      --footer-muted: {theme['footer.muted_text']};
-      --footer-lettering: {theme['footer.lettering_color']};
-      --footer-border: {theme['footer.border_color']};
-      --cursor-color: {theme['global.cursor_color']};
-      --font-heading: {theme['typography.font_heading']};
-      --font-body: {theme['typography.font_body']};
-      --font-mono: {theme['typography.font_mono']};
-    }
-
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap" rel="stylesheet" />
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    
     <!-- CSS Variables do Tema -->
     <style is:global>
       :root {
@@ -361,37 +260,21 @@ interface Props {
         #custom-cursor { display: none !important; }
       }
     </style>
-    body {
-      font-family: var(--font-body);
-      background: #0a0a0c;
-      color: #fff;
-      overflow-x: hidden;
-    }
-
+    
     <slot name="head" />
   </head>
   <body>
     <div id="custom-cursor"></div>
-    .font-vcr { font-family: var(--font-mono); }
-
+    
     <div id="cart-toast">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
       </svg>
       <span id="cart-toast-message">Added to cart</span>
     </div>
-    .tech-card-asymmetric {
-      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-      background-color: var(--collection-card-bg);
-    }
-
+    
     <slot />
-    /* Custom Cursor */
-    .clickable {
-      cursor: crosshair;
-      transition: color 0.3s;
-    }
-
+    
     <!-- SCRIPT DO CURSOR - Executa imediatamente -->
     <script is:inline>
       (function() {
@@ -465,23 +348,4 @@ interface Props {
       })();
     </script>
   </body>
-    .clickable:hover {
-      color: var(--cursor-color);
-    }
-    
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.2);
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255,255,255,0.4);
-    }
-  </style>
-</head>
-<body>
-  <slot />
-</body>
 </html>
