@@ -1,929 +1,845 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
-
 const SUPABASE_URL = import.meta.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 ---
-
 <AdminLayout title="Theme Editor" activePage="theme-editor">
-  
-  <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
-  
-  <style is:global>
-    .theme-editor-wrapper {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      height: calc(100vh - 73px);
-      background: #0a0a0c;
-      overflow: hidden;
-    }
-    
-    .theme-editor-wrapper ::-webkit-scrollbar { width: 5px; }
-    .theme-editor-wrapper ::-webkit-scrollbar-track { background: transparent; }
-    .theme-editor-wrapper ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 3px;
-    }
-    
-    .te-sidebar-left {
-      background: #111113;
-      border-right: 1px solid rgba(255, 255, 255, 0.06);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 10;
-    }
-    
-    .te-sidebar-header {
-      padding: 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      flex-shrink: 0;
-    }
-    
-    .te-sidebar-header h2 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 0.25rem;
-    }
-    
-    .te-sidebar-header p {
-      font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.4);
-    }
-    
-    .te-sections-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0.5rem;
-    }
-    
-    .te-section-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      margin-bottom: 2px;
-      user-select: none;
-    }
-    
-    .te-section-item:hover { background: rgba(255, 255, 255, 0.04); }
-    .te-section-item.active { background: rgba(255, 255, 255, 0.08); }
-    
-    .te-section-icon {
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.06);
-      flex-shrink: 0;
-    }
-    
-    .te-section-icon svg {
-      width: 14px;
-      height: 14px;
-      stroke: rgba(255, 255, 255, 0.7);
-    }
-    
-    .te-section-item.active .te-section-icon {
-      background: rgba(255, 255, 255, 0.12);
-    }
-    
-    .te-section-item.active .te-section-icon svg { stroke: #fff; }
-    
-    .te-section-info h3 {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: #fff;
-      margin-bottom: 0.1rem;
-    }
-    
-    .te-section-info p {
-      font-size: 0.65rem;
-      color: rgba(255, 255, 255, 0.4);
-    }
-    
-    .te-preview {
-      background: #1a1a1e;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    
-    .te-preview-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.75rem;
-      background: rgba(255, 255, 255, 0.03);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      flex-shrink: 0;
-    }
-    
-    .te-device-btn {
-      padding: 0.375rem 0.75rem;
-      border-radius: 6px;
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 0.375rem;
-    }
-    
-    .te-device-btn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
-    .te-device-btn.active {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-    .te-device-btn svg { width: 14px; height: 14px; }
-    
-    .te-preview-container {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-      background: #fff;
-    }
-    
-    .te-preview-frame {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-      transition: all 0.3s ease;
-    }
-    
-    .te-preview-frame.tablet {
-      width: 768px;
-      left: 50%;
-      transform: translateX(-50%);
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-    }
-    
-    .te-preview-frame.mobile {
-      width: 375px;
-      left: 50%;
-      transform: translateX(-50%);
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-    }
-    
-    .te-editor-panel {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 320px;
-      height: 100%;
-      background: #111113;
-      border-left: 1px solid rgba(255, 255, 255, 0.06);
-      display: flex;
-      flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 100;
-      box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
-    }
-    
-    .te-editor-panel.open { transform: translateX(0); }
-    
-    .te-editor-header {
-      padding: 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-    
-    .te-editor-header h2 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 0.125rem;
-    }
-    
-    .te-editor-header p {
-      font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.4);
-    }
-    
-    .te-close-panel {
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.06);
-      border: none;
-      cursor: pointer;
-      color: rgba(255, 255, 255, 0.7);
-      transition: all 0.2s;
-    }
-    
-    .te-close-panel:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-    .te-close-panel svg { width: 14px; height: 14px; }
-    
-    .te-save-btn {
-      background: #fff;
-      color: #000;
-      border: none;
-      padding: 0.5rem 0.875rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .te-save-btn:hover { background: rgba(255, 255, 255, 0.9); }
-    .te-save-btn.saving { opacity: 0.7; cursor: not-allowed; }
-    
-    .te-reset-btn {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .te-reset-btn:hover {
-      background: rgba(239, 68, 68, 0.3);
-      border-color: rgba(239, 68, 68, 0.5);
-    }
-    
-    .te-controls {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1rem;
-    }
-    
-    .te-control-group { margin-bottom: 1rem; }
-    
-    .te-control-label {
-      display: block;
-      font-size: 0.65rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: rgba(255, 255, 255, 0.5);
-      margin-bottom: 0.5rem;
-    }
-    
-    .te-color-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .te-color-input {
-      width: 36px;
-      height: 36px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      cursor: pointer;
-      background: none;
-      padding: 0;
-      flex-shrink: 0;
-    }
-    
-    .te-color-input::-webkit-color-swatch-wrapper { padding: 2px; }
-    .te-color-input::-webkit-color-swatch { border: none; border-radius: 4px; }
-    
-    .te-text-input, .te-select-input, .te-textarea-input {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      padding: 0.5rem 0.75rem;
-      color: #fff;
-      font-size: 0.8rem;
-      font-family: inherit;
-      transition: border-color 0.2s;
-    }
-    
-    .te-text-input:focus, .te-select-input:focus, .te-textarea-input:focus {
-      outline: none;
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-    
-    .te-select-input {
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.75rem center;
-      padding-right: 2rem;
-    }
-    
-    .te-select-input option { background: #1a1a1e; color: #fff; }
-    
-    .te-textarea-input {
-      resize: vertical;
-      min-height: 70px;
-      line-height: 1.5;
-    }
-    
-    .te-checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-    }
-    
-    .te-checkbox-row input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: #fff;
-      cursor: pointer;
-    }
-    
-    .te-checkbox-row span {
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.8);
-    }
-    
-    .te-open-editor-btn {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      padding: 0.5rem 0.875rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      cursor: pointer;
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      gap: 0.375rem;
-      transition: all 0.2s;
-    }
-    
-    .te-open-editor-btn:hover {
-      background: rgba(0, 0, 0, 0.9);
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-    
-    .te-open-editor-btn svg { width: 14px; height: 14px; }
-    
-    .te-toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 0.8rem;
-      z-index: 10000;
-      opacity: 0;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .te-toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-    
-    .te-toast svg { width: 16px; height: 16px; color: #22c55e; }
-    .te-toast.error svg { color: #ef4444; }
-  </style>
-
-  <div class="theme-editor-wrapper">
-    <div class="te-sidebar-left">
-      <div class="te-sidebar-header">
-        <h2>Site Sections</h2>
-        <p>Select section to edit</p>
-      </div>
-      
-      <div class="te-sections-list" id="sections-list">
-        <div class="te-section-item active" data-section="header">
-          <div class="te-section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <line x1="3" y1="9" x2="21" y2="9"/>
-            </svg>
-          </div>
-          <div class="te-section-info">
-            <h3>Header</h3>
-            <p>Logo, menu, icons</p>
-          </div>
-        </div>
-        
-        <div class="te-section-item" data-section="hero">
-          <div class="te-section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <circle cx="8.5" cy="8.5" r="1.5"/>
-              <polyline points="21 15 16 10 5 21"/>
-            </svg>
-          </div>
-          <div class="te-section-info">
-            <h3>Hero Section</h3>
-            <p>Collection showcase</p>
-          </div>
-        </div>
-        
-        <div class="te-section-item" data-section="collection">
-          <div class="te-section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-            </svg>
-          </div>
-          <div class="te-section-info">
-            <h3>New Collection</h3>
-            <p>Products grid</p>
-          </div>
-        </div>
-        
-        <div class="te-section-item" data-section="footer">
-          <div class="te-section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <line x1="3" y1="15" x2="21" y2="15"/>
-            </svg>
-          </div>
-          <div class="te-section-info">
-            <h3>Footer</h3>
-            <p>Bottom content</p>
-          </div>
-        </div>
-        
-        <div class="te-section-item" data-section="global">
-          <div class="te-section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="2" y1="12" x2="22" y2="12"/>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            </svg>
-          </div>
-          <div class="te-section-info">
-            <h3>Global</h3>
-            <p>Cursor, toast</p>
-          </div>
-        </div>
-      </div>
+<div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
+<style is:global>
+.theme-editor-wrapper {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  height: calc(100vh - 73px);
+  background: #0a0a0c;
+  overflow: hidden;
+}
+.theme-editor-wrapper ::-webkit-scrollbar { width: 5px; }
+.theme-editor-wrapper ::-webkit-scrollbar-track { background: transparent; }
+.theme-editor-wrapper ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+.te-sidebar-left {
+  background: #111113;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 10;
+}
+.te-sidebar-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+.te-sidebar-header h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+.te-sidebar-header p {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+.te-sections-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+.te-section-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+  user-select: none;
+}
+.te-section-item:hover { background: rgba(255, 255, 255, 0.04); }
+.te-section-item.active { background: rgba(255, 255, 255, 0.08); }
+.te-section-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+.te-section-icon svg {
+  width: 14px;
+  height: 14px;
+  stroke: rgba(255, 255, 255, 0.7);
+}
+.te-section-item.active .te-section-icon {
+  background: rgba(255, 255, 255, 0.12);
+}
+.te-section-item.active .te-section-icon svg { stroke: #fff; }
+.te-section-info h3 {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 0.1rem;
+}
+.te-section-info p {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+.te-preview {
+  background: #1a1a1e;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.te-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+.te-device-btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.te-device-btn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
+.te-device-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.te-device-btn svg { width: 14px; height: 14px; }
+.te-preview-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+}
+.te-preview-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  transition: all 0.3s ease;
+}
+.te-preview-frame.tablet {
+  width: 768px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+}
+.te-preview-frame.mobile {
+  width: 375px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+}
+.te-editor-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100%;
+  background: #111113;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+}
+.te-editor-panel.open { transform: translateX(0); }
+.te-editor-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.te-editor-header h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.125rem;
+}
+.te-editor-header p {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+.te-close-panel {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s;
+}
+.te-close-panel:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.te-close-panel svg { width: 14px; height: 14px; }
+.te-save-btn {
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 0.5rem 0.875rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.te-save-btn:hover { background: rgba(255, 255, 255, 0.9); }
+.te-save-btn.saving { opacity: 0.7; cursor: not-allowed; }
+.te-reset-btn {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.te-reset-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+.te-controls {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+.te-control-group { margin-bottom: 1rem; }
+.te-control-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 0.5rem;
+}
+.te-color-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.te-color-input {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+.te-color-input::-webkit-color-swatch-wrapper { padding: 2px; }
+.te-color-input::-webkit-color-swatch { border: none; border-radius: 4px; }
+.te-text-input, .te-select-input, .te-textarea-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  color: #fff;
+  font-size: 0.8rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.te-text-input:focus, .te-select-input:focus, .te-textarea-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.te-select-input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+.te-select-input option { background: #1a1a1e; color: #fff; }
+.te-textarea-input {
+  resize: vertical;
+  min-height: 70px;
+  line-height: 1.5;
+}
+.te-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.te-checkbox-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #fff;
+  cursor: pointer;
+}
+.te-checkbox-row span {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+.te-open-editor-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.5rem 0.875rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition: all 0.2s;
+}
+.te-open-editor-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.te-open-editor-btn svg { width: 14px; height: 14px; }
+.te-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.8rem;
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.te-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+.te-toast svg { width: 16px; height: 16px; color: #22c55e; }
+.te-toast.error svg { color: #ef4444; }
+</style>
+<div class="theme-editor-wrapper">
+  <div class="te-sidebar-left">
+    <div class="te-sidebar-header">
+      <h2>Site Sections</h2>
+      <p>Select section to edit</p>
     </div>
-    
-    <div class="te-preview">
-      <div class="te-preview-header">
-        <button class="te-device-btn active" data-device="desktop">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2"/>
-            <line x1="8" y1="21" x2="16" y2="21"/>
-            <line x1="12" y1="17" x2="12" y2="21"/>
+    <div class="te-sections-list" id="sections-list">
+      <div class="te-section-item active" data-section="header">
+        <div class="te-section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
           </svg>
-          Desktop
-        </button>
-        <button class="te-device-btn" data-device="tablet">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="4" y="2" width="16" height="20" rx="2"/>
-            <line x1="12" y1="18" x2="12" y2="18"/>
-          </svg>
-          Tablet
-        </button>
-        <button class="te-device-btn" data-device="mobile">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="5" y="2" width="14" height="20" rx="2"/>
-            <line x1="12" y1="18" x2="12" y2="18"/>
-          </svg>
-          Mobile
-        </button>
+        </div>
+        <div class="te-section-info">
+          <h3>Header</h3>
+          <p>Logo, menu, icons</p>
+        </div>
       </div>
-      
-      <div class="te-preview-container">
-        <iframe id="preview-frame" class="te-preview-frame" src="/" sandbox="allow-same-origin allow-scripts"></iframe>
-        
-        <button class="te-open-editor-btn" id="open-editor-btn" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      <div class="te-section-item" data-section="hero">
+        <div class="te-section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
           </svg>
-          Edit
-        </button>
-        
-        <div class="te-editor-panel" id="editor-panel">
-          <div class="te-editor-header">
-            <div>
-              <h2>Edit Section</h2>
-              <p id="section-description">Header settings</p>
-            </div>
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
-              <button id="reset-btn" class="te-reset-btn" type="button" title="Reset to defaults">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                  <path d="M3 3v5h5"/>
-                </svg>
-              </button>
-              <button id="save-btn" class="te-save-btn" type="button">Save</button>
-              <button class="te-close-panel" id="close-panel-btn" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-          
-          <div class="te-controls" id="controls-container"></div>
+        </div>
+        <div class="te-section-info">
+          <h3>Hero Section</h3>
+          <p>Collection showcase</p>
+        </div>
+      </div>
+      <div class="te-section-item" data-section="collection">
+        <div class="te-section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+        </div>
+        <div class="te-section-info">
+          <h3>New Collection</h3>
+          <p>Products grid</p>
+        </div>
+      </div>
+      <div class="te-section-item" data-section="footer">
+        <div class="te-section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="3" y1="15" x2="21" y2="15"/>
+          </svg>
+        </div>
+        <div class="te-section-info">
+          <h3>Footer</h3>
+          <p>Bottom content</p>
+        </div>
+      </div>
+      <div class="te-section-item" data-section="global">
+        <div class="te-section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </div>
+        <div class="te-section-info">
+          <h3>Global</h3>
+          <p>Cursor, toast</p>
         </div>
       </div>
     </div>
   </div>
-
-  <div id="te-toast" class="te-toast">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-    </svg>
-    <span id="te-toast-message">Saved</span>
+  <div class="te-preview">
+    <div class="te-preview-header">
+      <button class="te-device-btn active" data-device="desktop">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        Desktop
+      </button>
+      <button class="te-device-btn" data-device="tablet">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="2" width="16" height="20" rx="2"/>
+          <line x1="12" y1="18" x2="12" y2="18"/>
+        </svg>
+        Tablet
+      </button>
+      <button class="te-device-btn" data-device="mobile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2"/>
+          <line x1="12" y1="18" x2="12" y2="18"/>
+        </svg>
+        Mobile
+      </button>
+    </div>
+    <div class="te-preview-container">
+      <iframe id="preview-frame" class="te-preview-frame" src="/" sandbox="allow-same-origin allow-scripts"></iframe>
+      <button class="te-open-editor-btn" id="open-editor-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Edit
+      </button>
+      <div class="te-editor-panel" id="editor-panel">
+        <div class="te-editor-header">
+          <div>
+            <h2>Edit Section</h2>
+            <p id="section-description">Header settings</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button id="reset-btn" class="te-reset-btn" type="button" title="Reset to defaults">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+            </button>
+            <button id="save-btn" class="te-save-btn" type="button">Save</button>
+            <button class="te-close-panel" id="close-panel-btn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="te-controls" id="controls-container"></div>
+      </div>
+    </div>
   </div>
+</div>
+<div id="te-toast" class="te-toast">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+  </svg>
+  <span id="te-toast-message">Saved</span>
+</div>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const configEl = document.getElementById('app-config');
+const supabase = createClient(configEl.dataset.supabaseUrl, configEl.dataset.supabaseKey);
 
-  <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sectionControls = {
+  header: [
+    { key: 'header.bg_color', label: 'Background Color', type: 'color' },
+    { key: 'header.text_color', label: 'Text Color', type: 'color' },
+    { key: 'header.logo_text', label: 'Logo Text', type: 'text', placeholder: 'WOLTZ' },
+    { key: 'header.menu_items', label: 'Menu Items', type: 'text', placeholder: '[ CATALOG ],[ PUFFERS ]' },
+    { key: 'header.show_search', label: 'Show Search Icon', type: 'checkbox' },
+    { key: 'header.show_cart', label: 'Show Cart Icon', type: 'checkbox' },
+  ],
+  hero: [
+    { key: 'hero.title_color', label: 'Title Color', type: 'color' },
+    { key: 'hero.subtitle_color', label: 'Subtitle Color', type: 'color' },
+    { key: 'hero.label_color', label: 'Labels Color', type: 'color' },
+    { key: 'hero.price_color', label: 'Price Color', type: 'color' },
+    { key: 'hero.overlay_opacity', label: 'Image Overlay Opacity', type: 'text', placeholder: '0.6' },
+  ],
+  collection: [
+    { key: 'collection.bg_color', label: 'Section Background', type: 'color' },
+    { key: 'collection.title_color', label: '"NEW COLLECTION" Title', type: 'color' },
+    { key: 'collection.card_bg', label: 'Product Card BG', type: 'color' },
+    { key: 'collection.product_name_color', label: 'Product Name Color', type: 'color' },
+    { key: 'collection.product_desc_color', label: 'Description Color', type: 'color' },
+    { key: 'collection.price_color', label: 'Price Color', type: 'color' },
+    { key: 'collection.cart_icon_color', label: 'Cart Icon Color', type: 'color' },
+    { key: 'collection.filters_btn_bg', label: 'Filters Button BG', type: 'color' },
+    { key: 'collection.filters_btn_border', label: 'Filters Button Border', type: 'color' },
+    { key: 'collection.filters_btn_text', label: 'Filters Button Text', type: 'color' },
+  ],
+  footer: [
+    { key: 'footer.bg_color', label: 'Footer Background', type: 'color' },
+    { key: 'footer.text_color', label: 'Text Color', type: 'color' },
+    { key: 'footer.muted_text', label: 'Muted Text', type: 'color' },
+    { key: 'footer.lettering_color', label: 'Giant Lettering Color', type: 'color' },
+    { key: 'footer.border_color', label: 'Border/Divider Color', type: 'color' },
+    { key: 'footer.social_icon_bg', label: 'Social Icons BG', type: 'color' },
+    { key: 'footer.social_icon_border', label: 'Social Icons Border', type: 'color' },
+    { key: 'footer.social_icon_color', label: 'Social Icons Color', type: 'color' },
+    { key: 'footer.newsletter_input_bg', label: 'Newsletter Input BG', type: 'color' },
+    { key: 'footer.newsletter_input_border', label: 'Newsletter Input Border', type: 'color' },
+    { key: 'footer.left_text', label: 'Left Column Text', type: 'textarea', rows: 3 },
+    { key: 'footer.center_text', label: 'Center Column Text', type: 'textarea', rows: 3 },
+    { key: 'footer.lettering_text', label: 'Giant Lettering Text', type: 'text', placeholder: 'WOLTZ PUFFERS' },
+    { key: 'footer.bottom_left', label: 'Bottom Left Text', type: 'text', placeholder: 'MADE WITH PRECISION...' },
+    { key: 'footer.bottom_right', label: 'Bottom Right Text', type: 'text', placeholder: 'TERMS · PRIVACY...' },
+  ],
+  global: [
+    { key: 'global.cursor_color', label: 'Custom Cursor Color', type: 'color' },
+    { key: 'global.toast_bg', label: 'Toast Notification BG', type: 'color' },
+    { key: 'global.toast_text', label: 'Toast Text Color', type: 'color' },
+    { key: 'typography.font_heading', label: 'Heading Font', type: 'select', options: ['Anton', 'Playfair Display', 'Oswald', 'Bebas Neue', 'Montserrat'] },
+    { key: 'typography.font_body', label: 'Body Font', type: 'select', options: ['Inter, sans-serif', 'Roboto, sans-serif', 'Open Sans, sans-serif', 'DM Sans, sans-serif'] },
+    { key: 'typography.font_mono', label: 'Monospace Font', type: 'text', placeholder: 'VCR OSD Mono, monospace' },
+  ],
+};
 
-    const configEl = document.getElementById('app-config');
-    const supabase = createClient(configEl.dataset.supabaseUrl, configEl.dataset.supabaseKey);
+const sectionDescriptions = {
+  header: 'Header / Navigation bar',
+  hero: 'Hero section / Collection showcase',
+  collection: 'New Collection / Products grid',
+  footer: 'Footer / Bottom content',
+  global: 'Global settings / Typography',
+};
 
-    const sectionControls = {
-      header: [
-        { key: 'header.bg_color', label: 'Background Color', type: 'color' },
-        { key: 'header.text_color', label: 'Text Color', type: 'color' },
-        { key: 'header.logo_text', label: 'Logo Text', type: 'text', placeholder: 'WOLTZ' },
-        { key: 'header.menu_items', label: 'Menu Items', type: 'text', placeholder: '[ CATALOG ],[ PUFFERS ]' },
-        { key: 'header.show_search', label: 'Show Search Icon', type: 'checkbox' },
-        { key: 'header.show_cart', label: 'Show Cart Icon', type: 'checkbox' },
-      ],
+let currentSection = 'header';
+let themeData = {};
+let hasChanges = false;
+
+function rgbaToHex(rgba) {
+  if (!rgba) return '#ffffff';
+  if (rgba.startsWith('#')) return rgba;
+  const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (match) {
+    const r = parseInt(match[1]).toString(16).padStart(2, '0');
+    const g = parseInt(match[2]).toString(16).padStart(2, '0');
+    const b = parseInt(match[3]).toString(16).padStart(2, '0');
+    return `#${r}${g}${b}`;
+  }
+  return '#ffffff';
+}
+
+function refreshPreview() {
+  const iframe = document.getElementById('preview-frame');
+  if (iframe) {
+    const currentSrc = iframe.src.split('?')[0];
+    iframe.src = currentSrc + '?t=' + Date.now();
+  }
+}
+
+async function loadThemeSettings() {
+  try {
+    const { data, error } = await supabase.from('theme_settings').select('*');
+    if (error) throw error;
+    
+    // Armazena valores diretamente como string
+    themeData = {};
+    data.forEach((row) => {
+      themeData[row.key] = row.value;
+    });
+    
+    console.log('Loaded', Object.keys(themeData).length, 'settings');
+    renderControls();
+  } catch (err) {
+    console.error('Error loading:', err);
+  }
+}
+
+function renderControls() {
+  const container = document.getElementById('controls-container');
+  if (!container) return;
+  
+  const controls = sectionControls[currentSection] || [];
+  const descEl = document.getElementById('section-description');
+  if (descEl) descEl.textContent = sectionDescriptions[currentSection];
+  
+  container.innerHTML = controls.map((control) => {
+    // Pega o valor diretamente (string)
+    const value = themeData[control.key] ?? '';
+    
+    if (control.type === 'color') {
+      const hexValue = rgbaToHex(value);
+      return `
+        <div class="te-control-group">
+          <label class="te-control-label">${control.label}</label>
+          <div class="te-color-row">
+            <input type="color" class="te-color-input" data-key="${control.key}" value="${hexValue}" />
+            <input type="text" class="te-text-input" data-key="${control.key}" value="${value || hexValue}" />
+          </div>
+        </div>
+      `;
+    } else if (control.type === 'select') {
+      return `
+        <div class="te-control-group">
+          <label class="te-control-label">${control.label}</label>
+          <select class="te-select-input" data-key="${control.key}">
+            ${control.options.map((opt) => `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+          </select>
+        </div>
+      `;
+    } else if (control.type === 'checkbox') {
+      return `
+        <div class="te-control-group">
+          <label class="te-control-label">${control.label}</label>
+          <label class="te-checkbox-row">
+            <input type="checkbox" data-key="${control.key}" ${value ? 'checked' : ''} />
+            <span>Enabled</span>
+          </label>
+        </div>
+      `;
+    } else if (control.type === 'textarea') {
+      return `
+        <div class="te-control-group">
+          <label class="te-control-label">${control.label}</label>
+          <textarea class="te-textarea-input" data-key="${control.key}" rows="${control.rows || 3}">${value}</textarea>
+        </div>
+      `;
+    } else {
+      return `
+        <div class="te-control-group">
+          <label class="te-control-label">${control.label}</label>
+          <input type="${control.type}" class="te-text-input" data-key="${control.key}" value="${value}" placeholder="${control.placeholder || ''}" />
+        </div>
+      `;
+    }
+  }).join('');
+  
+  container.querySelectorAll('input, select, textarea').forEach((input) => {
+    input.addEventListener('input', function() {
+      const key = this.dataset.key;
+      let value = this.type === 'checkbox' ? this.checked : this.value;
       
-      hero: [
-        { key: 'hero.title_color', label: 'Title Color', type: 'color' },
-        { key: 'hero.subtitle_color', label: 'Subtitle Color', type: 'color' },
-        { key: 'hero.label_color', label: 'Labels Color', type: 'color' },
-        { key: 'hero.price_color', label: 'Price Color', type: 'color' },
-        { key: 'hero.overlay_opacity', label: 'Image Overlay Opacity', type: 'text', placeholder: '0.6' },
-      ],
+      // Armazena valor diretamente como string
+      themeData[key] = value;
+      hasChanges = true;
       
-      collection: [
-        { key: 'collection.bg_color', label: 'Section Background', type: 'color' },
-        { key: 'collection.title_color', label: '"NEW COLLECTION" Title', type: 'color' },
-        { key: 'collection.card_bg', label: 'Product Card BG', type: 'color' },
-        { key: 'collection.product_name_color', label: 'Product Name Color', type: 'color' },
-        { key: 'collection.product_desc_color', label: 'Description Color', type: 'color' },
-        { key: 'collection.price_color', label: 'Price Color', type: 'color' },
-        { key: 'collection.cart_icon_color', label: 'Cart Icon Color', type: 'color' },
-        { key: 'collection.filters_btn_bg', label: 'Filters Button BG', type: 'color' },
-        { key: 'collection.filters_btn_border', label: 'Filters Button Border', type: 'color' },
-        { key: 'collection.filters_btn_text', label: 'Filters Button Text', type: 'color' },
-      ],
+      refreshPreview();
       
-      footer: [
-        { key: 'footer.bg_color', label: 'Footer Background', type: 'color' },
-        { key: 'footer.text_color', label: 'Text Color', type: 'color' },
-        { key: 'footer.muted_text', label: 'Muted Text', type: 'color' },
-        { key: 'footer.lettering_color', label: 'Giant Lettering Color', type: 'color' },
-        { key: 'footer.border_color', label: 'Border/Divider Color', type: 'color' },
-        { key: 'footer.social_icon_bg', label: 'Social Icons BG', type: 'color' },
-        { key: 'footer.social_icon_border', label: 'Social Icons Border', type: 'color' },
-        { key: 'footer.social_icon_color', label: 'Social Icons Color', type: 'color' },
-        { key: 'footer.newsletter_input_bg', label: 'Newsletter Input BG', type: 'color' },
-        { key: 'footer.newsletter_input_border', label: 'Newsletter Input Border', type: 'color' },
-        { key: 'footer.left_text', label: 'Left Column Text', type: 'textarea', rows: 3 },
-        { key: 'footer.center_text', label: 'Center Column Text', type: 'textarea', rows: 3 },
-        { key: 'footer.lettering_text', label: 'Giant Lettering Text', type: 'text', placeholder: 'WOLTZ PUFFERS' },
-        { key: 'footer.bottom_left', label: 'Bottom Left Text', type: 'text', placeholder: 'MADE WITH PRECISION...' },
-        { key: 'footer.bottom_right', label: 'Bottom Right Text', type: 'text', placeholder: 'TERMS · PRIVACY...' },
-      ],
-      
-      global: [
-        { key: 'global.cursor_color', label: 'Custom Cursor Color', type: 'color' },
-        { key: 'global.toast_bg', label: 'Toast Notification BG', type: 'color' },
-        { key: 'global.toast_text', label: 'Toast Text Color', type: 'color' },
-        { key: 'typography.font_heading', label: 'Heading Font', type: 'select', options: ['Anton', 'Playfair Display', 'Oswald', 'Bebas Neue', 'Montserrat'] },
-        { key: 'typography.font_body', label: 'Body Font', type: 'select', options: ['Inter, sans-serif', 'Roboto, sans-serif', 'Open Sans, sans-serif', 'DM Sans, sans-serif'] },
-        { key: 'typography.font_mono', label: 'Monospace Font', type: 'text', placeholder: 'VCR OSD Mono, monospace' },
-      ],
-    };
-
-    const sectionDescriptions = {
-      header: 'Header / Navigation bar',
-      hero: 'Hero section / Collection showcase',
-      collection: 'New Collection / Products grid',
-      footer: 'Footer / Bottom content',
-      global: 'Global settings / Typography',
-    };
-
-    let currentSection = 'header';
-    let themeData = {};
-    let hasChanges = false;
-
-    function rgbaToHex(rgba) {
-      if (!rgba) return '#ffffff';
-      if (rgba.startsWith('#')) return rgba;
-      
-      const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-      if (match) {
-        const r = parseInt(match[1]).toString(16).padStart(2, '0');
-        const g = parseInt(match[2]).toString(16).padStart(2, '0');
-        const b = parseInt(match[3]).toString(16).padStart(2, '0');
-        return `#${r}${g}${b}`;
+      if (this.type === 'color') {
+        const textInput = this.parentElement?.querySelector('.te-text-input');
+        if (textInput) textInput.value = value;
       }
-      return '#ffffff';
-    }
+    });
+  });
+}
 
-    // Função para atualizar o preview recarregando o iframe
-    function refreshPreview() {
+function showToast(message, isError = false) {
+  const toast = document.getElementById('te-toast');
+  const msgEl = document.getElementById('te-toast-message');
+  if (!toast || !msgEl) return;
+  
+  msgEl.textContent = message;
+  toast.classList.toggle('error', isError);
+  toast.classList.add('show');
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+    toast.classList.remove('error');
+  }, 3000);
+}
+
+async function saveChanges() {
+  if (!hasChanges) return;
+  
+  const btn = document.getElementById('save-btn');
+  if (!btn) return;
+  
+  btn.classList.add('saving');
+  btn.textContent = 'Saving...';
+  
+  try {
+    // Envia valores diretamente como string
+    const updates = Object.entries(themeData).map(([key, value]) => ({
+      key,
+      value: String(value),
+      category: key.split('.')[0],
+      updated_at: new Date().toISOString(),
+    }));
+    
+    console.log('Saving', updates.length, 'settings');
+    
+    const { error } = await supabase.from('theme_settings').upsert(updates, { onConflict: 'key' });
+    
+    if (error) {
+      console.error('Save error:', error);
+      throw error;
+    }
+    
+    hasChanges = false;
+    btn.textContent = 'Save';
+    btn.classList.remove('saving');
+    
+    showToast('Saved successfully - Reloading...');
+    
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+    
+  } catch (err) {
+    console.error('Error saving:', err);
+    btn.textContent = 'Save';
+    btn.classList.remove('saving');
+    showToast('Error: ' + err.message, true);
+  }
+}
+
+async function resetToDefaults() {
+  if (!confirm('Reset ALL theme settings to default? This cannot be undone.')) {
+    return;
+  }
+  
+  const btn = document.getElementById('reset-btn');
+  if (!btn) return;
+  
+  btn.classList.add('saving');
+  
+  try {
+    const { error } = await supabase
+      .from('theme_settings')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+    
+    if (error) throw error;
+    
+    showToast('Reset successful - Reloading with defaults...');
+    
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+    
+  } catch (err) {
+    console.error('Error resetting:', err);
+    showToast('Error resetting: ' + err.message, true);
+    btn.classList.remove('saving');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.te-section-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      document.querySelectorAll('.te-section-item').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+      
+      currentSection = this.dataset.section;
+      renderControls();
+      
+      const panel = document.getElementById('editor-panel');
+      if (panel) panel.classList.add('open');
+    });
+  });
+  
+  document.getElementById('open-editor-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const panel = document.getElementById('editor-panel');
+    if (panel) panel.classList.add('open');
+  });
+  
+  document.getElementById('close-panel-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const panel = document.getElementById('editor-panel');
+    if (panel) panel.classList.remove('open');
+  });
+  
+  document.getElementById('save-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    saveChanges();
+  });
+  
+  document.getElementById('reset-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    resetToDefaults();
+  });
+  
+  document.querySelectorAll('.te-device-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      document.querySelectorAll('.te-device-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      
       const iframe = document.getElementById('preview-frame');
       if (iframe) {
-        // Adiciona timestamp para evitar cache
-        const currentSrc = iframe.src.split('?')[0];
-        iframe.src = currentSrc + '?t=' + Date.now();
+        iframe.className = 'te-preview-frame';
+        const device = this.dataset.device;
+        if (device === 'tablet') iframe.classList.add('tablet');
+        if (device === 'mobile') iframe.classList.add('mobile');
       }
-    }
-
-    async function loadThemeSettings() {
-      try {
-        const { data, error } = await supabase.from('theme_settings').select('*');
-        if (error) throw error;
-        
-        data.forEach((row) => {
-          themeData[row.key] = row.value;
-        });
-        
-        console.log('Loaded', Object.keys(themeData).length, 'settings');
-        renderControls();
-      } catch (err) {
-        console.error('Error loading:', err);
-      }
-    }
-
-    function renderControls() {
-      const container = document.getElementById('controls-container');
-      if (!container) return;
-
-      const controls = sectionControls[currentSection] || [];
-      const descEl = document.getElementById('section-description');
-      if (descEl) descEl.textContent = sectionDescriptions[currentSection];
-
-      container.innerHTML = controls.map((control) => {
-        const value = themeData[control.key]?.value ?? '';
-        
-        if (control.type === 'color') {
-          const hexValue = rgbaToHex(value);
-          return `
-            <div class="te-control-group">
-              <label class="te-control-label">${control.label}</label>
-              <div class="te-color-row">
-                <input type="color" class="te-color-input" data-key="${control.key}" value="${hexValue}" />
-                <input type="text" class="te-text-input" data-key="${control.key}" value="${value || hexValue}" />
-              </div>
-            </div>
-          `;
-        } else if (control.type === 'select') {
-          return `
-            <div class="te-control-group">
-              <label class="te-control-label">${control.label}</label>
-              <select class="te-select-input" data-key="${control.key}">
-                ${control.options.map((opt) => `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`).join('')}
-              </select>
-            </div>
-          `;
-        } else if (control.type === 'checkbox') {
-          return `
-            <div class="te-control-group">
-              <label class="te-control-label">${control.label}</label>
-              <label class="te-checkbox-row">
-                <input type="checkbox" data-key="${control.key}" ${value ? 'checked' : ''} />
-                <span>Enabled</span>
-              </label>
-            </div>
-          `;
-        } else if (control.type === 'textarea') {
-          return `
-            <div class="te-control-group">
-              <label class="te-control-label">${control.label}</label>
-              <textarea class="te-textarea-input" data-key="${control.key}" rows="${control.rows || 3}">${value}</textarea>
-            </div>
-          `;
-        } else {
-          return `
-            <div class="te-control-group">
-              <label class="te-control-label">${control.label}</label>
-              <input type="${control.type}" class="te-text-input" data-key="${control.key}" value="${value}" placeholder="${control.placeholder || ''}" />
-            </div>
-          `;
-        }
-      }).join('');
-
-      container.querySelectorAll('input, select, textarea').forEach((input) => {
-        input.addEventListener('input', function() {
-          const key = this.dataset.key;
-          let value = this.type === 'checkbox' ? this.checked : this.value;
-          
-          if (!themeData[key]) themeData[key] = { value: '', label: key };
-          themeData[key].value = value;
-          hasChanges = true;
-          
-          // Atualiza preview em tempo real
-          refreshPreview();
-          
-          if (this.type === 'color') {
-            const textInput = this.parentElement?.querySelector('.te-text-input');
-            if (textInput) textInput.value = value;
-          }
-        });
-      });
-    }
-
-    function showToast(message, isError = false) {
-      const toast = document.getElementById('te-toast');
-      const msgEl = document.getElementById('te-toast-message');
-      if (!toast || !msgEl) return;
-      
-      msgEl.textContent = message;
-      toast.classList.toggle('error', isError);
-      toast.classList.add('show');
-      setTimeout(() => {
-        toast.classList.remove('show');
-        toast.classList.remove('error');
-      }, 3000);
-    }
-
-    async function saveChanges() {
-      if (!hasChanges) return;
-      
-      const btn = document.getElementById('save-btn');
-      if (!btn) return;
-      
-      btn.classList.add('saving');
-      btn.textContent = 'Saving...';
-      
-      try {
-        const updates = Object.entries(themeData).map(([key, value]) => ({
-          key,
-          value,
-          category: key.split('.')[0],
-          updated_at: new Date().toISOString(),
-        }));
-        
-        console.log('Saving', updates.length, 'settings');
-        
-        const { error } = await supabase.from('theme_settings').upsert(updates, { onConflict: 'key' });
-        
-        if (error) {
-          console.error('Save error:', error);
-          throw error;
-        }
-        
-        hasChanges = false;
-        btn.textContent = 'Save';
-        btn.classList.remove('saving');
-        
-        showToast('Saved successfully - Reloading...');
-        
-        // Recarrega a página inteira para aplicar as mudanças no site real
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-        
-      } catch (err) {
-        console.error('Error saving:', err);
-        btn.textContent = 'Save';
-        btn.classList.remove('saving');
-        showToast('Error: ' + err.message, true);
-      }
-    }
-
-    async function resetToDefaults() {
-      if (!confirm('Reset ALL theme settings to default? This cannot be undone.')) {
-        return;
-      }
-      
-      const btn = document.getElementById('reset-btn');
-      if (!btn) return;
-      
-      btn.classList.add('saving');
-      
-      try {
-        // Deleta todas as configurações atuais
-        const { error } = await supabase
-          .from('theme_settings')
-          .delete()
-          .neq('id', '00000000-0000-0000-0000-000000000000');
-        
-        if (error) throw error;
-        
-        showToast('Reset successful - Reloading with defaults...');
-        
-        // Recarrega para aplicar os valores padrão do SQL INSERT
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-        
-      } catch (err) {
-        console.error('Error resetting:', err);
-        showToast('Error resetting: ' + err.message, true);
-        btn.classList.remove('saving');
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Sidebar items
-      document.querySelectorAll('.te-section-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          document.querySelectorAll('.te-section-item').forEach(i => i.classList.remove('active'));
-          this.classList.add('active');
-          
-          currentSection = this.dataset.section;
-          renderControls();
-          
-          const panel = document.getElementById('editor-panel');
-          if (panel) panel.classList.add('open');
-        });
-      });
-
-      // Open editor button
-      document.getElementById('open-editor-btn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        const panel = document.getElementById('editor-panel');
-        if (panel) panel.classList.add('open');
-      });
-
-      // Close panel button
-      document.getElementById('close-panel-btn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        const panel = document.getElementById('editor-panel');
-        if (panel) panel.classList.remove('open');
-      });
-
-      // Save button
-      document.getElementById('save-btn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        saveChanges();
-      });
-
-      // Reset button
-      document.getElementById('reset-btn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        resetToDefaults();
-      });
-
-      // Device buttons
-      document.querySelectorAll('.te-device-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          document.querySelectorAll('.te-device-btn').forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
-          
-          const iframe = document.getElementById('preview-frame');
-          if (iframe) {
-            iframe.className = 'te-preview-frame';
-            const device = this.dataset.device;
-            if (device === 'tablet') iframe.classList.add('tablet');
-            if (device === 'mobile') iframe.classList.add('mobile');
-          }
-        });
-      });
-
-      // Iframe load
-      document.getElementById('preview-frame')?.addEventListener('load', () => {
-        // Opcional: fazer algo após o iframe carregar
-      });
-
-      // Load initial settings
-      loadThemeSettings();
     });
-  </script>
+  });
+  
+  document.getElementById('preview-frame')?.addEventListener('load', () => {
+    // Optional
+  });
+  
+  loadThemeSettings();
+});
+</script>
 </AdminLayout>
