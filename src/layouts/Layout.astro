@@ -1,68 +1,55 @@
 ---
-import { supabase } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-// Busca configurações do tema
-let themeSettings: any = {};
+const supabase = createClient(
+  import.meta.env.SUPABASE_URL,
+  import.meta.env.SUPABASE_ANON_KEY
+);
+
+// Carregar configurações do tema
+let themeData: any = {};
 try {
   const { data, error } = await supabase
     .from('theme_settings')
-    .select('*')
-    .order('updated_at', { ascending: false });
+    .select('*');
   
-  if (error) throw error;
-  
-  const latestSettings = new Map();
-  data?.forEach((row: any) => {
-    if (!latestSettings.has(row.key)) {
-      latestSettings.set(row.key, row.value);
-    }
-  });
-  
-  themeSettings = Object.fromEntries(latestSettings);
+  if (!error && data) {
+    data.forEach((row: any) => {
+      themeData[row.key] = row.value;
+    });
+  }
 } catch (e) {
   console.error('Failed to load theme settings:', e);
 }
 
-// Extrai valores com fallbacks
-const colors = {
-  primary: themeSettings['colors.primary']?.value || '#ffffff',
-  secondary: themeSettings['colors.secondary']?.value || '#6b7c93',
-  background: themeSettings['colors.background']?.value || '#121214',
-  backgroundAlt: themeSettings['colors.background_alt']?.value || '#111113',
-  text: themeSettings['colors.text']?.value || '#ffffff',
-  textMuted: themeSettings['colors.text_muted']?.value || 'rgba(255,255,255,0.4)',
-  accent: themeSettings['colors.accent']?.value || '#a8b5c6',
-  success: themeSettings['colors.success']?.value || '#22c55e',
-  error: themeSettings['colors.error']?.value || '#ef4444',
-  warning: themeSettings['colors.warning']?.value || '#f59e0b',
-};
-
-const typography = {
-  fontHeading: themeSettings['typography.font_heading']?.value || 'Anton',
-  fontBody: themeSettings['typography.font_body']?.value || 'Inter, sans-serif',
-  fontMono: themeSettings['typography.font_mono']?.value || 'VCR OSD Mono, monospace',
-  sizeH1: themeSettings['typography.size_h1']?.value || 'clamp(3rem, 8vw, 6rem)',
-  sizeH2: themeSettings['typography.size_h2']?.value || 'clamp(2rem, 5vw, 4rem)',
-  sizeBody: themeSettings['typography.size_body']?.value || '1rem',
-  weightHeading: themeSettings['typography.weight_heading']?.value || '400',
-  weightBody: themeSettings['typography.weight_body']?.value || '400',
-  trackingHeading: themeSettings['typography.tracking_heading']?.value || '-0.02em',
-  trackingBody: themeSettings['typography.tracking_body']?.value || '0.05em',
-};
-
-const layout = {
-  containerMaxWidth: themeSettings['layout.container_max_width']?.value || '1536px',
-  sectionPadding: themeSettings['layout.section_padding']?.value || '3rem',
-  gridGap: themeSettings['layout.grid_gap']?.value || '1.5rem',
-  borderRadius: themeSettings['layout.border_radius']?.value || '0px',
-  heroHeight: themeSettings['layout.hero_height']?.value || '100vh',
-};
-
-const branding = {
-  siteName: themeSettings['branding.site_name']?.value || 'WOLTZ',
-  logoUrl: themeSettings['branding.logo_url']?.value || '',
-  faviconUrl: themeSettings['branding.favicon_url']?.value || '',
-  tagline: themeSettings['branding.tagline']?.value || '',
+// Valores padrão
+const theme = {
+  'header.bg_color': themeData['header.bg_color'] || '#121214',
+  'header.text_color': themeData['header.text_color'] || '#ffffff',
+  'hero.title_color': themeData['hero.title_color'] || '#ffffff',
+  'hero.subtitle_color': themeData['hero.subtitle_color'] || 'rgba(255,255,255,0.6)',
+  'hero.label_color': themeData['hero.label_color'] || 'rgba(255,255,255,0.4)',
+  'hero.price_color': themeData['hero.price_color'] || '#ffffff',
+  'hero.overlay_opacity': themeData['hero.overlay_opacity'] || '0.6',
+  'collection.bg_color': themeData['collection.bg_color'] || '#6b7c93',
+  'collection.title_color': themeData['collection.title_color'] || '#ffffff',
+  'collection.card_bg': themeData['collection.card_bg'] || '#5f7085',
+  'collection.product_name_color': themeData['collection.product_name_color'] || '#ffffff',
+  'collection.product_desc_color': themeData['collection.product_desc_color'] || 'rgba(255,255,255,0.6)',
+  'collection.price_color': themeData['collection.price_color'] || '#ffffff',
+  'collection.cart_icon_color': themeData['collection.cart_icon_color'] || '#ffffff',
+  'collection.filters_btn_bg': themeData['collection.filters_btn_bg'] || 'rgba(255,255,255,0.1)',
+  'collection.filters_btn_border': themeData['collection.filters_btn_border'] || 'rgba(255,255,255,0.3)',
+  'collection.filters_btn_text': themeData['collection.filters_btn_text'] || '#ffffff',
+  'footer.bg_color': themeData['footer.bg_color'] || '#6b7c93',
+  'footer.text_color': themeData['footer.text_color'] || '#ffffff',
+  'footer.muted_text': themeData['footer.muted_text'] || 'rgba(255,255,255,0.4)',
+  'footer.lettering_color': themeData['footer.lettering_color'] || 'rgba(255,255,255,0.07)',
+  'footer.border_color': themeData['footer.border_color'] || 'rgba(255,255,255,0.2)',
+  'global.cursor_color': themeData['global.cursor_color'] || '#ffffff',
+  'typography.font_heading': themeData['typography.font_heading'] || 'Anton',
+  'typography.font_body': themeData['typography.font_body'] || 'Inter, sans-serif',
+  'typography.font_mono': themeData['typography.font_mono'] || 'VCR OSD Mono, monospace',
 };
 
 interface Props {
@@ -74,278 +61,187 @@ const { title } = Astro.props;
 
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="description" content={branding.tagline || "WOLTZ - Premium Digital Fashion"} />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="WOLTZ - Premium Digital Fashion" />
+  <title>{title}</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style is:global>
+    @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
     
-    {branding.faviconUrl && <link rel="icon" href={branding.faviconUrl} />}
+    :root {
+      --header-bg: {theme['header.bg_color']};
+      --header-text: {theme['header.text_color']};
+      --hero-title: {theme['hero.title_color']};
+      --hero-subtitle: {theme['hero.subtitle_color']};
+      --hero-label: {theme['hero.label_color']};
+      --hero-price: {theme['hero.price_color']};
+      --hero-overlay: {theme['hero.overlay_opacity']};
+      --collection-bg: {theme['collection.bg_color']};
+      --collection-title: {theme['collection.title_color']};
+      --collection-card-bg: {theme['collection.card_bg']};
+      --collection-product-name: {theme['collection.product_name_color']};
+      --collection-product-desc: {theme['collection.product_desc_color']};
+      --collection-price: {theme['collection.price_color']};
+      --collection-cart-icon: {theme['collection.cart_icon_color']};
+      --collection-filters-btn-bg: {theme['collection.filters_btn_bg']};
+      --collection-filters-btn-border: {theme['collection.filters_btn_border']};
+      --collection-filters-btn-text: {theme['collection.filters_btn_text']};
+      --footer-bg: {theme['footer.bg_color']};
+      --footer-text: {theme['footer.text_color']};
+      --footer-muted: {theme['footer.muted_text']};
+      --footer-lettering: {theme['footer.lettering_color']};
+      --footer-border: {theme['footer.border_color']};
+      --cursor-color: {theme['global.cursor_color']};
+      --font-heading: {theme['typography.font_heading']};
+      --font-body: {theme['typography.font_body']};
+      --font-mono: {theme['typography.font_mono']};
+    }
     
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;300;400;500&display=swap" rel="stylesheet" />
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     
-    <!-- CSS Variables do Tema -->
-    <style is:global>
-      :root {
-        --color-primary: {colors.primary};
-        --color-secondary: {colors.secondary};
-        --color-background: {colors.background};
-        --color-background-alt: {colors.backgroundAlt};
-        --color-text: {colors.text};
-        --color-text-muted: {colors.textMuted};
-        --color-accent: {colors.accent};
-        --color-success: {colors.success};
-        --color-error: {colors.error};
-        --color-warning: {colors.warning};
-        
-        --font-heading: {typography.fontHeading};
-        --font-body: {typography.fontBody};
-        --font-mono: {typography.fontMono};
-        --size-h1: {typography.sizeH1};
-        --size-h2: {typography.sizeH2};
-        --size-body: {typography.sizeBody};
-        --weight-heading: {typography.weightHeading};
-        --weight-body: {typography.weightBody};
-        --tracking-heading: {typography.trackingHeading};
-        --tracking-body: {typography.trackingBody};
-        
-        --container-max-width: {layout.containerMaxWidth};
-        --section-padding: {layout.sectionPadding};
-        --grid-gap: {layout.gridGap};
-        --border-radius: {layout.borderRadius};
-        --hero-height: {layout.heroHeight};
-      }
-      
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      
-      html, body {
-        background-color: var(--color-background);
-        color: var(--color-text);
-      }
-      
-      body {
-        font-family: var(--font-body);
-        font-size: var(--size-body);
-        font-weight: var(--weight-body);
-        letter-spacing: var(--tracking-body);
-        line-height: 1.6;
-        cursor: none !important;
-      }
-      
-      body * {
-        cursor: none !important;
-      }
-      
-      h1, h2, h3, h4, h5, h6 {
-        font-family: var(--font-heading);
-        font-weight: var(--weight-heading);
-        letter-spacing: var(--tracking-heading);
-        line-height: 1.1;
-        text-transform: uppercase;
-        color: var(--color-text);
-      }
-      
-      h1 { font-size: var(--size-h1); }
-      h2 { font-size: var(--size-h2); }
-      
-      p { color: var(--color-text); }
-      
-      a {
-        color: var(--color-primary);
-        text-decoration: none;
-        transition: opacity 0.3s ease;
-      }
-      
-      a:hover { opacity: 0.7; }
-      
-      button {
-        cursor: none;
-        border: none;
-        background: none;
-        font-family: inherit;
-        color: var(--color-text);
-      }
-      
-      img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-      }
-      
-      .container {
-        max-width: var(--container-max-width);
-        margin: 0 auto;
-        padding: 0 var(--section-padding);
-      }
-      
-      /* CURSOR NORMAL - Bolinha pequena com borda branca */
-      #custom-cursor {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 24px;
-        height: 24px;
-        border: 2px solid #ffffff;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 2147483647;
-        transform: translate(-50%, -50%);
-        transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-        background-color: transparent;
-        opacity: 1;
-        visibility: visible;
-        display: block;
-      }
-      
-      /* CURSOR ATIVO (HOVER) - Círculo maior com borda branca e fundo sutil */
-      #custom-cursor.active {
-        width: 50px;
-        height: 50px;
-        border: 2px solid #ffffff;
-        background-color: rgba(255, 255, 255, 0.15);
-      }
-      
-      /* TOAST NOTIFICATION */
-      #cart-toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%) translateY(100px);
-        background: var(--color-background-alt);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--color-text-muted);
-        padding: 1rem 2rem;
-        border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        z-index: 10000;
-        opacity: 0;
-        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        min-width: 300px;
-        max-width: 500px;
-      }
-
-      #cart-toast.show {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
-
-      #cart-toast-message {
-        color: var(--color-text);
-        font-size: 0.875rem;
-        font-weight: 400;
-        letter-spacing: 0.02em;
-        flex: 1;
-      }
-
-      #cart-toast svg {
-        width: 20px;
-        height: 20px;
-        color: var(--color-success);
-        flex-shrink: 0;
-      }
-      
-      @media (hover: none) and (pointer: coarse) {
-        body { cursor: auto !important; }
-        body * { cursor: auto !important; }
-        #custom-cursor { display: none !important; }
-      }
-    </style>
+    body {
+      font-family: var(--font-body);
+      background: #0a0a0c;
+      color: #fff;
+      overflow-x: hidden;
+      cursor: none !important;
+    }
     
-    <slot name="head" />
-  </head>
-  <body>
-    <div id="custom-cursor"></div>
+    body * {
+      cursor: none !important;
+    }
     
-    <div id="cart-toast">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-      </svg>
-      <span id="cart-toast-message">Added to cart</span>
-    </div>
+    .font-vcr { font-family: var(--font-mono); }
     
-    <slot />
+    .tech-card-asymmetric {
+      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+      background-color: var(--collection-card-bg) !important;
+    }
     
-    <!-- SCRIPT DO CURSOR - Executa imediatamente -->
-    <script is:inline>
-      (function() {
-        var cursor = document.getElementById('custom-cursor');
-        if (!cursor) return;
-        
-        // Garante visibilidade
-        cursor.style.display = 'block';
-        cursor.style.opacity = '1';
-        cursor.style.visibility = 'visible';
-        
-        // Posições iniciais (centro da tela)
-        var mouseX = window.innerWidth / 2;
-        var mouseY = window.innerHeight / 2;
-        var cursorX = mouseX;
-        var cursorY = mouseY;
-        
-        // Atualiza posição inicial
-        cursor.style.left = mouseX + 'px';
-        cursor.style.top = mouseY + 'px';
-        
-        // Captura movimento do mouse
-        window.onmousemove = function(e) {
-          mouseX = e.clientX;
-          mouseY = e.clientY;
-        };
-        
-        // Animação suave
-        function moveCursor() {
-          cursorX += (mouseX - cursorX) * 0.15;
-          cursorY += (mouseY - cursorY) * 0.15;
-          cursor.style.left = cursorX + 'px';
-          cursor.style.top = cursorY + 'px';
-          requestAnimationFrame(moveCursor);
-        }
-        moveCursor();
-        
-        // Efeito hover
-        function addHover(el) {
-          if (!el) return;
-          el.onmouseenter = function() { cursor.className = 'active'; };
-          el.onmouseleave = function() { cursor.className = ''; };
-        }
-        
-        // Aplica em todos elementos clicáveis
-        var clickables = document.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
-        for (var i = 0; i < clickables.length; i++) {
-          addHover(clickables[i]);
-        }
-        
-        // Observer para elementos dinâmicos
-        var observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(m) {
-            m.addedNodes.forEach(function(node) {
-              if (node.nodeType === 1) {
-                if (node.matches && node.matches('a, button, [onclick], .clickable, input, select, textarea')) {
-                  addHover(node);
-                }
-                if (node.querySelectorAll) {
-                  var newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
-                  for (var i = 0; i < newClickables.length; i++) {
-                    addHover(newClickables[i]);
-                  }
+    /* CURSOR CUSTOMIZADO - BOLA BRANCA */
+    #custom-cursor {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 24px !important;
+      height: 24px !important;
+      border: 2px solid var(--cursor-color) !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483647 !important;
+      transform: translate(-50%, -50%) !important;
+      transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+      background-color: transparent !important;
+    }
+    
+    #custom-cursor.active {
+      width: 50px !important;
+      height: 50px !important;
+      border: 2px solid #ffffff !important;
+      background-color: rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    @media (hover: none) and (pointer: coarse) {
+      body { cursor: auto !important; }
+      body * { cursor: auto !important; }
+      #custom-cursor { display: none !important; }
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+<body>
+  <!-- CURSOR CUSTOMIZADO -->
+  <div id="custom-cursor"></div>
+  
+  <slot />
+  
+  <!-- SCRIPT DO CURSOR -->
+  <script is:inline>
+    (function() {
+      var cursor = document.getElementById('custom-cursor');
+      if (!cursor) return;
+      
+      cursor.style.display = 'block';
+      cursor.style.opacity = '1';
+      cursor.style.visibility = 'visible';
+      
+      var mouseX = window.innerWidth / 2;
+      var mouseY = window.innerHeight / 2;
+      var cursorX = mouseX;
+      var cursorY = mouseY;
+      
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+      
+      window.onmousemove = function(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      };
+      
+      function moveCursor() {
+        cursorX += (mouseX - cursorX) * 0.15;
+        cursorY += (mouseY - cursorY) * 0.15;
+        cursor.style.left = cursorX + 'px';
+        cursor.style.top = cursorY + 'px';
+        requestAnimationFrame(moveCursor);
+      }
+      moveCursor();
+      
+      function addHover(el) {
+        if (!el) return;
+        el.onmouseenter = function() { cursor.className = 'active'; };
+        el.onmouseleave = function() { cursor.className = ''; };
+      }
+      
+      var clickables = document.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
+      for (var i = 0; i < clickables.length; i++) {
+        addHover(clickables[i]);
+      }
+      
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+          m.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) {
+              if (node.matches && node.matches('a, button, [onclick], .clickable, input, select, textarea')) {
+                addHover(node);
+              }
+              if (node.querySelectorAll) {
+                var newClickables = node.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
+                for (var i = 0; i < newClickables.length; i++) {
+                  addHover(newClickables[i]);
                 }
               }
-            });
+            }
           });
         });
-        
-        observer.observe(document.body, { childList: true, subtree: true });
-      })();
-    </script>
-  </body>
+      });
+      
+      observer.observe(document.body, { childList: true, subtree: true });
+    })();
+  </script>
+</body>
 </html>
