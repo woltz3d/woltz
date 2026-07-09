@@ -6,7 +6,7 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 <AdminLayout title="Theme Editor" activePage="theme-editor">
 <div id="app-config" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY} style="display:none;"></div>
 <style is:global>
-/* ... (Mantenha todo o seu CSS original aqui, ele está ótimo) ... */
+/* ... MANTENHA TODO O SEU CSS ORIGINAL AQUI ... */
 .theme-editor-wrapper { display: grid; grid-template-columns: 200px 1fr; height: calc(100vh - 73px); background: #0a0a0c; overflow: hidden; }
 .theme-editor-wrapper ::-webkit-scrollbar { width: 5px; }
 .theme-editor-wrapper ::-webkit-scrollbar-track { background: transparent; }
@@ -73,31 +73,13 @@ const SUPABASE_ANON_KEY = import.meta.env.SUPABASE_ANON_KEY;
 </style>
 <div class="theme-editor-wrapper">
   <div class="te-sidebar-left">
-    <div class="te-sidebar-header">
-      <h2>Site Sections</h2>
-      <p>Select section to edit</p>
-    </div>
+    <div class="te-sidebar-header"><h2>Site Sections</h2><p>Select section to edit</p></div>
     <div class="te-sections-list" id="sections-list">
-      <div class="te-section-item active" data-section="header">
-        <div class="te-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div>
-        <div class="te-section-info"><h3>Header</h3><p>Logo, menu, icons</p></div>
-      </div>
-      <div class="te-section-item" data-section="hero">
-        <div class="te-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-        <div class="te-section-info"><h3>Hero Section</h3><p>Collection showcase</p></div>
-      </div>
-      <div class="te-section-item" data-section="collection">
-        <div class="te-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-        <div class="te-section-info"><h3>New Collection</h3><p>Products grid</p></div>
-      </div>
-      <div class="te-section-item" data-section="footer">
-        <div class="te-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="15" x2="21" y2="15"/></svg></div>
-        <div class="te-section-info"><h3>Footer</h3><p>Bottom content</p></div>
-      </div>
-      <div class="te-section-item" data-section="global">
-        <div class="te-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-        <div class="te-section-info"><h3>Global</h3><p>Cursor, toast</p></div>
-      </div>
+      <div class="te-section-item active" data-section="header"><div class="te-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div class="te-section-info"><h3>Header</h3><p>Logo, menu, icons</p></div></div>
+      <div class="te-section-item" data-section="hero"><div class="te-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div class="te-section-info"><h3>Hero Section</h3><p>Collection showcase</p></div></div>
+      <div class="te-section-item" data-section="collection"><div class="te-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><div class="te-section-info"><h3>New Collection</h3><p>Products grid</p></div></div>
+      <div class="te-section-item" data-section="footer"><div class="te-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="15" x2="21" y2="15"/></svg></div><div class="te-section-info"><h3>Footer</h3><p>Bottom content</p></div></div>
+      <div class="te-section-item" data-section="global"><div class="te-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="te-section-info"><h3>Global</h3><p>Cursor, toast</p></div></div>
     </div>
   </div>
   <div class="te-preview">
