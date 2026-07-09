@@ -23,7 +23,7 @@ try {
   console.error('Failed to load theme settings:', e);
 }
 
-// Extrai valores com fallbacks
+// Extrai valores com fallbacks (MANTENDO A ESTRUTURA ORIGINAL)
 const colors = {
   primary: themeSettings['colors.primary']?.value || '#ffffff',
   secondary: themeSettings['colors.secondary']?.value || '#6b7c93',
@@ -65,6 +65,22 @@ const branding = {
   tagline: themeSettings['branding.tagline']?.value || '',
 };
 
+// NOVOS VALORES PARA O THEME EDITOR (Com fallbacks seguros)
+const teColors = {
+  headerBg: themeSettings['header.bg_color'] || '#121214',
+  headerText: themeSettings['header.text_color'] || '#ffffff',
+  heroTitle: themeSettings['hero.title_color'] || '#ffffff',
+  heroSubtitle: themeSettings['hero.subtitle_color'] || 'rgba(255,255,255,0.6)',
+  heroLabel: themeSettings['hero.label_color'] || 'rgba(255,255,255,0.4)',
+  heroPrice: themeSettings['hero.price_color'] || '#ffffff',
+  collectionBg: themeSettings['collection.bg_color'] || '#6b7c93',
+  collectionCardBg: themeSettings['collection.card_bg'] || '#5f7085',
+  footerBg: themeSettings['footer.bg_color'] || '#6b7c93',
+  footerText: themeSettings['footer.text_color'] || '#ffffff',
+  footerMuted: themeSettings['footer.muted_text'] || 'rgba(255,255,255,0.4)',
+  cursorColor: themeSettings['global.cursor_color'] || '#ffffff',
+};
+
 interface Props {
   title: string;
 }
@@ -90,6 +106,7 @@ const { title } = Astro.props;
     <!-- CSS Variables do Tema -->
     <style is:global>
       :root {
+        /* Variáveis Originais (NÃO MEXER) */
         --color-primary: {colors.primary};
         --color-secondary: {colors.secondary};
         --color-background: {colors.background};
@@ -117,6 +134,20 @@ const { title } = Astro.props;
         --grid-gap: {layout.gridGap};
         --border-radius: {layout.borderRadius};
         --hero-height: {layout.heroHeight};
+
+        /* NOVAS Variáveis para o Theme Editor */
+        --te-header-bg: {teColors.headerBg};
+        --te-header-text: {teColors.headerText};
+        --te-hero-title: {teColors.heroTitle};
+        --te-hero-subtitle: {teColors.heroSubtitle};
+        --te-hero-label: {teColors.heroLabel};
+        --te-hero-price: {teColors.heroPrice};
+        --te-collection-bg: {teColors.collectionBg};
+        --te-collection-card-bg: {teColors.collectionCardBg};
+        --te-footer-bg: {teColors.footerBg};
+        --te-footer-text: {teColors.footerText};
+        --te-footer-muted: {teColors.footerMuted};
+        --te-cursor-color: {teColors.cursorColor};
       }
       
       * {
@@ -185,14 +216,14 @@ const { title } = Astro.props;
         padding: 0 var(--section-padding);
       }
       
-      /* CURSOR NORMAL - Bolinha pequena com borda branca */
+      /* CURSOR NORMAL - Bolinha pequena com borda branca (ORIGINAL) */
       #custom-cursor {
         position: fixed;
         top: 0;
         left: 0;
         width: 24px;
         height: 24px;
-        border: 2px solid #ffffff;
+        border: 2px solid var(--te-cursor-color, #ffffff);
         border-radius: 50%;
         pointer-events: none;
         z-index: 2147483647;
@@ -204,7 +235,7 @@ const { title } = Astro.props;
         display: block;
       }
       
-      /* CURSOR ATIVO (HOVER) - Círculo maior com borda branca e fundo sutil */
+      /* CURSOR ATIVO (HOVER) - Círculo maior com borda branca e fundo sutil (ORIGINAL) */
       #custom-cursor.active {
         width: 50px;
         height: 50px;
@@ -212,7 +243,7 @@ const { title } = Astro.props;
         background-color: rgba(255, 255, 255, 0.15);
       }
       
-      /* TOAST NOTIFICATION */
+      /* TOAST NOTIFICATION (ORIGINAL) */
       #cart-toast {
         position: fixed;
         bottom: 2rem;
@@ -275,7 +306,7 @@ const { title } = Astro.props;
     
     <slot />
     
-    <!-- SCRIPT DO CURSOR - Executa imediatamente -->
+    <!-- SCRIPT DO CURSOR - Executa imediatamente (ORIGINAL - NÃO MEXER) -->
     <script is:inline>
       (function() {
         var cursor = document.getElementById('custom-cursor');
