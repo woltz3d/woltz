@@ -181,27 +181,32 @@ const { title } = Astro.props;
   
   <!-- SCRIPT DO CURSOR -->
   <script is:inline>
-    (function() {
+    document.addEventListener('DOMContentLoaded', function() {
       var cursor = document.getElementById('custom-cursor');
       if (!cursor) return;
       
+      // Garante visibilidade inicial
       cursor.style.display = 'block';
       cursor.style.opacity = '1';
       cursor.style.visibility = 'visible';
       
+      // Posições iniciais (centro da tela)
       var mouseX = window.innerWidth / 2;
       var mouseY = window.innerHeight / 2;
       var cursorX = mouseX;
       var cursorY = mouseY;
       
+      // Atualiza posição inicial
       cursor.style.left = mouseX + 'px';
       cursor.style.top = mouseY + 'px';
       
+      // Captura movimento do mouse
       window.onmousemove = function(e) {
         mouseX = e.clientX;
         mouseY = e.clientY;
       };
       
+      // Animação suave
       function moveCursor() {
         cursorX += (mouseX - cursorX) * 0.15;
         cursorY += (mouseY - cursorY) * 0.15;
@@ -211,17 +216,20 @@ const { title } = Astro.props;
       }
       moveCursor();
       
+      // Efeito hover
       function addHover(el) {
         if (!el) return;
         el.onmouseenter = function() { cursor.className = 'active'; };
         el.onmouseleave = function() { cursor.className = ''; };
       }
       
+      // Aplica em todos elementos clicáveis existentes
       var clickables = document.querySelectorAll('a, button, [onclick], .clickable, input, select, textarea');
       for (var i = 0; i < clickables.length; i++) {
         addHover(clickables[i]);
       }
       
+      // Observer para elementos dinâmicos
       var observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(m) {
           m.addedNodes.forEach(function(node) {
@@ -241,7 +249,7 @@ const { title } = Astro.props;
       });
       
       observer.observe(document.body, { childList: true, subtree: true });
-    })();
+    });
   </script>
 </body>
 </html>
